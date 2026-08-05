@@ -28,7 +28,7 @@ Full brief: [`docs/HACKATHON.md`](./HACKATHON.md). Official rules: https://www.g
 |------|-------|------|
 | Primary live URL | https://relay-ai-app.vercel.app | [ ] |
 | Legacy alias | https://support-ai-nine-mu.vercel.app | [ ] |
-| GitHub | `YatharthSharma1309/relay-ai` (public **or** share with testing@devpost.com + judging@hacker.fund) | [ ] |
+| GitHub | `YatharthSharma1309/opsconcierge` (legacy: `relay-ai`) | [ ] |
 | Demo video (&lt; 3 min, public) | YouTube / Vimeo / Youku link | [ ] |
 
 ---

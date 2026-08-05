@@ -1,6 +1,7 @@
 # OpsConcierge
 
 **Folder:** `OpsConcierge-App`  
+**Repo:** https://github.com/YatharthSharma1309/opsconcierge  
 **Product:** OpsConcierge — the AI concierge that runs your business operations.
 
 Next.js multi-tenant support + hiring agents. Formerly the Relay AI codebase; public brand for XPRIZE is **OpsConcierge**.
