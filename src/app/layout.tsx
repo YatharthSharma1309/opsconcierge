@@ -15,10 +15,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Relay AI | Support & Recruitment Platform",
+  title: "OpsConcierge | AI Concierge for Business Operations",
   description:
-    "Unified Support & Recruitment Platform — RAG customer support, recruitment pipelines, tickets, and analytics for SaaS teams.",
-  applicationName: "Relay AI",
+    "OpsConcierge — the AI concierge that runs your business operations. Shared company memory, support + hiring agents, tickets, and execution logs.",
+  applicationName: "OpsConcierge",
 };
 
 export default function RootLayout({

@@ -1,4 +1,4 @@
-import {
+﻿import {
   ChatServiceError,
   prepareChatTurn,
   prepareSandboxChatTurn,
@@ -6,6 +6,10 @@ import {
   saveAssistantMessage,
   streamChatReply,
 } from "@/lib/chat/service";
+
+import { getChatModel, isAiConfigured } from "@/lib/ai";
+import { getGeminiChatModel, isGeminiConfigured } from "@/lib/gemini";
+import { db } from "@/lib/db";
 
 function encodeSse(event: string, data: unknown) {
   return `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`;
@@ -32,6 +36,8 @@ export async function createChatStreamResponse({
     null;
 
   try {
+    const laneRoutingStartAt = Date.now();
+
     const prepared = sandbox
       ? {
           conversationId: null,
@@ -43,6 +49,52 @@ export async function createChatStreamResponse({
           channel,
         });
 
+    const shouldLogExecution =
+      !sandbox && prepared.conversationId && prepared.userMessageId && channel !== "ADMIN";
+
+    const executionRun = shouldLogExecution
+      ? await db.executionRun.create({
+          data: {
+            workspaceId: organizationId,
+            conversationId: prepared.conversationId,
+            userMessageId: prepared.userMessageId,
+            channel,
+            trigger: "widget_intake",
+          },
+        })
+      : null;
+
+    const modelForEvidence = isGeminiConfigured()
+      ? getGeminiChatModel()
+      : isAiConfigured()
+        ? getChatModel()
+        : "N/A";
+
+    const laneDecision =
+      prepared.chunksMatched === 0
+        ? "route_fallback_no_knowledge"
+        : isGeminiConfigured()
+          ? "route_to_gemini"
+          : isAiConfigured()
+            ? "route_to_openrouter"
+            : "route_fallback_ai_unconfigured";
+
+    if (executionRun) {
+      await db.executionLogEntry.create({
+        data: {
+          runId: executionRun.id,
+          workspaceId: organizationId,
+          conversationId: prepared.conversationId,
+          userMessageId: prepared.userMessageId,
+          agent: "lane-router",
+          trigger: "widget_intake",
+          model: modelForEvidence,
+          decision: laneDecision,
+          latencyMs: Date.now() - laneRoutingStartAt,
+        },
+      });
+    }
+
     if (!sandbox && prepared.conversationId && prepared.userMessageId) {
       rollbackTarget = {
         conversationId: prepared.conversationId,
@@ -50,12 +102,24 @@ export async function createChatStreamResponse({
       };
     }
 
-    const { stream, reply: fallback } = await streamChatReply(
+    const trigger = sandbox
+      ? "chat.stream.sandbox"
+      : channel === "HELP_CENTER"
+        ? "help_center.chat.stream"
+        : channel === "WIDGET"
+          ? "widget.chat.stream"
+          : "admin.chat.stream";
+
+    const llmRequestStartedAt = Date.now();
+
+    const { stream, reply: fallback, provider: llmProvider, model: llmModel, latencyMs: llmLatencyMs } =
+      await streamChatReply(
       organizationId,
       message,
       prepared.rankedChunks,
       prepared.fallbackReply,
-    );
+      { trigger },
+      );
 
     const encoder = new TextEncoder();
 
@@ -99,6 +163,46 @@ export async function createChatStreamResponse({
               prepared.sources,
             );
 
+            if (executionRun && prepared.userMessageId) {
+              const latencyMs =
+                llmProvider === "gemini"
+                  ? llmLatencyMs ?? Date.now() - llmRequestStartedAt
+                  : Date.now() - llmRequestStartedAt;
+
+              const agent =
+                llmProvider === "gemini"
+                  ? "gemini"
+                  : llmProvider === "openrouter"
+                    ? "openrouter"
+                    : "llm";
+
+              const decision =
+                llmProvider === "gemini"
+                  ? "gemini_success"
+                  : llmProvider === "openrouter" && stream
+                    ? "openrouter_stream_completed"
+                    : "llm_non_stream_reply";
+
+              await db.executionLogEntry.create({
+                data: {
+                  runId: executionRun.id,
+                  workspaceId: organizationId,
+                  conversationId: prepared.conversationId,
+                  userMessageId: prepared.userMessageId,
+                  agent,
+                  trigger: "widget_intake",
+                  model: llmModel ?? modelForEvidence,
+                  decision,
+                  latencyMs,
+                  metadata: {
+                    assistantMessageId: assistantMessage.id,
+                    provider: llmProvider,
+                    retrievalMode: prepared.retrievalMode,
+                  },
+                },
+              });
+            }
+
             controller.enqueue(
               encoder.encode(
                 encodeSse("done", {
@@ -120,16 +224,43 @@ export async function createChatStreamResponse({
           controller.close();
         } catch (streamError) {
           console.error(streamError);
-          if (
-            !sandbox &&
-            prepared.conversationId &&
-            prepared.userMessageId
-          ) {
+          if (!sandbox && prepared.conversationId && prepared.userMessageId) {
             await rollbackFailedTurn(
               prepared.conversationId,
               prepared.userMessageId,
             );
           }
+
+          if (executionRun && prepared.userMessageId) {
+            const latencyMs = Date.now() - llmRequestStartedAt;
+            const agent =
+              llmProvider === "gemini"
+                ? "gemini"
+                : llmProvider === "openrouter"
+                  ? "openrouter"
+                  : "llm";
+
+            await db.executionLogEntry.create({
+              data: {
+                runId: executionRun.id,
+                workspaceId: organizationId,
+                conversationId: prepared.conversationId,
+                userMessageId: prepared.userMessageId,
+                agent,
+                trigger: "widget_intake",
+                model: llmModel ?? modelForEvidence,
+                decision: "llm_stream_error",
+                latencyMs,
+                metadata: {
+                  error:
+                    streamError instanceof Error
+                      ? streamError.message
+                      : "Stream failed",
+                },
+              },
+            });
+          }
+
           controller.enqueue(
             encoder.encode(
               encodeSse("error", {
@@ -176,3 +307,4 @@ export async function createChatStreamResponse({
     throw error;
   }
 }
+

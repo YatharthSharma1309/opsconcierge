@@ -1,5 +1,13 @@
-import { db } from "@/lib/db";
-import { getAiClient, getChatModel, isAiConfigured, isEmbeddingEnabled } from "@/lib/ai";
+﻿import { db } from "@/lib/db";
+import {
+  getAiClient,
+  getChatModel,
+  isAiConfigured,
+  isEmbeddingEnabled,
+  shouldAttemptGemini,
+} from "@/lib/ai";
+import { geminiChatCompletion, isGeminiConfigured } from "@/lib/gemini";
+import { notifyOpsWorker } from "@/lib/ops-worker";
 import { computeGroundingConfidence, type GroundingConfidence } from "@/lib/rag/confidence";
 import { MAX_RAG_CHUNKS_FETCH } from "@/lib/rag/constants";
 import { createEmbedding } from "@/lib/rag/embed";
@@ -41,6 +49,70 @@ export class ChatServiceError extends Error {
   ) {
     super(message);
     this.name = "ChatServiceError";
+  }
+}
+
+const DEFAULT_AGENT = "SaaS customer support assistant";
+
+function redactPII(value: string) {
+  // Keep this intentionally lightweight: remove common email/phone patterns.
+  return value
+    .replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, "[REDACTED_EMAIL]")
+    .replace(/(\+?\d[\d\s().-]{8,}\d)/g, "[REDACTED_PHONE]")
+    .replace(/\b\d{8,}\b/g, "[REDACTED_NUMBER]");
+}
+
+function summarizeForLog(value: string, maxChars: number) {
+  return redactPII(value)
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, maxChars);
+}
+
+function logLlmCall({
+  model,
+  latencyMs,
+  workspaceId,
+  agent,
+  trigger,
+  decision,
+  requestSummary,
+  responseSummary,
+}: {
+  model: string;
+  latencyMs: number;
+  workspaceId: string;
+  agent: string;
+  trigger: string;
+  decision: string;
+  requestSummary: Record<string, unknown>;
+  responseSummary: Record<string, unknown>;
+}) {
+  console.info("llm_call", {
+    model,
+    latency_ms: latencyMs,
+    workspace_id: workspaceId,
+    agent,
+    trigger,
+    decision,
+    request_summary: requestSummary,
+    response_summary: responseSummary,
+  });
+
+  // Fire-and-forget Cloud Run evidence when Gemini succeeds in production.
+  if (decision === "gemini_success") {
+    void notifyOpsWorker({
+      workspace_id: workspaceId,
+      agent,
+      trigger,
+      model,
+      decision,
+      latency_ms: latencyMs,
+      summary:
+        typeof responseSummary.reply_snippet === "string"
+          ? responseSummary.reply_snippet
+          : null,
+    });
   }
 }
 
@@ -213,7 +285,14 @@ export async function generateChatReply(
   message: string,
   rankedChunks: ChunkWithScore[],
   fallbackReply: string,
+  options?: {
+    trigger?: string;
+    agent?: string;
+  },
 ) {
+  const trigger = options?.trigger ?? "admin.chat.reply";
+  const agent = options?.agent ?? DEFAULT_AGENT;
+
   if (rankedChunks.length === 0) {
     return fallbackReply;
   }
@@ -222,12 +301,67 @@ export async function generateChatReply(
     return fallbackReply;
   }
 
-  const client = getAiClient();
   const prompt = buildRagPrompt(message, rankedChunks);
   const systemPrompt = await resolveSystemPrompt(organizationId);
 
+  const requestSummary = {
+    user_message_len: message.length,
+    user_message_snippet: summarizeForLog(message, 120),
+    ranked_chunks: rankedChunks.length,
+  };
+
+  if (shouldAttemptGemini()) {
+    try {
+      const { text, model, latencyMs } = await geminiChatCompletion({
+        systemPrompt,
+        userPrompt: prompt,
+        temperature: 0.2,
+      });
+
+      const reply = text.trim() || "I could not generate a response right now.";
+
+      logLlmCall({
+        model,
+        latencyMs,
+        workspaceId: organizationId,
+        agent,
+        trigger,
+        decision: "gemini_success",
+        requestSummary,
+        responseSummary: {
+          reply_len: reply.length,
+          reply_snippet: summarizeForLog(reply, 120),
+        },
+      });
+
+      return reply;
+    } catch (error) {
+      logLlmCall({
+        model: "gemini",
+        latencyMs: 0,
+        workspaceId: organizationId,
+        agent,
+        trigger,
+        decision: "gemini_failed",
+        requestSummary,
+        responseSummary: {
+          error: error instanceof Error ? error.message : "unknown_error",
+        },
+      });
+
+      // Fall through to OpenRouter when Gemini fails (quota, network, etc.).
+    }
+  }
+
+  const client = getAiClient();
+  if (!client) {
+    return fallbackReply;
+  }
+
+  const start = Date.now();
+
   try {
-    const completion = await client!.chat.completions.create({
+    const completion = await client.chat.completions.create({
       model: getChatModel(),
       messages: [
         { role: "system", content: systemPrompt },
@@ -236,11 +370,43 @@ export async function generateChatReply(
       temperature: 0.2,
     });
 
-    return (
-      completion.choices[0]?.message?.content?.trim() ??
-      "I could not generate a response right now."
-    );
+    const latencyMs = Date.now() - start;
+    const reply =
+      completion.choices[0]?.message?.content?.trim() ||
+      "I could not generate a response right now.";
+
+    logLlmCall({
+      model: getChatModel(),
+      latencyMs,
+      workspaceId: organizationId,
+      agent,
+      trigger,
+      decision: "openrouter_success",
+      requestSummary,
+      responseSummary: {
+        reply_len: reply.length,
+        reply_snippet: summarizeForLog(reply, 120),
+      },
+    });
+
+    return reply;
   } catch {
+    // Keep legacy UX behavior: provide a snippet from docs.
+    const latencyMs = Date.now() - start;
+
+    logLlmCall({
+      model: getChatModel(),
+      latencyMs,
+      workspaceId: organizationId,
+      agent,
+      trigger,
+      decision: "openrouter_failed",
+      requestSummary,
+      responseSummary: {
+        error: "completion_failed",
+      },
+    });
+
     return `Based on your documentation:\n\n${rankedChunks[0].content.slice(0, 700)}`;
   }
 }
@@ -250,20 +416,90 @@ export async function streamChatReply(
   message: string,
   rankedChunks: ChunkWithScore[],
   fallbackReply: string,
+  options?: {
+    trigger?: string;
+    agent?: string;
+  },
 ) {
+  const trigger = options?.trigger ?? "chat.stream";
+  const agent = options?.agent ?? DEFAULT_AGENT;
+
   if (rankedChunks.length === 0 || !isAiConfigured()) {
     return {
       stream: null,
       reply: fallbackReply,
+      provider: "none",
+      model: "N/A",
+      latencyMs: 0,
     };
   }
 
-  const client = getAiClient();
   const prompt = buildRagPrompt(message, rankedChunks);
   const systemPrompt = await resolveSystemPrompt(organizationId);
 
+  const requestSummary = {
+    user_message_len: message.length,
+    user_message_snippet: summarizeForLog(message, 120),
+    ranked_chunks: rankedChunks.length,
+  };
+
+  if (shouldAttemptGemini()) {
+    try {
+      const { text, model, latencyMs } = await geminiChatCompletion({
+        systemPrompt,
+        userPrompt: prompt,
+        temperature: 0.2,
+      });
+
+      const reply = text.trim() || fallbackReply;
+
+      logLlmCall({
+        model,
+        latencyMs,
+        workspaceId: organizationId,
+        agent,
+        trigger,
+        decision: "gemini_success",
+        requestSummary,
+        responseSummary: {
+          reply_len: reply.length,
+          reply_snippet: summarizeForLog(reply, 120),
+        },
+      });
+
+      // We don't stream Gemini tokens yet; stream-handler will stream words.
+      return { stream: null, reply, provider: "gemini", model, latencyMs };
+    } catch (error) {
+      logLlmCall({
+        model: "gemini",
+        latencyMs: 0,
+        workspaceId: organizationId,
+        agent,
+        trigger,
+        decision: "gemini_failed",
+        requestSummary,
+        responseSummary: {
+          error: error instanceof Error ? error.message : "unknown_error",
+        },
+      });
+    }
+  }
+
+  const client = getAiClient();
+  if (!client) {
+    return {
+      stream: null,
+      reply: fallbackReply,
+      provider: "none",
+      model: "N/A",
+      latencyMs: 0,
+    };
+  }
+
+  const start = Date.now();
+
   try {
-    const stream = await client!.chat.completions.create({
+    const stream = await client.chat.completions.create({
       model: getChatModel(),
       stream: true,
       messages: [
@@ -273,11 +509,46 @@ export async function streamChatReply(
       temperature: 0.2,
     });
 
-    return { stream, reply: null };
+    logLlmCall({
+      model: getChatModel(),
+      latencyMs: Date.now() - start,
+      workspaceId: organizationId,
+      agent,
+      trigger,
+      decision: "openrouter_stream_requested",
+      requestSummary,
+      responseSummary: {
+        stream: true,
+      },
+    });
+
+    return {
+      stream,
+      reply: null,
+      provider: "openrouter",
+      model: getChatModel(),
+      latencyMs: Date.now() - start,
+    };
   } catch {
+    logLlmCall({
+      model: getChatModel(),
+      latencyMs: Date.now() - start,
+      workspaceId: organizationId,
+      agent,
+      trigger,
+      decision: "openrouter_failed",
+      requestSummary,
+      responseSummary: {
+        error: "completion_failed",
+      },
+    });
+
     return {
       stream: null,
       reply: `Based on your documentation:\n\n${rankedChunks[0].content.slice(0, 700)}`,
+      provider: "openrouter",
+      model: getChatModel(),
+      latencyMs: Date.now() - start,
     };
   }
 }
@@ -310,11 +581,18 @@ export async function suggestTicketReply(
       messages: Array<{ role: string; content: string }>;
     } | null;
   },
+  options?: {
+    trigger?: string;
+    agent?: string;
+  },
 ) {
+  const trigger = options?.trigger ?? "ticket.suggest-reply";
+  const agent = options?.agent ?? DEFAULT_AGENT;
+
   const transcript = ticket.conversation?.messages
     .filter((message) => message.role !== "SYSTEM")
     .map((message) => `${message.role.toLowerCase()}: ${message.content}`)
-    .join("\n\n");
+    .join("\\n\\n") ?? "";
 
   const query = transcript
     ? `${ticket.title}\n\nLatest context:\n${transcript.slice(-1200)}`
@@ -356,10 +634,9 @@ export async function suggestTicketReply(
     if (rankedChunks.length === 0) {
       return "Thanks for reaching out. I'm reviewing your request and will follow up shortly with next steps.";
     }
-    return `Hi — thanks for your patience. Based on our docs:\n\n${rankedChunks[0].content.slice(0, 500)}`;
+    return `Hi! thanks for your patience. Based on our docs:\n\n${rankedChunks[0].content.slice(0, 500)}`;
   }
 
-  const client = getAiClient();
   const context =
     rankedChunks.length > 0
       ? rankedChunks
@@ -370,22 +647,95 @@ export async function suggestTicketReply(
           .join("\n\n")
       : "No matching documentation found.";
 
+  const requestSummary = {
+    ticket_title_snippet: summarizeForLog(ticket.title, 120),
+    ticket_description_len: ticket.description.length,
+    transcript_present: Boolean(transcript),
+    transcript_len: transcript.length,
+    ranked_chunks: rankedChunks.length,
+  };
+
+  const systemPrompt =
+    "You are a support agent drafting a helpful reply to a customer ticket. Be empathetic, concise, and grounded in the provided context and transcript.";
+
+  const userPrompt = `Ticket: ${ticket.title}\n\nDescription:\n${ticket.description}\n\nTranscript:\n${transcript || "None"}\n\nKnowledge context:\n${context}\n\nDraft a reply the agent can send.`;
+
   try {
-    const completion = await client!.chat.completions.create({
+    if (shouldAttemptGemini()) {
+      try {
+        const { text, model, latencyMs } = await geminiChatCompletion({
+          systemPrompt,
+          userPrompt,
+          temperature: 0.3,
+        });
+
+        const suggestion = text.trim();
+
+        if (!suggestion) {
+          throw new ChatServiceError(
+            "AI returned an empty suggestion",
+            "AI_FAILED",
+          );
+        }
+
+        logLlmCall({
+          model,
+          latencyMs,
+          workspaceId: organizationId,
+          agent,
+          trigger,
+          decision: "gemini_success",
+          requestSummary,
+          responseSummary: {
+            reply_len: suggestion.length,
+            reply_snippet: summarizeForLog(suggestion, 120),
+          },
+        });
+
+        return suggestion;
+      } catch (error) {
+        if (error instanceof ChatServiceError) {
+          throw error;
+        }
+        logLlmCall({
+          model: "gemini",
+          latencyMs: 0,
+          workspaceId: organizationId,
+          agent,
+          trigger,
+          decision: "gemini_failed",
+          requestSummary,
+          responseSummary: {
+            error: error instanceof Error ? error.message : "unknown_error",
+          },
+        });
+        // Fall through to OpenRouter.
+      }
+    }
+
+    const client = getAiClient();
+    if (!client) {
+      throw new ChatServiceError("AI client unavailable", "AI_UNAVAILABLE");
+    }
+
+    const start = Date.now();
+
+    const completion = await client.chat.completions.create({
       model: getChatModel(),
       messages: [
         {
           role: "system",
-          content:
-            "You are a support agent drafting a helpful reply to a customer ticket. Be empathetic, concise, and grounded in the provided context and transcript.",
+          content: systemPrompt,
         },
         {
           role: "user",
-          content: `Ticket: ${ticket.title}\n\nDescription:\n${ticket.description}\n\nTranscript:\n${transcript ?? "None"}\n\nKnowledge context:\n${context}\n\nDraft a reply the agent can send.`,
+          content: userPrompt,
         },
       ],
       temperature: 0.3,
     });
+
+    const latencyMs = Date.now() - start;
 
     const suggestion = completion.choices[0]?.message?.content?.trim();
     if (!suggestion) {
@@ -395,11 +745,38 @@ export async function suggestTicketReply(
       );
     }
 
+    logLlmCall({
+      model: getChatModel(),
+      latencyMs,
+      workspaceId: organizationId,
+      agent,
+      trigger,
+      decision: "openrouter_success",
+      requestSummary,
+      responseSummary: {
+        reply_len: suggestion.length,
+        reply_snippet: summarizeForLog(suggestion, 120),
+      },
+    });
+
     return suggestion;
   } catch (error) {
     if (error instanceof ChatServiceError) {
       throw error;
     }
+
+    logLlmCall({
+      model: shouldAttemptGemini() ? "gemini" : getChatModel(),
+      latencyMs: 0,
+      workspaceId: organizationId,
+      agent,
+      trigger,
+      decision: "ai_failed",
+      requestSummary,
+      responseSummary: {
+        error: error instanceof Error ? error.message : "unknown_error",
+      },
+    });
 
     throw new ChatServiceError(
       error instanceof Error ? error.message : "AI request failed",

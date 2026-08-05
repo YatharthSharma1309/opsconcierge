@@ -19,33 +19,33 @@ import {
 const features = [
   {
     icon: BookOpen,
-    title: "Multi-document knowledge base",
+    title: "Shared company memory",
     description:
-      "Upload PDFs, DOCX, and FAQs. Documents are chunked and indexed for semantic retrieval.",
+      "Upload SOPs, FAQs, pricing, and policies. Every agent lane answers from the same business knowledge.",
   },
   {
     icon: Bot,
-    title: "RAG-powered AI chatbot",
+    title: "Gemini-powered concierge",
     description:
-      "Answers are grounded in your docs with visible citations and a live retrieval pipeline.",
+      "Inbound widget requests are answered by Gemini in production — not a generic chatbot toy.",
   },
   {
     icon: Headphones,
-    title: "Smart ticket escalation",
+    title: "Tickets + execution logs",
     description:
-      "Escalate from chat with full transcript attached. Agents resolve with full context.",
+      "Every run leaves an audit trail: lane routing → Gemini call → ticket update for judges and owners.",
   },
   {
     icon: BarChart3,
-    title: "Support analytics",
+    title: "Ops analytics",
     description:
-      "Track deflection rate, ticket trends, resolution time, and knowledge gaps.",
+      "Track deflection, ticket trends, and where the AI handed off to humans.",
   },
   {
     icon: Briefcase,
-    title: "AI recruitment",
+    title: "Hiring agent lane",
     description:
-      "Screen resumes against job criteria, score candidates, surface skill gaps, and manage hiring pipelines.",
+      "Screen resumes, score candidates, draft interview questions, and keep hiring in the same workspace.",
   },
 ];
 
@@ -62,19 +62,19 @@ export default function LandingPage() {
             <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-700">
               <Zap className="h-3.5 w-3.5" />
               {demoMode
-                ? "Relay AI · Support + Recruitment"
-                : "RAG-powered · Support + Recruitment"}
+                ? "OpsConcierge · AI-operated business"
+                : "Gemini-powered · Support + Hiring concierge"}
             </p>
             <h1 className="text-4xl font-bold tracking-tight text-slate-900 md:text-5xl md:leading-tight">
-              One platform for{" "}
+              The AI concierge that{" "}
               <span className="bg-gradient-to-r from-indigo-600 to-cyan-500 bg-clip-text text-transparent">
-                support and hiring AI
+                runs your business operations
               </span>
             </h1>
             <p className="mt-6 text-lg leading-8 text-slate-600">
-              Answer customers with cited RAG chat, escalate to tickets, screen
-              resumes against job criteria, and run hiring pipelines — all in one
-              multi-tenant workspace.
+              Capture inbound requests, route them to the right AI agent lane,
+              answer from company memory, update tickets, and leave an
+              auditable execution log — not just another chatbot.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
@@ -108,9 +108,9 @@ export default function LandingPage() {
 
           <div className="mt-14 grid gap-4 md:grid-cols-3">
             {[
-              { label: "RAG pipeline", value: "Live source citations" },
-              { label: "AI engine", value: "Streaming grounded answers" },
-              { label: "Workflow", value: "Chat → Ticket → Analytics" },
+              { label: "Ops workflow", value: "Widget → Agent → Ticket" },
+              { label: "AI engine", value: "Gemini in production" },
+              { label: "Evidence", value: "Auditable execution logs" },
             ].map((item) => (
               <div
                 key={item.label}
@@ -132,11 +132,11 @@ export default function LandingPage() {
           className="mx-auto max-w-6xl scroll-mt-20 px-4 py-16 sm:px-6"
         >
           <h2 className="text-2xl font-semibold text-slate-900">
-            Everything your support team needs
+            What OpsConcierge runs for you
           </h2>
           <p className="mt-2 max-w-2xl text-slate-600">
-            Knowledge, AI chat, human handoff, embeddable widget, and analytics
-            in a single product surface.
+            One AI concierge for support and hiring — shared memory, production
+            Gemini calls, and auditable execution logs.
           </p>
           <div className="mt-10 grid gap-6 md:grid-cols-2">
             {features.map((feature) => {
@@ -158,6 +158,55 @@ export default function LandingPage() {
                 </div>
               );
             })}
+          </div>
+        </section>
+
+        <section
+          id="pricing"
+          className="border-t border-slate-200 bg-slate-50"
+        >
+          <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+            <h2 className="text-2xl font-semibold text-slate-900">
+              Simple pricing for small businesses
+            </h2>
+            <p className="mt-2 max-w-2xl text-slate-600">
+              Start free. Upgrade when OpsConcierge is answering customers and
+              updating tickets for you.
+            </p>
+            <div className="mt-10 grid gap-6 md:grid-cols-3">
+              {[
+                {
+                  name: "Free",
+                  price: "$0",
+                  detail: "1 workspace · 1 AI agent · watermarked logs",
+                },
+                {
+                  name: "Pro",
+                  price: "$29–$49/mo",
+                  detail: "Multiple agents · analytics · custom workflows",
+                },
+                {
+                  name: "Enterprise",
+                  price: "Custom",
+                  detail: "Private deploy · SSO · audit logs · API",
+                },
+              ].map((plan) => (
+                <div
+                  key={plan.name}
+                  className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
+                >
+                  <p className="text-sm font-medium uppercase tracking-wide text-slate-400">
+                    {plan.name}
+                  </p>
+                  <p className="mt-3 text-2xl font-semibold text-slate-900">
+                    {plan.price}
+                  </p>
+                  <p className="mt-2 text-sm leading-6 text-slate-600">
+                    {plan.detail}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 

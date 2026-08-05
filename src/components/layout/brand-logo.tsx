@@ -32,10 +32,12 @@ export function BrandLogo({
             size === "sm" ? "text-sm" : "text-lg",
           )}
         >
-          Relay AI
+          OpsConcierge
         </p>
         {showTagline ? (
-          <p className="text-xs text-slate-500">Support & Recruitment Platform</p>
+          <p className="text-xs text-slate-500">
+            AI concierge for business operations
+          </p>
         ) : null}
       </div>
     </div>

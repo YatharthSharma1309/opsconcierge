@@ -1,88 +1,95 @@
-# Relay AI — Support & Recruitment Platform
+# OpsConcierge
 
-**Portfolio flagship** — unified multi-tenant SaaS combining **customer support** and **recruitment** in one workspace.
+**Folder:** `OpsConcierge-App`  
+**Product:** OpsConcierge — the AI concierge that runs your business operations.
 
-| Module | Capabilities |
-|--------|----------------|
-| **Support** | Knowledge base, streaming RAG chat with citations, agent inbox, tickets, embeddable widget, deflection analytics |
-| **Recruitment** | Job posts, PDF/DOCX resume parsing, AI match scoring, skill gaps, interview questions, hiring pipeline with hire-safety grace window |
+Next.js multi-tenant support + hiring agents. Formerly the Relay AI codebase; public brand for XPRIZE is **OpsConcierge**.
 
-Built with **Next.js 16**, **React 19**, **TypeScript**, **Prisma + PostgreSQL**, **Clerk** (multi-tenant orgs), and **OpenRouter**.
+| Agent lane | What it does |
+|------------|----------------|
+| **Support concierge** | Widget intake → RAG answer → ticket update + execution log |
+| **Hiring concierge** | Resume screen, match score, interview questions, pipeline |
+
+**Mandatory stack for judges** ([Build with Gemini XPRIZE](https://xprize.devpost.com) — $2M)
+
+- **Gemini API** (production LLM on the hero widget/chat path)
+- **Firebase Realtime Database** (free Google Cloud evidence of agent runs)
+- Deployed app (Vercel) + Neon Postgres
+
+**Deadline:** 18 Aug 2026 @ 1:30 AM GMT+5:30 · Category: Small Business Services · See [docs/HACKATHON.md](./docs/HACKATHON.md)
 
 ## Live demo
 
 **https://relay-ai-app.vercel.app** (also https://support-ai-nine-mu.vercel.app)
 
-Click **Open live demo** on the landing page — no sign-in required. Try RAG chat with citations, ticket workflows, recruitment AI scoring, analytics, and the embeddable widget.
+Judge path: landing → widget chat → escalate/ticket → `/widget/intake` execution log.
 
 ## Quick start
 
 ```bash
 npm install
 cp .env.example .env
-# Set DATABASE_URL, OPENROUTER_API_KEY; optional Clerk keys or AUTH_BYPASS=true for local demo
+# Required: DATABASE_URL
+# Free LLM (no payment): OPENROUTER_API_KEY + AI_PROVIDER_PREFERENCE=openrouter
+# For XPRIZE later: GEMINI_API_KEY + FIREBASE_DATABASE_URL + AI_PROVIDER_PREFERENCE=auto
+# Optional: Clerk keys or AUTH_BYPASS=true for local demo
 npm run db:migrate
 npm run db:seed
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) → `/dashboard` (support) or `/recruitment` (hiring).
+### Free LLM path (no payment)
+
+Gemini free-tier quota is sometimes **0** on new Google keys. Until a free Gemini quota works, use **OpenRouter free models** (already supported):
+
+```
+OPENROUTER_API_KEY=...          # https://openrouter.ai/keys — free
+OPENROUTER_CHAT_MODEL=openrouter/free
+AI_PROVIDER_PREFERENCE=openrouter
+```
+
+Chat skips Gemini and uses OpenRouter. When you get a working free Gemini key, set `AI_PROVIDER_PREFERENCE=auto` (Gemini first, OpenRouter fallback).
+
+### Free Gemini + Firebase (XPRIZE — still $0)
+
+1. Gemini key: https://aistudio.google.com/apikey (use a project with free generate quota)
+2. Firebase project → enable **Realtime Database** (Spark / test mode OK for demo)
+3. Add to `.env`:
+
+```
+GEMINI_API_KEY=...
+GEMINI_CHAT_MODEL=gemini-2.0-flash
+FIREBASE_DATABASE_URL=https://YOUR_PROJECT-default-rtdb.firebaseio.com
+AI_PROVIDER_PREFERENCE=auto
+```
+
+Full steps: [docs/GCP_AND_GEMINI_SETUP.md](./docs/GCP_AND_GEMINI_SETUP.md)
 
 ## Modules
 
-### Customer support (`/dashboard`, `/knowledge`, `/chat`, `/inbox`, `/tickets`)
+### Support (`/dashboard`, `/knowledge`, `/chat`, `/inbox`, `/tickets`, `/widget`)
 
 - Upload PDF, DOCX, TXT, Markdown → chunked RAG index
-- Streaming admin + widget chat with source citations
-- Ticket escalation, agent copilot, analytics
-- Public help center + embeddable widget
+- Streaming admin + widget chat (Gemini when configured)
+- Ticket escalation + analytics
+- **Widget intake demo / execution logs:** `/widget/intake`
 
 ### Recruitment (`/recruitment`)
 
-- Create jobs with required/preferred skills and experience criteria
-- Upload resumes (PDF/DOCX) or paste text manually
-- AI analysis: match score, skill gaps, interview questions
-- Pipeline: new → shortlisted → interviewing → hired/rejected
-- Hire safety: grace window to undo before archiving other candidates
+- Job posts, resume parsing, AI match scoring, hiring pipeline
 
-## Tech stack
+## Stack
 
-- Next.js 16 App Router, Tailwind CSS 4
-- Prisma + PostgreSQL (Neon)
-- Clerk organizations + role-based access (or public demo mode)
-- OpenRouter for chat, analysis, and job-assist
-- Vitest + Playwright
+Next.js 16 · React 19 · TypeScript · Prisma + PostgreSQL · Clerk · Gemini · OpenRouter fallback · Firebase RTDB (evidence)
 
-## API routes (recruitment)
+## Related
 
-| Route | Description |
-|-------|-------------|
-| `GET/POST /api/recruitment/jobs` | List / create jobs |
-| `GET/PATCH/DELETE /api/recruitment/jobs/[id]` | Job CRUD |
-| `POST /api/recruitment/jobs/assist` | AI job description assist |
-| `POST /api/recruitment/upload` | Resume upload |
-| `POST /api/recruitment/analyze` | Run candidate analysis |
-| `GET/PATCH/DELETE /api/recruitment/candidates/[id]` | Candidate detail / update |
+- [Hackathon brief](./docs/HACKATHON.md) — Build with Gemini XPRIZE ($2M)
+- [Documentation index](./docs/README.md)
+- [Technical foundation](./docs/FOUNDATION.md)
+- [Architecture](./docs/ARCHITECTURE.md)
+- [Gemini + Firebase setup](./docs/GCP_AND_GEMINI_SETUP.md)
+- [Production deployment](./DEPLOY.md)
+## License
 
-Support APIs remain under `/api/documents`, `/api/chat`, `/api/tickets`, etc.
-
-## Deploy
-
-See [DEPLOY.md](./DEPLOY.md) for Vercel + Neon + Clerk production setup.
-
-| Item | Value |
-|------|--------|
-| GitHub | [YatharthSharma1309/relay-ai](https://github.com/YatharthSharma1309/relay-ai) |
-| Vercel project | `relay-ai` |
-| Production URL | https://relay-ai-app.vercel.app |
-
-## Scripts
-
-```bash
-npm run dev          # Development (Webpack on Windows)
-npm run build        # Production build
-npm run db:migrate   # Apply migrations
-npm run db:seed      # Demo KB + tickets + sample recruitment job
-npm run test         # Unit tests
-npm run test:e2e     # Playwright
-```
+Private / portfolio — see repo owner for terms.

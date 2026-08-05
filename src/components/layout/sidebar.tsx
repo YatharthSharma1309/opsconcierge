@@ -110,6 +110,14 @@ export function SidebarContent({
           Preview embed widget
           <span aria-hidden>→</span>
         </Link>
+        <Link
+          href="/widget/intake"
+          onClick={onNavigate}
+          className="mb-3 flex items-center justify-between rounded-xl border border-cyan-100 bg-cyan-50/60 px-3 py-2.5 text-sm font-medium text-cyan-800 transition hover:bg-cyan-50"
+        >
+          Widget intake demo
+          <span aria-hidden>→</span>
+        </Link>
         {role === "ADMIN" ? (
           <Link
             href="/settings"

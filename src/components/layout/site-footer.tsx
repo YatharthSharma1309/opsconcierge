@@ -49,7 +49,7 @@ export function SiteFooter({ variant = "full", className }: SiteFooterProps) {
           <p className="text-sm text-slate-500">
             Powered by{" "}
             <Link href="/" className="font-medium text-indigo-600 hover:text-indigo-500">
-              Relay AI
+              OpsConcierge
             </Link>
           </p>
         </div>
@@ -64,8 +64,9 @@ export function SiteFooter({ variant = "full", className }: SiteFooterProps) {
           <div className="md:col-span-2">
             <BrandLogo showTagline />
             <p className="mt-4 max-w-sm text-sm leading-6 text-slate-600">
-              RAG customer support, AI recruitment pipelines, and multi-tenant
-              ops workflows — one workspace for support and hiring teams.
+              The AI concierge that runs your business operations — shared
+              company memory, support and hiring agents, tickets, and
+              auditable execution logs.
             </p>
           </div>
 
@@ -108,7 +109,7 @@ export function SiteFooter({ variant = "full", className }: SiteFooterProps) {
       </div>
 
       <div className="border-t border-slate-100 py-6 text-center text-sm text-slate-500">
-        © {year} Relay AI. All rights reserved.
+        © {year} OpsConcierge. All rights reserved.
       </div>
     </footer>
   );

@@ -269,3 +269,43 @@ model RecruitmentAuditEvent {
   @@index([entityType])
   @@index([createdAt])
 }
+
+model ExecutionRun {
+  id             String               @id @default(cuid())
+  workspaceId    String
+  conversationId String?
+  userMessageId String?
+  channel        ConversationChannel
+  trigger        String
+  createdAt      DateTime             @default(now())
+
+  logs ExecutionLogEntry[]
+
+  @@index([workspaceId, createdAt])
+  @@index([conversationId])
+  @@index([trigger])
+}
+
+model ExecutionLogEntry {
+  id String @id @default(cuid())
+
+  runId String
+  workspaceId String
+  conversationId String?
+  userMessageId String?
+
+  agent String
+  trigger String
+  model String
+  decision String
+  latencyMs Int?
+
+  metadata Json?
+
+  createdAt DateTime @default(now())
+
+  run ExecutionRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, createdAt])
+  @@index([runId, createdAt])
+}

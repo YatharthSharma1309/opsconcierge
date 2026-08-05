@@ -94,7 +94,7 @@ export default async function WidgetPage() {
                   <pre className="mt-4 overflow-x-auto rounded-xl bg-slate-900 p-4 text-xs text-slate-100">
 {`<iframe
   src="${embedUrl}"
-  title="Relay AI chat widget"
+  title="OpsConcierge chat widget"
   style="border:0;position:fixed;inset:0;width:100%;height:100%;z-index:9999;background:transparent;pointer-events:none"
 ></iframe>`}
                   </pre>
@@ -112,7 +112,7 @@ export default async function WidgetPage() {
     iframe.src = "${embedUrl}";
     iframe.style.cssText =
       "border:0;position:fixed;inset:0;width:100%;height:100%;z-index:9999;background:transparent;pointer-events:none";
-    iframe.title = "Relay AI chat widget";
+    iframe.title = "OpsConcierge chat widget";
     document.body.appendChild(iframe);
   })();
 </script>`}
