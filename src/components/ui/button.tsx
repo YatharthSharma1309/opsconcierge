@@ -10,9 +10,9 @@ const variants = {
   primary:
     "bg-primary text-white shadow-sm shadow-slate-900/15 hover:bg-[var(--primary-hover)] hover:shadow-md hover:shadow-slate-900/20 active:bg-[var(--primary-active)] disabled:bg-slate-300 disabled:text-slate-500 disabled:shadow-none dark:disabled:bg-slate-700 dark:disabled:text-slate-400",
   secondary:
-    "border border-border bg-surface text-foreground hover:border-primary/30 hover:bg-primary-soft active:bg-primary-soft disabled:text-muted",
+    "border border-border bg-background text-foreground hover:bg-foreground/[0.05] hover:border-primary/30 active:bg-foreground/[0.08] disabled:text-muted",
   ghost:
-    "text-foreground/75 hover:bg-primary-soft hover:text-foreground active:bg-primary-soft/80 disabled:text-muted/60",
+    "text-muted hover:bg-foreground/[0.05] hover:text-foreground active:bg-foreground/[0.08] disabled:text-muted/60",
   danger:
     "bg-danger text-white shadow-sm shadow-rose-600/20 hover:bg-rose-500 active:bg-rose-700 disabled:bg-rose-300 disabled:shadow-none",
 };

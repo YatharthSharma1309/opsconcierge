@@ -143,7 +143,7 @@ export function ProductDemoWalkthrough({
                       "flex w-full items-start gap-3 rounded-xl border px-3.5 py-3 text-left transition-[border-color,background-color,box-shadow] duration-200",
                       selected
                         ? "border-primary/20 bg-primary-soft/60 shadow-sm"
-                        : "border-transparent bg-slate-50/80 hover:border-slate-200 hover:bg-white",
+                        : "border-transparent bg-foreground/[0.04] hover:border-slate-200 hover:bg-surface",
                     )}
                   >
                     <span
@@ -173,7 +173,7 @@ export function ProductDemoWalkthrough({
           </ol>
 
           <div className="overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-[0_20px_50px_-28px_rgba(15,23,42,0.35)]">
-            <div className="border-b border-slate-100 bg-gradient-to-b from-primary-soft/70 to-white px-5 py-5 sm:px-6">
+            <div className="border-b border-slate-100 bg-gradient-to-b from-primary-soft/70 to-surface px-5 py-5 sm:px-6">
               <p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">
                 Step {active.step}
               </p>
@@ -183,7 +183,7 @@ export function ProductDemoWalkthrough({
               <p className="mt-2 text-sm leading-6 text-slate-600">{active.body}</p>
             </div>
 
-            <div className="border-b border-slate-100 bg-slate-50/60 px-5 py-5 sm:px-6">
+            <div className="border-b border-slate-100 bg-surface px-5 py-5 sm:px-6">
               <StepPreview stepId={active.id} />
             </div>
 

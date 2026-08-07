@@ -317,7 +317,7 @@ function ChatHistoryPanel({
               className={`mb-1 w-full rounded-xl px-3 py-2.5 text-left transition ${
                 conversationId === conversation.id
                   ? "bg-primary-soft text-primary"
-                  : "hover:bg-slate-50"
+                  : "hover:bg-foreground/[0.05]"
               }`}
             >
               <p className="truncate text-sm font-medium">

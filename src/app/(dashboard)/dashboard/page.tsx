@@ -129,11 +129,11 @@ export default async function DashboardPage() {
               >
                 <div>
                   <p className="text-xs font-medium text-muted">{item.label}</p>
-                  <p className="mt-1 text-2xl font-semibold tabular-nums text-slate-900">
+                  <p className="mt-1 text-2xl font-semibold tabular-nums text-foreground">
                     {item.value}
                   </p>
                 </div>
-                <Icon className="h-5 w-5 text-slate-300" aria-hidden />
+                <Icon className="h-5 w-5 text-muted" aria-hidden />
               </Link>
             );
           })}
@@ -164,22 +164,22 @@ export default async function DashboardPage() {
                   className="py-8"
                 />
               ) : (
-                <ul className="divide-y divide-slate-100 border-y border-slate-100">
+                <ul className="divide-y divide-border">
                   {data.recentTickets.map((ticket) => (
                     <li key={ticket.id}>
                       <Link
                         href={`/tickets/${ticket.id}`}
-                        className="flex items-center justify-between gap-3 py-3 transition hover:bg-slate-50/80"
+                        className="group -mx-2 flex items-center justify-between gap-3 rounded-xl px-2 py-3 transition-colors hover:bg-foreground/[0.05] focus-visible:bg-foreground/[0.05] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
                       >
                         <div className="min-w-0">
-                          <p className="truncate text-sm font-medium text-slate-900">
+                          <p className="truncate text-sm font-medium text-foreground">
                             {ticket.title}
                           </p>
-                          <p className="text-xs text-slate-500">
+                          <p className="text-xs text-muted">
                             {ticket.status.replace("_", " ").toLowerCase()}
                           </p>
                         </div>
-                        <span className="shrink-0 text-xs text-slate-400">
+                        <span className="shrink-0 text-xs text-muted">
                           <RelativeTime date={ticket.createdAt} />
                         </span>
                       </Link>

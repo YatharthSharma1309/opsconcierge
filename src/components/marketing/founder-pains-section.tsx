@@ -93,13 +93,13 @@ const toneStyles: Record<
     footer: "text-slate-600",
   },
   teal: {
-    gradient: "from-teal-50/80",
-    rail: "border-teal-600",
-    label: "text-teal-800",
-    dot: "bg-teal-500",
-    ring: "ring-teal-100",
-    tabActive: "text-teal-800 ring-teal-100",
-    footer: "text-teal-700",
+    gradient: "from-accent-soft/80",
+    rail: "border-accent",
+    label: "text-accent",
+    dot: "bg-accent",
+    ring: "ring-accent/25",
+    tabActive: "text-accent ring-accent/25",
+    footer: "text-accent",
   },
 };
 
@@ -282,7 +282,7 @@ function PainTab({
         "inline-flex min-h-10 flex-col items-center justify-center gap-0.5 rounded-lg px-1.5 py-1.5 text-[11px] font-semibold transition-colors sm:flex-row sm:gap-1.5 sm:px-2 sm:text-xs",
         active
           ? cn("bg-white shadow-sm ring-1", styles.tabActive)
-          : "text-slate-500 hover:bg-white/70 hover:text-slate-700",
+          : "text-slate-500 hover:bg-foreground/[0.05] hover:text-foreground",
       )}
     >
       <Icon
@@ -308,7 +308,7 @@ function TimelineSpine({ activeIndex }: { activeIndex: number }) {
   return (
     <div className="pointer-events-none absolute inset-y-0 left-6 hidden w-px sm:block">
       <div
-        className="absolute inset-y-4 w-px bg-gradient-to-b from-blue-200 via-slate-200 to-teal-200"
+        className="absolute inset-y-4 w-px bg-gradient-to-b from-blue-200 via-slate-200 to-accent/30"
         aria-hidden
       />
       {FOUNDER_PAINS.map((pain, index) => {
@@ -452,7 +452,7 @@ function HiringPdfVignette() {
 
   return (
     <div>
-      <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-teal-700/80">
+      <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-accent/80">
         Inbox · Indeed + referrals
       </p>
       <div className="relative mt-3 h-28">
@@ -469,14 +469,14 @@ function HiringPdfVignette() {
               zIndex: files.length - index,
             }}
           >
-            <FileText className="inline h-3.5 w-3.5 text-teal-700" />
+            <FileText className="inline h-3.5 w-3.5 text-accent" />
             <span className="ml-2 text-xs font-medium text-slate-800">{file}</span>
           </div>
         ))}
       </div>
-      <div className="mt-6 rounded-xl border border-dashed border-teal-200 bg-teal-50/40 px-3 py-2.5">
-        <p className="text-xs font-medium text-teal-900">Shortlist: empty</p>
-        <p className="text-[11px] text-teal-800/70">
+      <div className="mt-6 rounded-xl border border-dashed border-accent/30 bg-accent-soft/40 px-3 py-2.5">
+        <p className="text-xs font-medium text-accent">Shortlist: empty</p>
+        <p className="text-[11px] text-accent/70">
           No rubric · no trail · founder reads every PDF
         </p>
       </div>

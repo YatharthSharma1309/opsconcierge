@@ -6,10 +6,10 @@ type ScoreBadgeProps = {
 };
 
 function scoreTone(score: number): string {
-  if (score >= 80) return "bg-emerald-100 text-emerald-700 ring-emerald-200";
-  if (score >= 60) return "bg-teal-50 text-teal-800 ring-teal-200";
-  if (score >= 40) return "bg-amber-100 text-amber-700 ring-amber-200";
-  return "bg-slate-100 text-slate-600 ring-slate-200";
+  if (score >= 80) return "bg-success/15 text-success ring-success/30";
+  if (score >= 60) return "bg-primary-soft text-primary ring-primary/25";
+  if (score >= 40) return "bg-warning/15 text-warning ring-warning/30";
+  return "bg-foreground/[0.06] text-muted ring-border";
 }
 
 export function ScoreBadge({ score, className }: ScoreBadgeProps) {
@@ -17,7 +17,7 @@ export function ScoreBadge({ score, className }: ScoreBadgeProps) {
     return (
       <span
         className={cn(
-          "inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ring-1 ring-inset bg-slate-50 text-slate-400 ring-slate-200",
+          "inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ring-1 ring-inset bg-foreground/[0.04] text-muted ring-border",
           className,
         )}
       >

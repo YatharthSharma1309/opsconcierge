@@ -5,7 +5,6 @@ import {
 } from "lucide-react";
 import { MarketingHeader } from "@/components/layout/marketing-header";
 import { SiteFooter } from "@/components/layout/site-footer";
-import { DemoShortcuts } from "@/components/marketing/demo-shortcuts";
 import { FounderPainsSection } from "@/components/marketing/founder-pains-section";
 import { HeroOpsPreview } from "@/components/marketing/hero-ops-preview";
 import { HowItWorksSection } from "@/components/marketing/how-it-works-section";
@@ -106,14 +105,6 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
-
-        {demoMode ? (
-          <section className="border-b border-slate-200/80 bg-white">
-            <div className="mx-auto max-w-6xl px-4 py-5 sm:px-6">
-              <DemoShortcuts tone="light" />
-            </div>
-          </section>
-        ) : null}
 
         <FounderPainsSection />
 
@@ -251,41 +242,44 @@ export default function LandingPage() {
                     "1 workspace · widget · knowledge upload · watermarked logs",
                   cta: demoMode ? "Open live demo" : "Get started free",
                   href: primaryHref,
+                  variant: "primary" as const,
                 },
                 {
                   name: "Pro",
                   price: "$29–$49/mo",
                   detail:
                     "Higher volume · analytics · hiring lane · execution exports — planned",
-                  cta: demoMode ? "Open live demo" : "Start free — Pro later",
-                  href: primaryHref,
+                  cta: demoMode ? "Try the demo path" : "Start free — Pro later",
+                  href: demoMode ? "/#try-demo" : primaryHref,
+                  variant: "secondary" as const,
                 },
                 {
                   name: "Enterprise",
                   price: "Custom",
                   detail: "SSO · private deploy · API · audit exports — later",
-                  cta: demoMode ? "Open live demo" : "Contact us",
+                  cta: demoMode ? "See the live demo" : "Contact us",
                   href: demoMode ? "/dashboard" : "mailto:hello@opsconcierge.app",
+                  variant: "secondary" as const,
                 },
               ].map((plan) => (
                 <div
                   key={plan.name}
                   className="flex flex-col border-t-2 border-primary pt-5"
                 >
-                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">
+                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted">
                     {plan.name}
                   </p>
-                  <p className="mt-3 text-2xl font-semibold text-slate-900">
+                  <p className="mt-3 text-2xl font-semibold text-foreground">
                     {plan.price}
                   </p>
-                  <p className="mt-2 flex-1 text-sm leading-6 text-slate-600">
+                  <p className="mt-2 flex-1 text-sm leading-6 text-muted">
                     {plan.detail}
                   </p>
                   {plan.href.startsWith("mailto:") ? (
                     <a
                       href={plan.href}
                       className={buttonClassName({
-                        variant: "secondary",
+                        variant: plan.variant,
                         size: "sm",
                         className: "mt-6 w-full",
                       })}
@@ -297,8 +291,7 @@ export default function LandingPage() {
                     <Link
                       href={plan.href}
                       className={buttonClassName({
-                        variant:
-                          plan.name === "Enterprise" ? "secondary" : "primary",
+                        variant: plan.variant,
                         size: "sm",
                         className: "mt-6 w-full",
                       })}

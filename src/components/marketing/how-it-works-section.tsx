@@ -83,7 +83,7 @@ export function HowItWorksSection({
           ))}
         </ol>
 
-        <div className="mt-12 rounded-2xl border border-slate-200/90 bg-white px-5 py-6 shadow-sm sm:flex sm:items-center sm:justify-between sm:gap-6 sm:px-8">
+        <div className="mt-12 rounded-2xl border border-slate-200/90 bg-surface px-5 py-6 shadow-sm sm:flex sm:items-center sm:justify-between sm:gap-6 sm:px-8">
           <div className="min-w-0">
             <p className="text-sm font-semibold text-slate-900">
               {demoMode
@@ -97,20 +97,32 @@ export function HowItWorksSection({
             </p>
           </div>
           <div className="mt-4 flex flex-wrap items-center gap-3 sm:mt-0 sm:shrink-0">
-            <Link
-              href={demoMode ? "/widget" : primaryHref}
-              className={buttonClassName()}
-            >
-              {demoMode ? "Support widget" : "Get started free"}
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-            <Link
-              href={demoMode ? "/widget/intake" : secondaryHref}
-              className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-600 transition-colors hover:text-primary"
-            >
-              {demoMode ? "Execution logs" : "Help center"}
-              <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
+            {demoMode ? (
+              <Link
+                href="/#try-demo"
+                className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-600 transition-colors hover:text-primary"
+              >
+                Open interactive demo
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            ) : (
+              <>
+                <Link
+                  href={primaryHref}
+                  className={buttonClassName()}
+                >
+                  Get started free
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+                <Link
+                  href={secondaryHref}
+                  className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-600 transition-colors hover:text-primary"
+                >
+                  Help center
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -188,7 +200,7 @@ function HowItWorksStepCard({
           </div>
         </div>
 
-        <div className="relative flex-1 bg-gradient-to-b from-primary-soft/40 to-white px-4 py-4 sm:px-5 sm:py-5">
+        <div className="relative flex-1 bg-gradient-to-b from-primary-soft/40 to-surface px-4 py-4 sm:px-5 sm:py-5">
           <Mockup />
         </div>
       </article>

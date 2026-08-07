@@ -79,23 +79,23 @@ const toneStyles: Record<
 > = {
   navy: {
     panel: "border-primary/15/80",
-    wash: "from-primary-soft/90 via-white to-white",
+    wash: "from-primary-soft/90 via-surface to-surface",
     label: "text-primary",
     iconWrap: "bg-primary text-white shadow-sm shadow-slate-900/25",
-    step: "bg-white text-primary ring-1 ring-primary/15",
+    step: "bg-surface text-primary ring-1 ring-primary/15",
     connector: "bg-blue-200",
     number: "text-blue-300",
     cta: "border-primary/20 text-primary hover:border-primary/30 hover:bg-primary-soft",
   },
   teal: {
-    panel: "border-teal-100/80",
-    wash: "from-teal-50/90 via-white to-white",
-    label: "text-teal-800",
-    iconWrap: "bg-teal-700 text-white shadow-sm shadow-teal-700/20",
-    step: "bg-white text-teal-900 ring-1 ring-teal-100",
-    connector: "bg-teal-200",
-    number: "text-teal-300",
-    cta: "border-teal-200 text-teal-900 hover:border-teal-300 hover:bg-teal-50",
+    panel: "border-accent/30",
+    wash: "from-accent-soft via-surface to-surface",
+    label: "text-accent",
+    iconWrap: "bg-accent text-white shadow-sm shadow-accent/20",
+    step: "bg-surface text-accent ring-1 ring-accent/25",
+    connector: "bg-accent/30",
+    number: "text-accent/40",
+    cta: "border-accent/30 text-accent hover:border-accent/40 hover:bg-accent-soft",
   },
 };
 
@@ -206,7 +206,7 @@ export function OpsLaneColumn({
             className="grid grid-cols-[auto_1fr] gap-2.5 text-sm leading-6 text-slate-700"
           >
             <span
-              className={cn("mt-[9px] h-1 w-1 rounded-full", lane.tone === "teal" ? "bg-teal-500" : "bg-[var(--primary-hover)]")}
+              className={cn("mt-[9px] h-1 w-1 rounded-full", lane.tone === "teal" ? "bg-accent" : "bg-[var(--primary-hover)]")}
               aria-hidden
             />
             <span>{line}</span>

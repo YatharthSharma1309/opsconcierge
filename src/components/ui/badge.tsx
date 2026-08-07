@@ -7,10 +7,10 @@ type BadgeProps = HTMLAttributes<HTMLSpanElement> & {
 
 const tones = {
   default: "bg-primary-soft text-foreground ring-1 ring-inset ring-border",
-  success: "bg-emerald-50 text-emerald-800 ring-1 ring-inset ring-emerald-200/80",
-  warning: "bg-amber-50 text-amber-800 ring-1 ring-inset ring-amber-200/80",
-  danger: "bg-rose-50 text-rose-800 ring-1 ring-inset ring-rose-200/80",
-  info: "bg-primary-soft text-primary ring-1 ring-inset ring-primary/15",
+  success: "bg-success/15 text-success ring-1 ring-inset ring-success/30",
+  warning: "bg-warning/15 text-warning ring-1 ring-inset ring-warning/30",
+  danger: "bg-danger/15 text-danger ring-1 ring-inset ring-danger/30",
+  info: "bg-primary-soft text-primary ring-1 ring-inset ring-primary/25",
 };
 
 export function Badge({

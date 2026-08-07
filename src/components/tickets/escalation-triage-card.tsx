@@ -16,14 +16,14 @@ export function EscalationTriageCard({ triage }: EscalationTriageCardProps) {
   if (!parsed) return null;
 
   return (
-    <div className="mt-6 overflow-hidden rounded-2xl border border-blue-100 bg-primary-soft/50">
-      <div className="flex flex-wrap items-start justify-between gap-3 border-b border-blue-100/80 bg-surface/80 px-4 py-3">
+    <div className="mt-6 overflow-hidden rounded-2xl border border-border bg-primary-soft/50">
+      <div className="flex flex-wrap items-start justify-between gap-3 border-b border-border bg-surface/80 px-4 py-3">
         <div className="flex items-center gap-2">
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-white">
             <Sparkles className="h-4 w-4" />
           </span>
           <div>
-            <h3 className="text-sm font-semibold text-slate-900">
+            <h3 className="text-sm font-semibold text-foreground">
               Operator brief
             </h3>
             <p className="text-xs text-muted">
@@ -40,9 +40,9 @@ export function EscalationTriageCard({ triage }: EscalationTriageCardProps) {
       </div>
 
       <div className="px-4 py-4">
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-muted">
           Reason code:{" "}
-          <span className="font-mono text-slate-700">{parsed.reasonCode}</span>
+          <span className="font-mono text-foreground">{parsed.reasonCode}</span>
           {parsed.source === "ai" && parsed.model
             ? ` · triaged by ${parsed.model}`
             : " · heuristic triage"}
@@ -52,7 +52,7 @@ export function EscalationTriageCard({ triage }: EscalationTriageCardProps) {
           {parsed.brief.map((item, index) => (
             <li
               key={`${index}-${item.slice(0, 24)}`}
-              className="flex gap-2 text-sm leading-6 text-slate-800"
+              className="flex gap-2 text-sm leading-6 text-foreground"
             >
               <ListChecks className="mt-1 h-3.5 w-3.5 shrink-0 text-primary" />
               <span>{item}</span>
@@ -61,7 +61,7 @@ export function EscalationTriageCard({ triage }: EscalationTriageCardProps) {
         </ul>
 
         {parsed.priority === "HIGH" || parsed.priority === "URGENT" ? (
-          <p className="mt-4 inline-flex items-center gap-1.5 text-xs font-medium text-amber-800">
+          <p className="mt-4 inline-flex items-center gap-1.5 text-xs font-medium text-warning">
             <AlertTriangle className="h-3.5 w-3.5" />
             Priority needs prompt human attention
           </p>

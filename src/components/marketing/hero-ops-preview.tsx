@@ -47,7 +47,7 @@ export function HeroOpsPreview() {
         <div
           className={cn(
             "pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b to-transparent",
-            isSupport ? "from-primary-soft/80" : "from-teal-50/80",
+            isSupport ? "from-primary-soft/80" : "from-accent-soft/80",
           )}
           aria-hidden
         />
@@ -95,7 +95,7 @@ export function HeroOpsPreview() {
             <span
               className={cn(
                 "h-1.5 w-1.5 shrink-0 rounded-full",
-                isSupport ? "bg-[var(--primary-hover)]" : "bg-teal-500",
+                isSupport ? "bg-[var(--primary-hover)]" : "bg-accent",
               )}
             />
             <span className="truncate">Grounded in company memory</span>
@@ -103,7 +103,7 @@ export function HeroOpsPreview() {
           <span
             className={cn(
               "shrink-0 font-semibold",
-              isSupport ? "text-primary" : "text-teal-700",
+              isSupport ? "text-primary" : "text-accent",
             )}
           >
             {isSupport ? "Support" : "Hiring"}
@@ -138,8 +138,8 @@ function LaneChip({
         active
           ? tone === "navy"
             ? "bg-white text-primary shadow-sm ring-1 ring-primary/15"
-            : "bg-white text-teal-800 shadow-sm ring-1 ring-teal-100"
-          : "text-slate-500 hover:bg-white/70 hover:text-slate-700",
+            : "bg-white text-accent shadow-sm ring-1 ring-accent/25"
+          : "text-slate-500 hover:bg-foreground/[0.05] hover:text-foreground",
       )}
     >
       <span
@@ -147,7 +147,7 @@ function LaneChip({
           active
             ? tone === "navy"
               ? "text-primary"
-              : "text-teal-700"
+              : "text-accent"
             : "text-slate-400",
         )}
       >
@@ -204,15 +204,15 @@ function HiringPanel() {
   return (
     <div className="flex flex-col gap-3">
       <div className="flex items-center justify-between gap-2">
-        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-teal-700/80">
+        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-accent/80">
           Hiring inbox
         </p>
-        <span className="rounded-md bg-teal-50 px-2 py-0.5 text-[10px] font-semibold text-teal-800">
+        <span className="rounded-md bg-accent-soft px-2 py-0.5 text-[10px] font-semibold text-accent">
           Resume screen
         </span>
       </div>
 
-      <div className="rounded-xl border border-teal-100 bg-teal-50/40 px-3.5 py-3">
+      <div className="rounded-xl border border-accent/25 bg-accent-soft/40 px-3.5 py-3">
         <p className="text-sm font-medium text-slate-900">{HIRING.question}</p>
         <p className="mt-1 text-xs text-slate-500">{HIRING.candidate}</p>
       </div>
@@ -220,7 +220,7 @@ function HiringPanel() {
       <div className="space-y-2.5 rounded-xl border border-slate-200/80 bg-white px-3.5 py-3">
         <div className="flex items-center justify-between gap-2">
           <p className="text-sm font-semibold text-slate-900">Match score</p>
-          <span className="rounded-lg bg-teal-100 px-2 py-0.5 text-xs font-semibold tabular-nums text-teal-800">
+          <span className="rounded-lg bg-accent-soft px-2 py-0.5 text-xs font-semibold tabular-nums text-accent">
             {HIRING.score}
           </span>
         </div>
@@ -250,14 +250,14 @@ function HiringPanel() {
         </ul>
       </div>
 
-      <div className="flex items-center justify-between gap-3 rounded-xl border border-teal-100 bg-teal-50/70 px-3 py-2.5">
+      <div className="flex items-center justify-between gap-3 rounded-xl border border-accent/25 bg-accent-soft/70 px-3 py-2.5">
         <div className="min-w-0">
-          <p className="text-sm font-medium text-teal-950">{HIRING.action}</p>
-          <p className="mt-0.5 truncate text-[11px] text-teal-800/80">
+          <p className="text-sm font-medium text-accent">{HIRING.action}</p>
+          <p className="mt-0.5 truncate text-[11px] text-accent/80">
             {HIRING.actionHint}
           </p>
         </div>
-        <span className="shrink-0 rounded-lg bg-teal-700 px-2.5 py-1 text-[11px] font-semibold text-white">
+        <span className="shrink-0 rounded-lg bg-accent px-2.5 py-1 text-[11px] font-semibold text-white">
           You decide
         </span>
       </div>

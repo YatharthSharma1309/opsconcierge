@@ -94,7 +94,7 @@ export function ExecutionRunStoryboard({
 
   if (steps.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50/60 px-4 py-6 text-sm text-slate-500">
+      <div className="rounded-2xl border border-dashed border-slate-200 bg-foreground/[0.04] px-4 py-6 text-sm text-slate-500">
         No storyboard steps yet for this run.
       </div>
     );

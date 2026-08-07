@@ -43,7 +43,7 @@ export function ExecutionLogTable({
               {logs.map((log) => (
                 <tr
                   key={log.id}
-                  className="border-b border-slate-100 last:border-0 hover:bg-slate-50/80"
+                  className="border-b border-slate-100 last:border-0 hover:bg-foreground/[0.05]"
                 >
                   <td className="px-4 py-4 text-slate-600">
                     {formatDate(log.createdAt)}

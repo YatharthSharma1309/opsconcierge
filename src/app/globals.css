@@ -150,7 +150,10 @@ body {
 }
 
 .dark .hover\:bg-slate-50:hover,
+.dark .hover\:bg-slate-50\/80:hover,
+.dark .hover\:bg-slate-50\/60:hover,
 .dark .hover\:bg-slate-100:hover,
+.dark .hover\:bg-slate-100\/80:hover,
 .dark .hover\:bg-gray-50:hover,
 .dark .hover\:bg-gray-100:hover,
 .dark .hover\:bg-white:hover {
