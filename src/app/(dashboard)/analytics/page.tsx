@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { Header } from "@/components/layout/header";
 import { AnalyticsDashboard } from "@/components/analytics/analytics-dashboard";
 import { requireOrgMembershipOrRedirect } from "@/lib/auth";
@@ -230,7 +231,7 @@ async function getAnalytics(organizationId: string) {
 }
 
 export default async function AnalyticsPage() {
-  const { organization } = await requireOrgMembershipOrRedirect();
+  const { organization, role } = await requireOrgMembershipOrRedirect();
   const analytics = await getAnalytics(organization.id);
 
   return (
@@ -240,7 +241,12 @@ export default async function AnalyticsPage() {
         description="Track chatbot performance, ticket trends, and support health."
       />
       <main id="main-content" className="flex-1 px-4 py-6 sm:p-6 lg:p-8">
-        <AnalyticsDashboard {...analytics} />
+        <Suspense fallback={<p className="text-sm text-slate-500">Loading analytics…</p>}>
+          <AnalyticsDashboard
+            {...analytics}
+            canPublishFaq={role === "ADMIN"}
+          />
+        </Suspense>
       </main>
     </>
   );

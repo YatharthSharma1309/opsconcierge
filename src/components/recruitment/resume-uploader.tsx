@@ -73,11 +73,11 @@ export function ResumeUploader({ jobId, className }: ResumeUploaderProps) {
         className={cn(
           "flex flex-col items-center justify-center rounded-2xl border-2 border-dashed px-6 py-8 text-center transition",
           dragOver
-            ? "border-indigo-400 bg-indigo-50/50"
+            ? "border-teal-400 bg-accent-soft/80"
             : "border-slate-200 bg-slate-50/50",
         )}
       >
-        <Upload className="mb-3 h-8 w-8 text-indigo-600" />
+        <Upload className="mb-3 h-8 w-8 text-accent" />
         <p className="text-sm font-medium text-slate-900">Upload resume</p>
         <p className="mt-1 text-xs text-slate-500">PDF or DOCX, up to 5MB</p>
 

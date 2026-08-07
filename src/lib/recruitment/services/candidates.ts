@@ -7,9 +7,15 @@ import {
   normalizeResumeText,
 } from "@/lib/recruitment/parse-resume";
 import { toCandidateDetailDTO, toCandidateDTO } from "@/lib/recruitment/serializers";
-import { beginPendingHire } from "@/lib/recruitment/services/hire-safety";
+import { getHireGraceExpiresAt } from "@/lib/recruitment/hire-safety";
+import { parseInterviewScorecard } from "@/lib/recruitment/interview-scorecard";
 import type { AllowedUploadMime } from "@/lib/recruitment/validators";
-import type { CandidateDetailDTO, CandidateDTO, CandidateStatus } from "@/lib/recruitment/types";
+import type {
+  CandidateDetailDTO,
+  CandidateDTO,
+  CandidateStatus,
+  InterviewScorecard,
+} from "@/lib/recruitment/types";
 
 export type UpdateCandidateResult = CandidateDetailDTO & {
   archivedCandidateCount?: number;
@@ -126,6 +132,7 @@ export async function updateCandidate(input: {
   rawText?: string;
   status?: CandidateStatus;
   notes?: string | null;
+  interviewScorecard?: Omit<InterviewScorecard, "updatedAt">;
 }): Promise<UpdateCandidateResult> {
   const existing = await getCandidateForOrganization(
     input.candidateId,
@@ -134,6 +141,120 @@ export async function updateCandidate(input: {
 
   if (!existing) {
     throw new RecruitmentError("Candidate not found.", 404, "CANDIDATE_NOT_FOUND");
+  }
+
+  const scorecardPayload =
+    input.interviewScorecard !== undefined
+      ? {
+          ...parseInterviewScorecard(input.interviewScorecard),
+          updatedAt: new Date().toISOString(),
+        }
+      : undefined;
+
+  const isHiring =
+    input.status === "hired" && existing.status !== "hired";
+
+  let archivedCandidateCount = 0;
+  let pendingHireExpiresAt: string | undefined;
+
+  if (isHiring) {
+    const job = await db.job.findFirst({
+      where: { id: existing.jobId, organizationId: input.organizationId },
+      select: { pendingHireCandidateId: true },
+    });
+
+    if (
+      job?.pendingHireCandidateId &&
+      job.pendingHireCandidateId !== input.candidateId
+    ) {
+      throw new RecruitmentError(
+        "Another hire decision is pending for this job. Undo or finalize it before hiring someone else.",
+        409,
+        "PENDING_HIRE_ACTIVE"
+      );
+    }
+
+    const candidate = await db.$transaction(async (tx) => {
+      const freshJob = await tx.job.findFirst({
+        where: { id: existing.jobId, organizationId: input.organizationId },
+        select: { pendingHireCandidateId: true },
+      });
+
+      if (
+        freshJob?.pendingHireCandidateId &&
+        freshJob.pendingHireCandidateId !== input.candidateId
+      ) {
+        throw new RecruitmentError(
+          "Another hire decision is pending for this job. Undo or finalize it before hiring someone else.",
+          409,
+          "PENDING_HIRE_ACTIVE"
+        );
+      }
+
+      if (input.rawText !== undefined) {
+        await tx.candidateAnalysis.deleteMany({
+          where: { candidateId: input.candidateId },
+        });
+      }
+
+      const updated = await tx.candidate.update({
+        where: { id: input.candidateId },
+        data: {
+          ...(input.displayName ? { displayName: input.displayName } : {}),
+          ...(input.rawText !== undefined
+            ? {
+                rawText: normalizeResumeText(input.rawText),
+                parseStatus: "manual",
+              }
+            : {}),
+          status: "hired",
+          ...(input.notes !== undefined ? { notes: input.notes || null } : {}),
+          ...(scorecardPayload !== undefined
+            ? { interviewScorecard: scorecardPayload }
+            : {}),
+        },
+        include: { analysis: true },
+      });
+
+      const others = await tx.candidate.findMany({
+        where: {
+          jobId: existing.jobId,
+          id: { not: input.candidateId },
+          status: { not: "archived" },
+        },
+      });
+
+      for (const other of others) {
+        await tx.candidate.update({
+          where: { id: other.id },
+          data: {
+            status: "archived",
+            statusBeforeArchive: other.status,
+          },
+        });
+      }
+
+      const expiresAt = getHireGraceExpiresAt();
+      await tx.job.update({
+        where: { id: existing.jobId },
+        data: {
+          pendingHireCandidateId: input.candidateId,
+          pendingHireExpiresAt: expiresAt,
+          pendingHirePreviousStatus: existing.status,
+        },
+      });
+
+      archivedCandidateCount = others.length;
+      pendingHireExpiresAt = expiresAt.toISOString();
+
+      return updated;
+    });
+
+    return {
+      ...toCandidateDetailDTO(candidate),
+      archivedCandidateCount,
+      pendingHireExpiresAt,
+    };
   }
 
   const candidate = await db.$transaction(async (tx) => {
@@ -155,51 +276,15 @@ export async function updateCandidate(input: {
           : {}),
         ...(input.status ? { status: input.status } : {}),
         ...(input.notes !== undefined ? { notes: input.notes || null } : {}),
+        ...(scorecardPayload !== undefined
+          ? { interviewScorecard: scorecardPayload }
+          : {}),
       },
       include: { analysis: true },
     });
   });
 
-  let archivedCandidateCount = 0;
-  let pendingHireExpiresAt: string | undefined;
-
-  if (input.status === "hired" && existing.status !== "hired") {
-    const job = await db.job.findFirst({
-      where: { id: existing.jobId, organizationId: input.organizationId },
-      select: { pendingHireCandidateId: true },
-    });
-
-    if (
-      job?.pendingHireCandidateId &&
-      job.pendingHireCandidateId !== input.candidateId
-    ) {
-      throw new RecruitmentError(
-        "Another hire decision is pending for this job. Undo or finalize it before hiring someone else.",
-        409,
-        "PENDING_HIRE_ACTIVE"
-      );
-    }
-
-    const pending = await beginPendingHire({
-      organizationId: input.organizationId,
-      jobId: existing.jobId,
-      hiredCandidateId: candidate.id,
-      previousStatus: existing.status as CandidateStatus,
-    });
-    archivedCandidateCount = pending.archivedCount;
-    pendingHireExpiresAt = pending.expiresAt.toISOString();
-  }
-
-  const detail = toCandidateDetailDTO(candidate);
-  if (archivedCandidateCount > 0 || pendingHireExpiresAt) {
-    return {
-      ...detail,
-      archivedCandidateCount,
-      pendingHireExpiresAt,
-    };
-  }
-
-  return detail;
+  return toCandidateDetailDTO(candidate);
 }
 
 export const updateCandidateResumeText = updateCandidate;
@@ -213,4 +298,39 @@ export async function deleteCandidate(
 
   await db.candidate.delete({ where: { id: candidateId } });
   return true;
+}
+
+const MAX_COMPARE_CANDIDATES = 3;
+
+/** Load 2–3 candidates for side-by-side compare, preserving requested order. */
+export async function getCandidatesForCompare(
+  organizationId: string,
+  jobId: string,
+  candidateIds: string[],
+): Promise<CandidateDetailDTO[]> {
+  const uniqueIds = [...new Set(candidateIds.map((id) => id.trim()).filter(Boolean))].slice(
+    0,
+    MAX_COMPARE_CANDIDATES,
+  );
+
+  if (uniqueIds.length === 0) {
+    return [];
+  }
+
+  const candidates = await db.candidate.findMany({
+    where: {
+      id: { in: uniqueIds },
+      jobId,
+      job: { organizationId },
+      status: { not: "archived" },
+    },
+    include: { analysis: true },
+  });
+
+  const byId = new Map(candidates.map((candidate) => [candidate.id, candidate]));
+
+  return uniqueIds
+    .map((id) => byId.get(id))
+    .filter((candidate): candidate is NonNullable<typeof candidate> => Boolean(candidate))
+    .map(toCandidateDetailDTO);
 }

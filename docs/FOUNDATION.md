@@ -21,14 +21,14 @@ OpsConcierge is a multi-tenant Next.js app with two agent lanes: **support conci
 
 | Area | Routes | Notes |
 |------|--------|-------|
-| Dashboard | `/dashboard` | Setup health, stats, recent tickets |
+| Dashboard | `/dashboard` | Next-step banner, queue summary, recent tickets |
 | Knowledge base | `/knowledge` | Upload PDF, DOCX, TXT, Markdown → chunked RAG index |
 | AI chatbot | `/chat` | Streaming admin chat with citations |
 | Agent inbox | `/inbox`, `/inbox/[id]` | Conversation threads |
-| Tickets | `/tickets`, `/tickets/new`, `/tickets/[id]` | Escalation, comments, AI suggest-reply |
-| Analytics | `/analytics` | Deflection rate, knowledge gaps |
+| Tickets | `/tickets`, `/tickets/new`, `/tickets/[id]` | Escalation, operator brief (`triage`), comments, AI suggest-reply |
+| Analytics | `/analytics` | Deflection rate, knowledge gaps → draft FAQ |
 | Widget | `/widget` | Embed preview + iframe snippet |
-| Widget intake demo | `/widget/intake`, `/widget/intake/[runId]` | Execution log for judge screenshots |
+| Widget intake demo | `/widget/intake`, `/widget/intake/[runId]` | Execution log + storyboard for judges |
 | Public help center | `/help`, `/help/[slug]` | Public KB + embedded widget |
 | Widget embed (public) | `/widget/embed?key=...` | Customer-facing chat bubble |
 

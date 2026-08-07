@@ -163,6 +163,8 @@ model Ticket {
   requesterName  String?
   status         TicketStatus   @default(OPEN)
   priority       TicketPriority @default(MEDIUM)
+  /// Gemini/heuristic escalation triage: priority, category, reasonCode, brief[]
+  triage         Json?
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
   resolvedAt     DateTime?
@@ -225,6 +227,8 @@ model Candidate {
   status              String    @default("new")
   statusBeforeArchive String?
   notes               String?
+  /// Interactive interview scorecard JSON (skills 1–5, questions, recommendation)
+  interviewScorecard  Json?
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
 

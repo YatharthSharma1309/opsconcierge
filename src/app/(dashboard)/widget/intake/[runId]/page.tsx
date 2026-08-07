@@ -2,9 +2,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Header } from "@/components/layout/header";
 import { ExecutionLogTable } from "@/components/execution/execution-log-table";
+import { ExecutionRunStoryboard } from "@/components/execution/execution-run-storyboard";
 import { WidgetIntakeRunSelector } from "@/components/execution/widget-intake-run-selector";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { buttonClassName } from "@/components/ui/button";
 import { requireOrgMembershipOrRedirect } from "@/lib/auth";
 import { db } from "@/lib/db";
 
@@ -24,42 +25,62 @@ export default async function WidgetIntakeRunPage({
     notFound();
   }
 
-  const runs = await db.executionRun.findMany({
-    where: { workspaceId: organization.id, trigger: "widget_intake" },
-    orderBy: { createdAt: "desc" },
-    take: 10,
-    select: {
-      id: true,
-      createdAt: true,
-      conversationId: true,
-    },
-  });
-
-  const logs = await db.executionLogEntry.findMany({
-    where: { runId: run.id },
-    orderBy: { createdAt: "asc" },
-    select: {
-      id: true,
-      createdAt: true,
-      workspaceId: true,
-      agent: true,
-      trigger: true,
-      model: true,
-      decision: true,
-      latencyMs: true,
-    },
-  });
+  const [runs, logs, conversation, linkedTicket] = await Promise.all([
+    db.executionRun.findMany({
+      where: { workspaceId: organization.id, trigger: "widget_intake" },
+      orderBy: { createdAt: "desc" },
+      take: 10,
+      select: {
+        id: true,
+        createdAt: true,
+        conversationId: true,
+      },
+    }),
+    db.executionLogEntry.findMany({
+      where: { runId: run.id },
+      orderBy: { createdAt: "asc" },
+      select: {
+        id: true,
+        createdAt: true,
+        workspaceId: true,
+        agent: true,
+        trigger: true,
+        model: true,
+        decision: true,
+        latencyMs: true,
+        metadata: true,
+      },
+    }),
+    run.conversationId
+      ? db.conversation.findFirst({
+          where: {
+            id: run.conversationId,
+            organizationId: organization.id,
+          },
+          select: { id: true, channel: true },
+        })
+      : Promise.resolve(null),
+    run.conversationId
+      ? db.ticket.findFirst({
+          where: {
+            organizationId: organization.id,
+            conversationId: run.conversationId,
+            title: { startsWith: "Escalation:" },
+          },
+          orderBy: { createdAt: "desc" },
+          select: { id: true },
+        })
+      : Promise.resolve(null),
+  ]);
 
   return (
     <>
       <Header
-        title="Execution log"
-        description="Review lane routing -> Gemini -> ticket update for the selected widget run."
+        title="Execution storyboard"
+        description="Narrative of retrieve → model → deflect or escalate for this widget run."
         action={
-          <Link href="/widget/intake">
-            <Button size="sm" variant="secondary">
-              Back
-            </Button>
+          <Link href="/widget/intake" className={buttonClassName({ size: "sm", variant: "secondary" })}>
+            Back
           </Link>
         }
       />
@@ -70,13 +91,21 @@ export default async function WidgetIntakeRunPage({
             <WidgetIntakeRunSelector runs={runs} selectedRunId={run.id} />
           </Card>
 
+          <Card className="p-6">
+            <ExecutionRunStoryboard
+              logs={logs}
+              conversationId={run.conversationId}
+              conversationChannel={conversation?.channel ?? run.channel}
+              ticketId={linkedTicket?.id ?? null}
+            />
+          </Card>
+
           <Card className="p-6 space-y-4">
             <div className="space-y-1">
-              <p className="text-sm text-slate-500">Run details</p>
-              <p className="font-mono text-xs text-slate-700">
-                conversationId: {run.conversationId ?? "N/A"}
+              <p className="text-sm font-medium text-slate-800">Raw execution log</p>
+              <p className="font-mono text-xs text-slate-500">
+                conversationId: {run.conversationId ?? "N/A"} · channel: {run.channel}
               </p>
-              <p className="font-mono text-xs text-slate-700">channel: {run.channel}</p>
             </div>
 
             <ExecutionLogTable logs={logs} />
@@ -86,4 +115,3 @@ export default async function WidgetIntakeRunPage({
     </>
   );
 }
-

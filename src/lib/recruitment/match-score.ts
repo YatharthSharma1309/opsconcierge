@@ -235,6 +235,8 @@ export function calculateMatchScore(input: MatchScoreInput): MatchScoreResult {
       matchedPreferredSkills: preferred.matched,
       missingRequiredSkills: required.missing,
       missingPreferredSkills: preferred.missing,
+      requiredSkillEvidence: input.evidence.matchedRequiredSkills,
+      preferredSkillEvidence: input.evidence.matchedPreferredSkills,
       notes,
     },
   };

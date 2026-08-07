@@ -1,232 +1,345 @@
 import Link from "next/link";
 import {
   ArrowRight,
-  BarChart3,
-  BookOpen,
-  Bot,
-  Briefcase,
-  Headphones,
-  Zap,
+  CheckCircle2,
 } from "lucide-react";
 import { MarketingHeader } from "@/components/layout/marketing-header";
 import { SiteFooter } from "@/components/layout/site-footer";
+import { DemoShortcuts } from "@/components/marketing/demo-shortcuts";
+import { FounderPainsSection } from "@/components/marketing/founder-pains-section";
+import { HeroOpsPreview } from "@/components/marketing/hero-ops-preview";
+import { HowItWorksSection } from "@/components/marketing/how-it-works-section";
+import { OpsLanesSection } from "@/components/marketing/ops-lanes";
+import { ProductDemoWalkthrough } from "@/components/marketing/product-demo-walkthrough";
 import { buttonClassName } from "@/components/ui/button";
-import {
-  demoModuleLinks,
-  isMarketingDemoMode,
-} from "@/lib/env/marketing-demo";
+import { isMarketingDemoMode } from "@/lib/env/marketing-demo";
 
-const features = [
+const personas = [
   {
-    icon: BookOpen,
-    title: "Shared company memory",
-    description:
-      "Upload SOPs, FAQs, pricing, and policies. Every agent lane answers from the same business knowledge.",
+    name: "D2C / Shopify brands",
+    use: "Returns, shipping, and “where is my order?” policy answers on the store site.",
   },
   {
-    icon: Bot,
-    title: "Gemini-powered concierge",
-    description:
-      "Inbound widget requests are answered by Gemini in production — not a generic chatbot toy.",
+    name: "Early SaaS teams",
+    use: "Password, billing, and how-to deflection — escalate SSO bugs with context.",
   },
   {
-    icon: Headphones,
-    title: "Tickets + execution logs",
-    description:
-      "Every run leaves an audit trail: lane routing → Gemini call → ticket update for judges and owners.",
+    name: "Clinics & local services",
+    use: "Hours, insurance basics, membership FAQs while booking stays in your system.",
   },
   {
-    icon: BarChart3,
-    title: "Ops analytics",
-    description:
-      "Track deflection, ticket trends, and where the AI handed off to humans.",
+    name: "Tutoring & agencies",
+    use: "Parent FAQ plus a hiring inbox when you screen tutors or support hires.",
   },
-  {
-    icon: Briefcase,
-    title: "Hiring agent lane",
-    description:
-      "Screen resumes, score candidates, draft interview questions, and keep hiring in the same workspace.",
-  },
+];
+
+const includes = [
+  "Multi-tenant workspace with shared knowledge",
+  "Support chat + tickets + analytics",
+  "Hiring pipeline with AI match assist",
+  "Embeddable widget preview",
+  "Auditable execution runs for owners and judges",
+];
+
+const notIncludes = [
+  "Replacing your phone line or WhatsApp Business day one",
+  "Live order tracking or refunds without your shop APIs",
+  "Auto-rejecting candidates or “AI decides who to hire”",
+  "Enterprise ATS / 50-agent call-center software",
 ];
 
 export default function LandingPage() {
   const demoMode = isMarketingDemoMode();
+  const primaryHref = demoMode ? "/dashboard" : "/sign-up";
+  const secondaryHref = demoMode ? "/widget" : "/help";
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <MarketingHeader />
 
       <main id="main-content" className="flex-1">
-        <section className="hero-gradient mx-auto max-w-6xl px-4 pb-16 pt-12 sm:px-6 sm:pt-16">
-          <div className="max-w-3xl">
-            <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-700">
-              <Zap className="h-3.5 w-3.5" />
-              {demoMode
-                ? "OpsConcierge · AI-operated business"
-                : "Gemini-powered · Support + Hiring concierge"}
-            </p>
-            <h1 className="text-4xl font-bold tracking-tight text-slate-900 md:text-5xl md:leading-tight">
-              The AI concierge that{" "}
-              <span className="bg-gradient-to-r from-indigo-600 to-cyan-500 bg-clip-text text-transparent">
-                runs your business operations
-              </span>
-            </h1>
-            <p className="mt-6 text-lg leading-8 text-slate-600">
-              Capture inbound requests, route them to the right AI agent lane,
-              answer from company memory, update tickets, and leave an
-              auditable execution log — not just another chatbot.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link
-                href={demoMode ? "/dashboard" : "/sign-up"}
-                className={buttonClassName({ size: "lg" })}
-              >
-                {demoMode ? "Open live demo" : "Get started free"}
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-              <Link
-                href={demoMode ? "/recruitment" : "/help"}
-                className={buttonClassName({ variant: "secondary", size: "lg" })}
-              >
-                {demoMode ? "View recruitment" : "Browse help center"}
-              </Link>
+        {/* Hero — brand + one headline + support + CTAs + product preview */}
+        <section className="hero-gradient border-b border-slate-200/80">
+          <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 pb-14 pt-10 sm:px-6 sm:pb-18 sm:pt-14 lg:grid-cols-2 lg:gap-14 lg:pb-20 lg:pt-14">
+            <div>
+              <h1 className="max-w-xl text-5xl font-bold tracking-[-0.03em] text-slate-900 md:text-6xl md:leading-[1.05]">
+                OpsConcierge
+              </h1>
+              <p className="mt-4 max-w-xl text-xl font-medium leading-8 tracking-tight text-slate-800 md:text-2xl md:leading-9">
+                The ops desk for small businesses that still live in email and
+                DMs
+              </p>
+              <p className="mt-5 max-w-xl text-base leading-7 text-slate-600">
+                Deflect FAQs on your site, escalate messy cases with the full
+                chat, and shortlist hires from resumes — with a log of every AI
+                decision.
+              </p>
+              {demoMode ? (
+                <p className="mt-3 max-w-xl text-sm leading-6 text-slate-500">
+                  Built for Build with Gemini XPRIZE · Small Business Services
+                </p>
+              ) : null}
+              <div className="mt-8 flex flex-wrap items-center gap-3">
+                <Link
+                  href={primaryHref}
+                  className={buttonClassName({ size: "lg" })}
+                >
+                  {demoMode ? "Open live demo" : "Get started free"}
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+                <Link
+                  href={demoMode ? "/#try-demo" : secondaryHref}
+                  className={buttonClassName({
+                    variant: "secondary",
+                    size: "lg",
+                  })}
+                >
+                  {demoMode ? "How to use it" : "Help center"}
+                </Link>
+              </div>
             </div>
-            {demoMode ? (
-              <div className="mt-6 flex flex-wrap gap-2">
-                {demoModuleLinks.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className="rounded-full border border-indigo-100 bg-white/80 px-3 py-1.5 text-xs font-medium text-indigo-700 transition hover:bg-indigo-50"
-                  >
-                    {item.label}
-                  </Link>
-                ))}
-              </div>
-            ) : null}
-          </div>
 
-          <div className="mt-14 grid gap-4 md:grid-cols-3">
-            {[
-              { label: "Ops workflow", value: "Widget → Agent → Ticket" },
-              { label: "AI engine", value: "Gemini in production" },
-              { label: "Evidence", value: "Auditable execution logs" },
-            ].map((item) => (
-              <div
-                key={item.label}
-                className="rounded-2xl border border-white/80 bg-white/70 p-5 shadow-sm"
-              >
-                <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
-                  {item.label}
-                </p>
-                <p className="mt-2 text-lg font-semibold text-slate-900">
-                  {item.value}
-                </p>
+            <div className="flex justify-center lg:justify-end">
+              <div className="hero-preview-float w-full max-w-md lg:max-w-none">
+                <HeroOpsPreview />
               </div>
-            ))}
+            </div>
+          </div>
+        </section>
+
+        {demoMode ? (
+          <section className="border-b border-slate-200/80 bg-white">
+            <div className="mx-auto max-w-6xl px-4 py-5 sm:px-6">
+              <DemoShortcuts tone="light" />
+            </div>
+          </section>
+        ) : null}
+
+        <FounderPainsSection />
+
+        <HowItWorksSection
+          demoMode={demoMode}
+          primaryHref={primaryHref}
+          secondaryHref={secondaryHref}
+        />
+
+        <ProductDemoWalkthrough demoMode={demoMode} />
+
+        <section
+          id="features"
+          className="scroll-mt-20 border-b border-slate-200/80 bg-white"
+        >
+          <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+            <h2 className="text-2xl font-semibold text-slate-900">
+              Two lanes. One ops desk.
+            </h2>
+            <p className="mt-2 max-w-2xl text-slate-600">
+              Support and hiring share the same company memory — because in a
+              small business, it is usually the same person doing both.
+            </p>
+
+            <OpsLanesSection
+              showDemoCta={demoMode}
+              className="mt-12"
+            />
           </div>
         </section>
 
         <section
-          id="features"
-          className="mx-auto max-w-6xl scroll-mt-20 px-4 py-16 sm:px-6"
+          id="who"
+          className="scroll-mt-20 border-b border-slate-200/80 bg-slate-50"
         >
-          <h2 className="text-2xl font-semibold text-slate-900">
-            What OpsConcierge runs for you
-          </h2>
-          <p className="mt-2 max-w-2xl text-slate-600">
-            One AI concierge for support and hiring — shared memory, production
-            Gemini calls, and auditable execution logs.
-          </p>
-          <div className="mt-10 grid gap-6 md:grid-cols-2">
-            {features.map((feature) => {
-              const Icon = feature.icon;
-              return (
-                <div
-                  key={feature.title}
-                  className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:shadow-md"
+          <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+            <h2 className="text-2xl font-semibold text-slate-900">
+              Built for real small businesses
+            </h2>
+            <p className="mt-2 max-w-2xl text-slate-600">
+              If you are under ~50 people and still own the inbox, you are the
+              buyer — not enterprise IT.
+            </p>
+            <ul className="mt-10 divide-y divide-slate-200 border-y border-slate-200">
+              {personas.map((persona) => (
+                <li
+                  key={persona.name}
+                  className="grid gap-2 py-5 sm:grid-cols-[14rem_1fr] sm:gap-8"
                 >
-                  <div className="inline-flex rounded-xl bg-indigo-50 p-3 text-indigo-600">
-                    <Icon className="h-5 w-5" />
-                  </div>
-                  <h3 className="mt-4 text-lg font-semibold text-slate-900">
-                    {feature.title}
-                  </h3>
-                  <p className="mt-2 text-sm leading-6 text-slate-600">
-                    {feature.description}
+                  <p className="font-semibold text-slate-900">{persona.name}</p>
+                  <p className="text-sm leading-6 text-slate-600">
+                    {persona.use}
                   </p>
-                </div>
-              );
-            })}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
+        <section
+          id="scope"
+          className="scroll-mt-20 border-b border-slate-200/80 bg-white"
+        >
+          <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+            <h2 className="text-2xl font-semibold text-slate-900">
+              What you get — and what we do not claim
+            </h2>
+            <p className="mt-2 max-w-2xl text-slate-600">
+              Honest scope beats “90% autonomous support” marketing that SMBs
+              abandon in 30 days.
+            </p>
+            <div className="mt-10 grid gap-10 md:grid-cols-2">
+              <div>
+                <h3 className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">
+                  Included
+                </h3>
+                <ul className="mt-4 space-y-3">
+                  {includes.map((line) => (
+                    <li
+                      key={line}
+                      className="flex gap-2 text-sm leading-6 text-slate-700"
+                    >
+                      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
+                      {line}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <h3 className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">
+                  Not in v1
+                </h3>
+                <ul className="mt-4 space-y-3">
+                  {notIncludes.map((line) => (
+                    <li
+                      key={line}
+                      className="flex gap-2 text-sm leading-6 text-slate-700"
+                    >
+                      <span className="mt-0.5 inline-block h-4 w-4 shrink-0 text-center text-slate-400">
+                        –
+                      </span>
+                      {line}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+            <p className="mt-8 max-w-2xl text-sm leading-6 text-slate-500">
+              Realistic first-90-day target on a clean FAQ: about 40–60%
+              deflection of routine questions, with humans handling the rest —
+              and a weekly log review so the knowledge base improves.
+            </p>
           </div>
         </section>
 
         <section
           id="pricing"
-          className="border-t border-slate-200 bg-slate-50"
+          className="scroll-mt-20 border-b border-slate-200/80 bg-slate-50"
         >
           <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
             <h2 className="text-2xl font-semibold text-slate-900">
               Simple pricing for small businesses
             </h2>
             <p className="mt-2 max-w-2xl text-slate-600">
-              Start free. Upgrade when OpsConcierge is answering customers and
-              updating tickets for you.
+              Start free while you prove deflection on your FAQ. Upgrade when
+              tickets and hiring shortlists are part of the weekly ops rhythm.
+              No per-resolution surprise fees.
             </p>
-            <div className="mt-10 grid gap-6 md:grid-cols-3">
+            <div className="mt-10 grid gap-8 md:grid-cols-3">
               {[
                 {
                   name: "Free",
                   price: "$0",
-                  detail: "1 workspace · 1 AI agent · watermarked logs",
+                  detail:
+                    "1 workspace · widget · knowledge upload · watermarked logs",
+                  cta: demoMode ? "Open live demo" : "Get started free",
+                  href: primaryHref,
                 },
                 {
                   name: "Pro",
                   price: "$29–$49/mo",
-                  detail: "Multiple agents · analytics · custom workflows",
+                  detail:
+                    "Higher volume · analytics · hiring lane · execution exports — planned",
+                  cta: demoMode ? "Open live demo" : "Start free — Pro later",
+                  href: primaryHref,
                 },
                 {
                   name: "Enterprise",
                   price: "Custom",
-                  detail: "Private deploy · SSO · audit logs · API",
+                  detail: "SSO · private deploy · API · audit exports — later",
+                  cta: demoMode ? "Open live demo" : "Contact us",
+                  href: demoMode ? "/dashboard" : "mailto:hello@opsconcierge.app",
                 },
               ].map((plan) => (
                 <div
                   key={plan.name}
-                  className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
+                  className="flex flex-col border-t-2 border-primary pt-5"
                 >
-                  <p className="text-sm font-medium uppercase tracking-wide text-slate-400">
+                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">
                     {plan.name}
                   </p>
                   <p className="mt-3 text-2xl font-semibold text-slate-900">
                     {plan.price}
                   </p>
-                  <p className="mt-2 text-sm leading-6 text-slate-600">
+                  <p className="mt-2 flex-1 text-sm leading-6 text-slate-600">
                     {plan.detail}
                   </p>
+                  {plan.href.startsWith("mailto:") ? (
+                    <a
+                      href={plan.href}
+                      className={buttonClassName({
+                        variant: "secondary",
+                        size: "sm",
+                        className: "mt-6 w-full",
+                      })}
+                    >
+                      {plan.cta}
+                      <ArrowRight className="h-3.5 w-3.5" />
+                    </a>
+                  ) : (
+                    <Link
+                      href={plan.href}
+                      className={buttonClassName({
+                        variant:
+                          plan.name === "Enterprise" ? "secondary" : "primary",
+                        size: "sm",
+                        className: "mt-6 w-full",
+                      })}
+                    >
+                      {plan.cta}
+                      <ArrowRight className="h-3.5 w-3.5" />
+                    </Link>
+                  )}
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        <section className="border-t border-slate-200 bg-white">
-          <div className="mx-auto max-w-6xl px-4 py-16 text-center sm:px-6">
+        <section className="bg-white">
+          <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
             <h2 className="text-2xl font-semibold text-slate-900">
-              {demoMode ? "Explore the full platform" : "Ready to transform your support?"}
-            </h2>
-            <p className="mx-auto mt-2 max-w-xl text-slate-600">
               {demoMode
-                ? "Walk through support AI, ticket workflows, recruitment scoring, and analytics — no sign-in required."
-                : "Launch a cited AI helpdesk, embed it on your site, and measure deflection in minutes."}
+                ? "Walk the full path in the live demo"
+                : "Put your FAQ to work this week"}
+            </h2>
+            <p className="mt-2 max-w-xl text-slate-600">
+              {demoMode
+                ? "Command center → widget chat → escalate → execution log → optional hiring shortlist. No sign-in required in demo mode."
+                : "Upload one policy doc, embed the widget, and measure how many repeats never become tickets."}
             </p>
-            <Link
-              href={demoMode ? "/dashboard" : "/sign-up"}
-              className={buttonClassName({ size: "lg", className: "mt-8" })}
-            >
-              {demoMode ? "Open live demo" : "Start your workspace"}
-              <ArrowRight className="h-4 w-4" />
-            </Link>
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+              <Link href={primaryHref} className={buttonClassName({ size: "lg" })}>
+                {demoMode ? "Open live demo" : "Get started free"}
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link
+                href={demoMode ? "/recruitment" : "/help"}
+                className={buttonClassName({
+                  variant: "secondary",
+                  size: "lg",
+                })}
+              >
+                {demoMode ? "Hiring lane" : "Help center"}
+              </Link>
+            </div>
           </div>
         </section>
       </main>

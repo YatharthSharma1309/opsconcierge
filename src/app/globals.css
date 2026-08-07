@@ -1,22 +1,57 @@
 @import "tailwindcss";
 
 :root {
+  /* Slate–navy–teal system (aligned with OC brand mark) */
   --background: #f4f7fb;
   --foreground: #0f172a;
-  --primary: #4f46e5;
-  --primary-soft: #eef2ff;
-  --accent: #06b6d4;
-  --accent-soft: #ecfeff;
+  --primary: #1e3a8a;
+  --primary-soft: #e8eef8;
+  --primary-hover: #1e40af;
+  --primary-active: #172554;
+  --accent: #0f766e;
+  --accent-soft: #f0fdfa;
+  --accent-hover: #0d9488;
   --surface: #ffffff;
   --border: #e2e8f0;
   --muted: #64748b;
-  --success: #10b981;
-  --warning: #f59e0b;
+  --success: #059669;
+  --warning: #d97706;
+  --danger: #e11d48;
+  color-scheme: light;
+}
+
+.dark {
+  --background: #0b1220;
+  --foreground: #e8eef8;
+  --primary: #2563eb;
+  --primary-soft: rgba(96, 165, 250, 0.16);
+  --primary-hover: #3b82f6;
+  --primary-active: #1d4ed8;
+  --accent: #2dd4bf;
+  --accent-soft: rgba(45, 212, 191, 0.12);
+  --accent-hover: #5eead4;
+  --surface: #121a2b;
+  --border: #243044;
+  --muted: #94a3b8;
+  --success: #34d399;
+  --warning: #fbbf24;
+  --danger: #fb7185;
+  color-scheme: dark;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-soft: var(--primary-soft);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-surface: var(--surface);
+  --color-border: var(--border);
+  --color-muted: var(--muted);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -59,7 +94,7 @@ body {
   top: 1rem;
   z-index: 100;
   border-radius: 0.75rem;
-  background: #4f46e5;
+  background: var(--primary);
   padding: 0.5rem 1rem;
   font-size: 0.875rem;
   font-weight: 500;
@@ -71,12 +106,27 @@ body {
 
 .skip-link:focus {
   transform: translateY(0);
-  outline: 2px solid #c7d2fe;
+  outline: 2px solid #93c5fd;
   outline-offset: 2px;
 }
 
 #main-content {
   scroll-margin-top: 5rem;
+}
+
+@keyframes pain-metric-pop {
+  from {
+    opacity: 0.6;
+    transform: translateY(4px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.pain-metric-pop {
+  animation: pain-metric-pop 0.35s ease-out both;
 }
 
 @keyframes fade-up {
@@ -86,6 +136,45 @@ body {
 
 .animate-fade-up {
   animation: fade-up 0.35s ease-out both;
+}
+
+@keyframes hero-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.hero-preview-float {
+  animation: hero-float 5.5s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-preview-float,
+  .animate-fade-up,
+  .hero-demo-pulse,
+  .pain-metric-pop {
+    animation: none !important;
+  }
+}
+
+@keyframes hero-demo-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(0.85);
+  }
+}
+
+.hero-demo-pulse {
+  animation: hero-demo-pulse 1.6s ease-in-out infinite;
 }
 
 .animate-shimmer {
@@ -123,13 +212,111 @@ body {
 }
 
 .glass-panel {
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.78);
   backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
+.glass-panel-scrolled {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(18px) saturate(1.15);
+  -webkit-backdrop-filter: blur(18px) saturate(1.15);
+}
+
+.dark .glass-panel {
+  background: rgba(18, 26, 43, 0.82);
+}
+
+.dark .glass-panel-scrolled {
+  background: rgba(18, 26, 43, 0.94);
+}
+
+/* Shared micro-interaction utilities for marketing chrome */
+.interact-lift {
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.interact-lift:hover {
+  transform: translateY(-1px);
+}
+
+.footer-link {
+  position: relative;
+  display: inline-flex;
+  color: #94a3b8;
+  transition: color 0.2s ease;
+}
+
+.footer-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+  opacity: 0;
+  transform: scaleX(0.6);
+  transform-origin: left center;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+.footer-link:hover,
+.footer-link:focus-visible {
+  color: #fff;
+}
+
+.footer-link:hover::after,
+.footer-link:focus-visible::after {
+  opacity: 0.55;
+  transform: scaleX(1);
+}
+
+.footer-link:focus-visible {
+  outline: none;
+  border-radius: 0.25rem;
+  box-shadow: 0 0 0 2px #0f172a, 0 0 0 4px rgba(15, 118, 110, 0.45);
+}
+
+/* Atmosphere: slate + teal, no purple */
 .hero-gradient {
   background:
-    radial-gradient(circle at top left, rgba(79, 70, 229, 0.12), transparent 40%),
-    radial-gradient(circle at top right, rgba(6, 182, 212, 0.1), transparent 35%),
+    radial-gradient(ellipse 80% 55% at 12% 8%, rgba(30, 58, 138, 0.1), transparent 55%),
+    radial-gradient(ellipse 70% 50% at 88% 12%, rgba(15, 118, 110, 0.09), transparent 50%),
     linear-gradient(180deg, #ffffff 0%, #f4f7fb 100%);
+  background-image:
+    radial-gradient(ellipse 80% 55% at 12% 8%, rgba(30, 58, 138, 0.1), transparent 55%),
+    radial-gradient(ellipse 70% 50% at 88% 12%, rgba(15, 118, 110, 0.09), transparent 50%),
+    linear-gradient(180deg, #ffffff 0%, #f4f7fb 100%),
+    linear-gradient(rgba(148, 163, 184, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.07) 1px, transparent 1px);
+  background-size:
+    auto,
+    auto,
+    auto,
+    48px 48px,
+    48px 48px;
+}
+
+.dark .hero-gradient {
+  background-image:
+    radial-gradient(ellipse 80% 55% at 12% 8%, rgba(96, 165, 250, 0.14), transparent 55%),
+    radial-gradient(ellipse 70% 50% at 88% 12%, rgba(45, 212, 191, 0.1), transparent 50%),
+    linear-gradient(180deg, #0b1220 0%, #0f172a 100%),
+    linear-gradient(rgba(148, 163, 184, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.06) 1px, transparent 1px);
+  background-size:
+    auto,
+    auto,
+    auto,
+    48px 48px,
+    48px 48px;
 }

@@ -53,7 +53,7 @@ export function ExecutionLogTable({
                   </td>
                   <td className="px-4 py-4 text-slate-700">{log.agent}</td>
                   <td className="px-4 py-4 text-slate-700">{log.trigger}</td>
-                  <td className="px-4 py-4 font-mono text-xs text-indigo-700">
+                  <td className="px-4 py-4 font-mono text-xs text-blue-900">
                     {log.model}
                   </td>
                   <td className="px-4 py-4 text-slate-700">{log.decision}</td>

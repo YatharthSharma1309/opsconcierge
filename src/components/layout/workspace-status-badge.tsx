@@ -22,7 +22,7 @@ export function WorkspaceStatusBadge({
   } else if (!aiConfigured) {
     tone = "info";
     label = "Keyword search mode";
-    dotClass = "bg-indigo-500";
+    dotClass = "bg-primary";
   }
 
   return (

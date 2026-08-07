@@ -29,6 +29,8 @@ export type ScoreBreakdown = {
   matchedPreferredSkills: string[];
   missingRequiredSkills: string[];
   missingPreferredSkills: string[];
+  requiredSkillEvidence?: EvidenceMatch[];
+  preferredSkillEvidence?: EvidenceMatch[];
   notes: string[];
 };
 
@@ -85,6 +87,29 @@ export type CandidateDTO = {
   matchScore: number | null;
 };
 
+export type InterviewRecommendation = "strong_yes" | "yes" | "maybe" | "no";
+
+export type InterviewSkillScore = {
+  skill: string;
+  score: number | null;
+  notes: string;
+};
+
+export type InterviewQuestionScore = {
+  question: string;
+  asked: boolean;
+  score: number | null;
+  notes: string;
+};
+
+export type InterviewScorecard = {
+  skillScores: InterviewSkillScore[];
+  questionScores: InterviewQuestionScore[];
+  overallNotes: string;
+  recommendation: InterviewRecommendation | null;
+  updatedAt: string | null;
+};
+
 export type AnalysisDTO = {
   id: string;
   candidateId: string;
@@ -102,6 +127,7 @@ export type AnalysisDTO = {
 export type CandidateDetailDTO = CandidateDTO & {
   rawText: string;
   analysis: AnalysisDTO | null;
+  interviewScorecard: InterviewScorecard | null;
 };
 
 export type JobDetailDTO = JobDTO & {

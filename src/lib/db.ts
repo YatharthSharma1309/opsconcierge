@@ -1,10 +1,14 @@
-import { PrismaPg } from "@prisma/adapter-pg";
+﻿import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
 import { PrismaClient } from "@/generated/prisma/client";
+
+/** Bump when Prisma schema fields change so HMR drops a stale singleton. */
+const PRISMA_CLIENT_GENERATION = "ticket-triage-v2";
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
   pool: Pool | undefined;
+  prismaGeneration?: string;
 };
 
 function resolveDatabaseUrl(): string {
@@ -38,9 +42,18 @@ function createPrismaClient() {
   if (process.env.NODE_ENV !== "production") {
     globalForPrisma.pool = pool;
     globalForPrisma.prisma = client;
+    globalForPrisma.prismaGeneration = PRISMA_CLIENT_GENERATION;
   }
 
   return client;
+}
+
+if (
+  process.env.NODE_ENV !== "production" &&
+  globalForPrisma.prisma &&
+  globalForPrisma.prismaGeneration !== PRISMA_CLIENT_GENERATION
+) {
+  globalForPrisma.prisma = undefined;
 }
 
 export const db = globalForPrisma.prisma ?? createPrismaClient();

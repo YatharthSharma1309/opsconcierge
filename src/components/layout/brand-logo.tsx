@@ -1,11 +1,15 @@
+"use client";
+
 import Link from "next/link";
-import { RelayLogoMark } from "@/components/layout/relay-logo-mark";
+import { OpsConciergeLogoMark } from "@/components/layout/relay-logo-mark";
 import { cn } from "@/lib/utils";
 
 type BrandLogoProps = {
   href?: string;
   showTagline?: boolean;
   size?: "sm" | "md";
+  /** Light surfaces (default) or dark footer bands */
+  tone?: "light" | "dark";
   className?: string;
   onNavigate?: () => void;
 };
@@ -14,29 +18,43 @@ export function BrandLogo({
   href = "/",
   showTagline = false,
   size = "md",
+  tone = "light",
   className,
   onNavigate,
 }: BrandLogoProps) {
-  const markSize = size === "sm" ? 36 : 40;
+  const markSize = size === "sm" ? 34 : 40;
+  const dark = tone === "dark";
 
   const content = (
-    <div className={cn("flex items-center gap-3", className)}>
-      <RelayLogoMark
+    <div className={cn("flex min-w-0 items-center gap-2.5 sm:gap-3", className)}>
+      <OpsConciergeLogoMark
         size={markSize}
-        className="shadow-sm shadow-indigo-200/80"
+        className={cn(
+          "rounded-[10px] transition-[transform,box-shadow] duration-200 ease-out",
+          "group-hover:scale-[1.03]",
+          dark
+            ? "shadow-md shadow-black/30 ring-1 ring-white/15"
+            : "shadow-md shadow-slate-900/15 ring-1 ring-slate-900/10 dark:shadow-black/40 dark:ring-white/10",
+        )}
       />
-      <div>
+      <div className="min-w-0 leading-tight">
         <p
           className={cn(
-            "font-semibold text-slate-900",
-            size === "sm" ? "text-sm" : "text-lg",
+            "truncate font-semibold tracking-[-0.02em] transition-colors duration-200",
+            dark ? "text-white" : "text-foreground",
+            size === "sm" ? "text-[15px]" : "text-[17px]",
           )}
         >
           OpsConcierge
         </p>
         {showTagline ? (
-          <p className="text-xs text-slate-500">
-            AI concierge for business operations
+          <p
+            className={cn(
+              "mt-0.5 truncate text-[11px] font-medium tracking-[0.02em]",
+              dark ? "text-slate-400" : "text-muted",
+            )}
+          >
+            Ops desk for small businesses
           </p>
         ) : null}
       </div>
@@ -48,7 +66,13 @@ export function BrandLogo({
       <Link
         href={href}
         onClick={onNavigate}
-        className="transition-opacity hover:opacity-90"
+        className={cn(
+          "group inline-flex max-w-full rounded-xl outline-none",
+          "focus-visible:ring-2 focus-visible:ring-offset-2",
+          dark
+            ? "focus-visible:ring-teal-500/50 focus-visible:ring-offset-slate-950"
+            : "focus-visible:ring-teal-600/40 focus-visible:ring-offset-background",
+        )}
       >
         {content}
       </Link>

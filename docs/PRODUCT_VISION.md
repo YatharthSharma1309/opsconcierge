@@ -2,69 +2,90 @@
 
 **Brand:** OpsConcierge  
 **Codebase:** `OpsConcierge-App` (package: `opsconcierge`; formerly Relay AI)  
-**Live:** https://relay-ai-app.vercel.app · https://support-ai-nine-mu.vercel.app
+**Live:** **https://support-ai-nine-mu.vercel.app** (public) · https://relay-ai-app.vercel.app (login-walled)  
+**Real-world playbook:** [`REAL_WORLD_USE.md`](./REAL_WORLD_USE.md)
 
 ## What it is
 
-OpsConcierge is an AI concierge for small and mid-size business operations. It captures inbound requests, answers from company knowledge, routes work to the right agent lane, updates tickets, and leaves an auditable execution trail — not a generic chatbot demo.
+OpsConcierge is an **ops desk for small businesses** — not a generic chatbot.
 
-## Who it's for
+It stops founders from re-answering the same billing/returns/hours questions, hands messy cases to a human **with the full transcript**, and helps the same person shortlist hires from resumes that arrive over email or WhatsApp — with a log of every AI decision.
 
-| Segment | Pain | OpsConcierge value |
-|---------|------|-------------------|
-| **SMB owners / ops leads** | Support and hiring eat the same limited hours | One workspace for customer intake + hiring pipeline |
-| **Support teams** | Repeat questions, slow escalation, no audit trail | RAG answers, ticket handoff, execution logs |
-| **Hiring managers** | Resume triage and interview prep are manual | AI match scoring, questions, pipeline in the same product |
+## Who it's for (real ICP)
 
-**ICP (initial):** 5–50 person teams with a public website, a help/FAQ backlog, and occasional hiring — not enterprise IT departments.
+| Buyer | Situation | Why they care |
+|-------|-----------|---------------|
+| **Founder / ops lead (5–50 people)** | Still owns inbox + hiring | One tool for weekly ops repeats |
+| **D2C / Shopify brands** | WISMO, returns, shipping eat the week | Deflect policy FAQs on-site |
+| **Early SaaS** | Password/how-to/billing tickets | Docs → answers → ticket with context |
+| **Local services / tutoring** | Hours, booking FAQs + occasional hiring | Website FAQ + tutor/tech resume inbox |
 
-## Two agent lanes
+**Not v1:** Enterprise ITSM, call-center ACD, or “90% autonomous support” claims.
 
-### 1. Support concierge
+## Product structure
 
-**Path:** Widget embed → RAG answer (Gemini) → escalate to ticket → execution log
+```
+Company memory (FAQs, SOPs, policies)
+        │
+        ├─► Support concierge: Widget → RAG answer → Escalate → Ticket → Execution log
+        │
+        └─► Hiring concierge: Role brief → Resume intake → Ranked shortlist → Interview prep
+                    (founder posts jobs on Indeed/LinkedIn/referrals — outside the app)
+```
 
-- Upload SOPs, FAQs, policies to a shared knowledge base
-- Embeddable floating widget for customer sites
-- Streaming chat backed by **Gemini** in production
-- Ticket creation on escalation
-- **Widget intake demo** at `/widget/intake` — screenshot-friendly audit rows
+### Support lane (primary)
 
-### 2. Hiring concierge
+**Real path:** Website chat is where SMBs put self-serve; email remains for disputes.
 
-**Path:** Job post → resume upload → AI match score → interview questions → pipeline
+1. Upload the docs you already have (Notion export, PDF policy, FAQ).
+2. Customer asks on the embeddable widget.
+3. AI answers **from your docs only**.
+4. One-click escalate → ticket with transcript (customers insist on a human option).
+5. Review execution log weekly → fix the knowledge base.
 
-- Same org memory and dashboard as support
-- Shows OpsConcierge is ops-wide, not support-only
+### Hiring lane (secondary, same workspace)
+
+**Real path:** Referrals + free Indeed/LinkedIn; founders drown in PDFs.
+
+1. Define must-haves.
+2. Upload resumes from any channel.
+3. AI ranks with evidence — **never auto-rejects**.
+4. Draft interview questions / scorecard hints.
+5. Founder confirms hire/reject.
+
+## Design-partner personas
+
+See full detail in [`REAL_WORLD_USE.md`](./REAL_WORLD_USE.md):
+
+| Persona | Vertical | Hero use |
+|---------|----------|----------|
+| GlowTheory | D2C skincare | Returns / shipping FAQ widget |
+| PipelineKit | B2B SaaS | Password / billing / API FAQ + tickets |
+| Parkview Dental | Clinic | Hours / insurance FAQ on website |
+| Hall’s HVAC | Trades | Service-area / membership triage |
+| SummitPrep | Tutoring | Parent FAQ + **tutor hiring** lane |
+
+**Seeded demo:** PipelineKit-style SaaS FAQ (`demo/support-faq.txt`).
+
+## Honest success bar
+
+| Metric | Realistic first 90 days |
+|--------|-------------------------|
+| Support deflection | 40–60% of routine FAQs (not 90%) |
+| Escalation | Always available; ~25–40% to human is healthy |
+| Hiring time saved | ~4–6 hours/hire on screening + question prep |
+| Ops hygiene | Weekly log review → KB updates (prevents bot abandonment) |
 
 ## XPRIZE narrative
 
-**Hackathon:** Build with Gemini XPRIZE — **$2,000,000** in prizes · managed by Devpost · [xprize.devpost.com](https://xprize.devpost.com)  
-**Deadline:** 18 Aug 2026 @ 1:30 AM GMT+5:30 (17 Aug · 1:00 PM PT)  
+**Hackathon:** Build with Gemini XPRIZE — **$2,000,000** · [xprize.devpost.com](https://xprize.devpost.com)  
 **Category:** Small Business Services  
+**Deadline:** 18 Aug 2026 @ 1:30 AM GMT+5:30  
 
-OpsConcierge demonstrates **real business operations automated with Google AI**:
-
-1. **Gemini API** — production LLM on the hero widget/chat path (not a stub)
-2. **Firebase Realtime Database** — Google Cloud evidence of agent runs
-3. **Vercel + Neon** — deployed SaaS with persistent multi-tenant data
-
-**Judge story (60 seconds):** A customer asks the embedded widget a billing question → Gemini answers from uploaded FAQ → user escalates → ticket is created → owner opens `/widget/intake` and shows lane routing, model, latency, and decision in the execution log → optional Firebase RTDB mirror for GCP proof.
-
-See [`docs/HACKATHON.md`](./HACKATHON.md) for prizes, eligibility, and Devpost form requirements (users + revenue evidence).
-
-## Success criteria (demo-ready)
-
-- [ ] Live URL loads landing + demo dashboard without friction
-- [ ] Widget chat returns a cited Gemini answer from seeded FAQ
-- [ ] Escalation creates a ticket and an execution run
-- [ ] `/api/health/xprize` returns `readyForXprizeDemo: true`
-- [ ] Evidence folder has screenshots + public &lt;3 min video
-- [ ] Devpost project started; category + business evidence fields drafted
+**Judge story (60s):** SMB customer asks a billing/password question on the widget → Gemini answers from uploaded FAQ → escalates → ticket created → `/widget/intake` shows lane, model, latency, decision → Firebase RTDB as GCP evidence.
 
 ## Related docs
 
-- `docs/HACKATHON.md` — contest brief
-- `README.md` — setup and stack
-- `docs/ROADMAP_12_DAYS.md` — submission timeline
-- `evidence/demo/script.md` — timed judge walkthrough
+- [`REAL_WORLD_USE.md`](./REAL_WORLD_USE.md) — structure, personas, operator checklist  
+- [`BUSINESS_PLAN.md`](./BUSINESS_PLAN.md) · [`HACKATHON.md`](./HACKATHON.md)  
+- [`../evidence/demo/script.md`](../evidence/demo/script.md)

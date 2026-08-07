@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { BrandLogo } from "@/components/layout/brand-logo";
+import { MarketingHeaderShell } from "@/components/layout/marketing-header-shell";
 import { MarketingAuthLinks, MarketingNav } from "@/components/layout/marketing-nav";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { buttonClassName } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -25,12 +27,7 @@ export function MarketingHeader({
   className,
 }: MarketingHeaderProps) {
   return (
-    <header
-      className={cn(
-        "sticky top-0 z-40 glass-panel border-b border-slate-200/80",
-        className,
-      )}
-    >
+    <MarketingHeaderShell className={className}>
       <div
         className={cn(
           "mx-auto flex items-center justify-between gap-4 px-4 py-3 sm:px-6",
@@ -40,7 +37,10 @@ export function MarketingHeader({
         {variant === "marketing" ? (
           <>
             <BrandLogo showTagline />
-            <MarketingNav />
+            <div className="flex items-center gap-2 sm:gap-3">
+              <ThemeToggle />
+              <MarketingNav />
+            </div>
           </>
         ) : (
           <>
@@ -57,12 +57,12 @@ export function MarketingHeader({
               ) : null}
               <BrandLogo href="/" size="sm" className="hidden sm:flex" />
               {title ? (
-                <div className="min-w-0 border-l border-slate-200 pl-3 sm:pl-4">
-                  <h1 className="truncate text-base font-semibold text-slate-900 sm:text-lg">
+                <div className="min-w-0 border-l border-border pl-3 sm:pl-4">
+                  <h1 className="truncate text-base font-semibold text-foreground sm:text-lg">
                     {title}
                   </h1>
                   {subtitle ? (
-                    <p className="truncate text-xs text-slate-500 sm:text-sm">
+                    <p className="truncate text-xs text-muted sm:text-sm">
                       {subtitle}
                     </p>
                   ) : null}
@@ -70,13 +70,21 @@ export function MarketingHeader({
               ) : null}
             </div>
             {variant === "help" ? (
-              <MarketingAuthLinks className="shrink-0" />
+              <div className="flex shrink-0 items-center gap-2">
+                <ThemeToggle />
+                <MarketingAuthLinks className="shrink-0" />
+              </div>
             ) : action ? (
-              <div className="flex shrink-0 items-center gap-2">{action}</div>
-            ) : null}
+              <div className="flex shrink-0 items-center gap-2">
+                <ThemeToggle />
+                {action}
+              </div>
+            ) : (
+              <ThemeToggle />
+            )}
           </>
         )}
       </div>
-    </header>
+    </MarketingHeaderShell>
   );
 }

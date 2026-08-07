@@ -65,23 +65,23 @@ export function Dialog({
         aria-describedby={description ? "dialog-description" : undefined}
         tabIndex={-1}
         className={cn(
-          "relative z-10 w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-xl outline-none",
+          "relative z-10 w-full max-w-md rounded-2xl border border-border bg-surface p-6 shadow-xl outline-none",
         )}
       >
         <div className="mb-4 flex items-start justify-between gap-4">
           <div>
-            <h2 id="dialog-title" className="text-lg font-semibold text-slate-900">
+            <h2 id="dialog-title" className="text-lg font-semibold text-foreground">
               {title}
             </h2>
             {description ? (
-              <p id="dialog-description" className="mt-2 text-sm text-slate-500">
+              <p id="dialog-description" className="mt-2 text-sm text-muted">
                 {description}
               </p>
             ) : null}
           </div>
           <button
             type="button"
-            className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+            className="rounded-lg p-1 text-muted hover:bg-primary-soft hover:text-foreground"
             aria-label="Close dialog"
             onClick={() => onOpenChange(false)}
           >

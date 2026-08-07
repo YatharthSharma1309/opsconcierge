@@ -1,6 +1,6 @@
 export const clerkAppearance = {
   variables: {
-    colorPrimary: "#4f46e5",
+    colorPrimary: "#1e3a8a",
     colorText: "#0f172a",
     colorBackground: "#ffffff",
     borderRadius: "0.75rem",
@@ -9,7 +9,7 @@ export const clerkAppearance = {
   elements: {
     card: "shadow-lg border border-slate-200",
     formButtonPrimary:
-      "bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl",
+      "bg-[#1e3a8a] hover:bg-[#1e40af] text-white rounded-xl",
     organizationSwitcherTrigger: "rounded-xl border border-slate-200",
   },
 };

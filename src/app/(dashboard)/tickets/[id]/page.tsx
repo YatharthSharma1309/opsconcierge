@@ -3,6 +3,10 @@ import { Header } from "@/components/layout/header";
 import { TicketDetail } from "@/components/tickets/ticket-detail";
 import { requireOrgMembershipOrRedirect } from "@/lib/auth";
 import { db } from "@/lib/db";
+import {
+  heuristicEscalationTriage,
+  parseEscalationTriage,
+} from "@/lib/tickets/escalation-triage";
 
 type TicketPageProps = {
   params: Promise<{ id: string }>;
@@ -45,6 +49,13 @@ export default async function TicketPage({ params }: TicketPageProps) {
     name: member.user.name,
   }));
 
+  const parsedTriage = parseEscalationTriage(ticket.triage);
+  const triage =
+    parsedTriage ??
+    (ticket.title.startsWith("Escalation:")
+      ? heuristicEscalationTriage(ticket.title, ticket.description)
+      : null);
+
   return (
     <>
       <Header title="Ticket detail" description="Review and resolve this request." />
@@ -53,6 +64,7 @@ export default async function TicketPage({ params }: TicketPageProps) {
           teamMembers={teamMembers}
           ticket={{
             ...ticket,
+            triage,
             createdAt: ticket.createdAt.toISOString(),
             conversationId: ticket.conversationId,
             assigneeId: ticket.assigneeId,

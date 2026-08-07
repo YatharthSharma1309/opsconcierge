@@ -299,7 +299,7 @@ export function DocumentList({ canManage = false }: { canManage?: boolean }) {
 
                 <div className="flex items-start gap-3">
 
-                  <div className="rounded-lg bg-indigo-50 p-2 text-indigo-600">
+                  <div className="rounded-lg bg-blue-50 p-2 text-blue-900">
 
                     <FileText className="h-4 w-4" />
 

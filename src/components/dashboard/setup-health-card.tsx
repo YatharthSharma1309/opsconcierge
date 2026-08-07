@@ -88,10 +88,10 @@ export function SetupHealthCard({
   }
 
   return (
-    <Card className="hero-gradient overflow-hidden border-indigo-100 p-0">
+    <Card className="hero-gradient overflow-hidden border-blue-100 p-0">
       <div className="grid gap-6 p-6 lg:grid-cols-[1.2fr_1fr]">
         <div>
-          <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-700">
+          <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-900">
             <Sparkles className="h-3.5 w-3.5" />
             Workspace readiness
           </div>
@@ -141,13 +141,13 @@ export function SetupHealthCard({
         <div className="rounded-2xl border border-white/70 bg-white/80 p-5 shadow-sm">
           <div className="mb-4 flex items-center justify-between">
             <p className="text-sm font-medium text-slate-700">Setup progress</p>
-            <span className="text-2xl font-semibold text-indigo-600">
+            <span className="text-2xl font-semibold text-blue-900">
               {readiness}%
             </span>
           </div>
           <div className="mb-5 h-2 overflow-hidden rounded-full bg-slate-100">
             <div
-              className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-cyan-500 transition-all duration-500"
+              className="h-full rounded-full bg-gradient-to-r from-blue-800 to-teal-500 transition-all duration-500"
               style={{ width: `${readiness}%` }}
             />
           </div>

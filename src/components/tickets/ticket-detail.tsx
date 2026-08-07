@@ -3,12 +3,13 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, MessageSquare, Sparkles } from "lucide-react";
+import { ArrowLeft, MessageSquare, Sparkles, Wand2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, buttonClassName } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { EscalationTriageCard } from "@/components/tickets/escalation-triage-card";
 import {
   priorityTone,
   statusTone,
@@ -24,6 +25,7 @@ type TicketDetailProps = {
     description: string;
     status: TicketStatus;
     priority: "LOW" | "MEDIUM" | "HIGH" | "URGENT";
+    triage?: unknown;
     createdAt: string;
     conversationId: string | null;
     assigneeId: string | null;
@@ -37,6 +39,7 @@ type TicketDetailProps = {
     conversation: {
       id: string;
       title: string | null;
+      channel?: string;
       messages: Array<{
         id: string;
         role: "USER" | "ASSISTANT" | "SYSTEM";
@@ -152,7 +155,7 @@ export function TicketDetail({ ticket, teamMembers }: TicketDetailProps) {
     <div className="space-y-4">
       <Link
         href="/tickets"
-        className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-indigo-600"
+        className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-blue-900"
       >
         <ArrowLeft className="h-4 w-4" />
         Back to tickets
@@ -170,20 +173,44 @@ export function TicketDetail({ ticket, teamMembers }: TicketDetailProps) {
             {ticket.description}
           </p>
 
+          {ticket.triage ? <EscalationTriageCard triage={ticket.triage} /> : null}
+
+          {ticket.title.startsWith("Escalation:") ? (
+            <div className="mt-4">
+              <Link
+                href={`/analytics?gap=${encodeURIComponent(
+                  ticket.title.replace(/^Escalation:\s*/i, "").slice(0, 120),
+                )}#knowledge-gaps`}
+                className={buttonClassName({ variant: "secondary", size: "sm" })}
+              >
+                <Wand2 className="h-3.5 w-3.5" />
+                Draft FAQ from this gap
+              </Link>
+            </div>
+          ) : null}
+
           {ticket.conversation ? (
-            <div className="mt-8 rounded-2xl border border-indigo-100 bg-indigo-50/40 p-4">
+            <div className="mt-8 rounded-2xl border border-blue-100 bg-blue-50/40 p-4">
               <div className="mb-3 flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2">
-                  <MessageSquare className="h-4 w-4 text-indigo-600" />
+                  <MessageSquare className="h-4 w-4 text-blue-900" />
                   <h3 className="text-sm font-semibold text-slate-900">
                     Linked chat transcript
                   </h3>
                 </div>
                 <Link
-                  href={`/chat?conversation=${ticket.conversation.id}`}
-                  className="text-xs font-medium text-indigo-600 hover:text-indigo-500"
+                  href={
+                    ticket.conversation.channel &&
+                    ticket.conversation.channel !== "ADMIN"
+                      ? `/inbox/${ticket.conversation.id}`
+                      : `/chat?conversation=${ticket.conversation.id}`
+                  }
+                  className="text-xs font-medium text-blue-900 hover:text-blue-800"
                 >
-                  Open chatbot
+                  {ticket.conversation.channel &&
+                  ticket.conversation.channel !== "ADMIN"
+                    ? "Open inbox thread"
+                    : "Open chatbot"}
                 </Link>
               </div>
               <div className="max-h-64 space-y-2 overflow-y-auto">

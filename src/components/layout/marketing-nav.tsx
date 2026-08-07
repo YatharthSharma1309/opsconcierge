@@ -25,10 +25,12 @@ function marketingNavLinkClass({
   }
 
   return cn(
-    "flex w-full items-center rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
-    variant === "primary"
-      ? "mt-2 bg-indigo-600 text-white hover:bg-indigo-500"
-      : "text-slate-700 hover:bg-slate-50",
+    buttonClassName({
+      variant: variant === "primary" ? "primary" : "ghost",
+      size: "sm",
+    }),
+    "w-full justify-start",
+    variant === "primary" && "mt-2",
   );
 }
 
@@ -57,21 +59,35 @@ function MarketingNavLinksBypass({
         onClick={onNavigate}
         className={marketingNavLinkClass({ column: isColumn })}
       >
-        Help Center
+        Help center
       </Link>
       <Link
-        href="/#features"
+        href="/#how-it-works"
         onClick={onNavigate}
         className={marketingNavLinkClass({ column: isColumn })}
       >
-        Features
+        How it works
+      </Link>
+      <Link
+        href="/#try-demo"
+        onClick={onNavigate}
+        className={marketingNavLinkClass({ column: isColumn })}
+      >
+        Try the demo
+      </Link>
+      <Link
+        href="/#who"
+        onClick={onNavigate}
+        className={marketingNavLinkClass({ column: isColumn })}
+      >
+        Who it&apos;s for
       </Link>
       <Link
         href="/dashboard"
         onClick={onNavigate}
         className={marketingNavLinkClass({ variant: "primary", column: isColumn })}
       >
-        Dashboard
+        Open live demo
       </Link>
     </div>
   );
@@ -97,14 +113,28 @@ function MarketingNavLinksWithClerk({
         onClick={onNavigate}
         className={marketingNavLinkClass({ column: isColumn })}
       >
-        Help Center
+        Help center
       </Link>
       <Link
-        href="/#features"
+        href="/#how-it-works"
         onClick={onNavigate}
         className={marketingNavLinkClass({ column: isColumn })}
       >
-        Features
+        How it works
+      </Link>
+      <Link
+        href="/#try-demo"
+        onClick={onNavigate}
+        className={marketingNavLinkClass({ column: isColumn })}
+      >
+        Try the demo
+      </Link>
+      <Link
+        href="/#who"
+        onClick={onNavigate}
+        className={marketingNavLinkClass({ column: isColumn })}
+      >
+        Who it&apos;s for
       </Link>
       {isLoaded && isSignedIn ? (
         <Link
@@ -112,7 +142,7 @@ function MarketingNavLinksWithClerk({
           onClick={onNavigate}
           className={marketingNavLinkClass({ variant: "primary", column: isColumn })}
         >
-          Dashboard
+          Open live demo
         </Link>
       ) : (
         <>
@@ -128,7 +158,7 @@ function MarketingNavLinksWithClerk({
             onClick={onNavigate}
             className={marketingNavLinkClass({ variant: "primary", column: isColumn })}
           >
-            Get started
+            Get started free
           </Link>
         </>
       )}
@@ -159,7 +189,7 @@ export function MarketingAuthLinks({
           onClick={onNavigate}
           className={buttonClassName({ size: "sm" })}
         >
-          Dashboard
+          Open live demo
         </Link>
       </div>
     );
@@ -185,7 +215,7 @@ function MarketingAuthLinksWithClerk({
           onClick={onNavigate}
           className={buttonClassName({ size: "sm" })}
         >
-          Dashboard
+          Open live demo
         </Link>
       ) : (
         <>
@@ -201,7 +231,7 @@ function MarketingAuthLinksWithClerk({
             onClick={onNavigate}
             className={buttonClassName({ size: "sm" })}
           >
-            Get started
+            Get started free
           </Link>
         </>
       )}
@@ -287,12 +317,12 @@ export function MarketingNav() {
           <aside
             ref={drawerRef}
             id="marketing-nav-menu"
-            className="mobile-drawer-panel fixed inset-y-0 right-0 z-[101] flex w-[min(18rem,100vw)] flex-col border-l border-slate-200 bg-white shadow-2xl md:hidden"
+            className="mobile-drawer-panel fixed inset-y-0 right-0 z-[101] flex w-[min(18rem,100vw)] flex-col border-l border-border bg-surface shadow-2xl md:hidden"
             role="dialog"
             aria-modal="true"
             aria-label="Navigation menu"
           >
-            <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
+            <div className="flex items-center justify-between border-b border-border px-4 py-3">
               <BrandLogo
                 href="/"
                 size="sm"

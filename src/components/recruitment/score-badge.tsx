@@ -7,7 +7,7 @@ type ScoreBadgeProps = {
 
 function scoreTone(score: number): string {
   if (score >= 80) return "bg-emerald-100 text-emerald-700 ring-emerald-200";
-  if (score >= 60) return "bg-indigo-100 text-indigo-700 ring-indigo-200";
+  if (score >= 60) return "bg-teal-50 text-teal-800 ring-teal-200";
   if (score >= 40) return "bg-amber-100 text-amber-700 ring-amber-200";
   return "bg-slate-100 text-slate-600 ring-slate-200";
 }

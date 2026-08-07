@@ -100,3 +100,75 @@ export async function ingestUploadedFile(organizationId: string, file: File) {
     throw error;
   }
 }
+
+export async function ingestTextDocument(
+  organizationId: string,
+  input: { title: string; content: string; fileName?: string },
+) {
+  const title = input.title.trim().slice(0, 120) || "FAQ draft";
+  const content = input.content.trim();
+  if (content.length < 40) {
+    throw new Error("FAQ content is too short to publish.");
+  }
+
+  const safeBase = title.replace(/[^a-zA-Z0-9._-]+/g, "_").slice(0, 80) || "faq-draft";
+  const fileName = input.fileName?.replace(/[^a-zA-Z0-9._-]/g, "_") ?? `${safeBase}.md`;
+  const buffer = Buffer.from(content, "utf-8");
+
+  const document = await db.document.create({
+    data: {
+      organizationId,
+      title,
+      fileName,
+      fileType: "text/markdown",
+      filePath: null,
+      fileSize: buffer.length,
+      status: "PROCESSING",
+    },
+  });
+
+  try {
+    const chunks = chunkText(content);
+    if (chunks.length === 0) {
+      throw new Error("No text could be extracted from this document");
+    }
+
+    const embeddings = await createEmbeddings(chunks);
+
+    await db.$transaction(
+      chunks.map((chunkContent, index) =>
+        db.documentChunk.create({
+          data: {
+            documentId: document.id,
+            content: chunkContent,
+            chunkIndex: index,
+            tokenCount: estimateTokenCount(chunkContent),
+            embedding: embeddings[index] ?? undefined,
+          },
+        }),
+      ),
+    );
+
+    return db.document.update({
+      where: { id: document.id },
+      data: {
+        status: "READY",
+        chunkCount: chunks.length,
+        errorMessage: null,
+      },
+    });
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Failed to process document";
+
+    await db.document.update({
+      where: { id: document.id },
+      data: {
+        status: "FAILED",
+        errorMessage: message,
+      },
+    });
+
+    throw error;
+  }
+}

@@ -1,0 +1,251 @@
+﻿"use client";
+
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { ArrowRight, Loader2, Sparkles, Wand2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardDescription, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+
+type KnowledgeGap = {
+  topic: string;
+  count: number;
+};
+
+type KnowledgeGapsCardProps = {
+  knowledgeGaps: KnowledgeGap[];
+  canPublish: boolean;
+};
+
+type DraftState = {
+  topic: string;
+  title: string;
+  content: string;
+};
+
+export function KnowledgeGapsCard({
+  knowledgeGaps,
+  canPublish,
+}: KnowledgeGapsCardProps) {
+  const searchParams = useSearchParams();
+  const [draft, setDraft] = useState<DraftState | null>(null);
+  const [isDrafting, setIsDrafting] = useState(false);
+  const [isPublishing, setIsPublishing] = useState(false);
+  const [activeTopic, setActiveTopic] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [autoDrafted, setAutoDrafted] = useState(false);
+
+  async function draftFaq(topic: string) {
+    setIsDrafting(true);
+    setActiveTopic(topic);
+    setError(null);
+    setSuccess(null);
+
+    try {
+      const response = await fetch("/api/knowledge/draft-faq", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ topic }),
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error ?? "Failed to draft FAQ");
+        setDraft(null);
+        return;
+      }
+
+      setDraft({
+        topic,
+        title: data.draft.title,
+        content: data.draft.content,
+      });
+    } catch {
+      setError("Network error while drafting FAQ.");
+      setDraft(null);
+    } finally {
+      setIsDrafting(false);
+    }
+  }
+
+  useEffect(() => {
+    if (autoDrafted) return;
+    const gapTopic = searchParams.get("gap")?.trim();
+    if (!gapTopic) return;
+    setAutoDrafted(true);
+    void draftFaq(gapTopic);
+  }, [autoDrafted, searchParams]);
+
+  async function publishFaq() {
+    if (!draft || !canPublish) return;
+
+    setIsPublishing(true);
+    setError(null);
+    setSuccess(null);
+
+    try {
+      const response = await fetch("/api/knowledge/publish-faq", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: draft.title.trim(),
+          content: draft.content.trim(),
+        }),
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error ?? "Failed to publish FAQ");
+        return;
+      }
+
+      setSuccess(`Published "${draft.title.trim()}" to the knowledge base.`);
+      setDraft(null);
+      setActiveTopic(null);
+    } catch {
+      setError("Network error while publishing FAQ.");
+    } finally {
+      setIsPublishing(false);
+    }
+  }
+
+  return (
+    <Card id="knowledge-gaps">
+      <CardTitle>Knowledge gaps</CardTitle>
+      <CardDescription>
+        Topics escalated from chat — draft an FAQ with AI, then add it to your
+        knowledge base to improve deflection.
+      </CardDescription>
+
+      <div className="mt-5 space-y-3">
+        {knowledgeGaps.length === 0 ? (
+          <p className="text-sm text-slate-500">
+            No escalations yet. When users escalate from chat, topics appear here.
+          </p>
+        ) : (
+          knowledgeGaps.map((gap, index) => (
+            <div
+              key={`${gap.topic}-${index}`}
+              className="flex flex-col gap-3 rounded-xl border border-amber-100 bg-amber-50/50 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
+            >
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-slate-800">{gap.topic}</p>
+                <p className="mt-0.5 text-xs text-amber-700">
+                  Escalated{gap.count > 1 ? ` · ${gap.count}x` : ""}
+                </p>
+              </div>
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                disabled={isDrafting}
+                onClick={() => void draftFaq(gap.topic)}
+              >
+                {isDrafting && activeTopic === gap.topic ? (
+                  <>
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    Drafting...
+                  </>
+                ) : (
+                  <>
+                    <Wand2 className="h-3.5 w-3.5" />
+                    Draft FAQ
+                  </>
+                )}
+              </Button>
+            </div>
+          ))
+        )}
+      </div>
+
+      {draft ? (
+        <div className="mt-6 space-y-4 rounded-2xl border border-blue-100 bg-blue-50/40 p-4">
+          <div className="flex items-center gap-2 text-sm font-semibold text-blue-950">
+            <Sparkles className="h-4 w-4" />
+            Draft FAQ
+          </div>
+          <p className="text-xs text-blue-900/80">From gap: {draft.topic}</p>
+          <div>
+            <label htmlFor="faq-title" className="mb-1.5 block text-sm font-medium text-slate-700">
+              Title
+            </label>
+            <Input
+              id="faq-title"
+              value={draft.title}
+              onChange={(event) =>
+                setDraft((current) =>
+                  current ? { ...current, title: event.target.value } : current,
+                )
+              }
+            />
+          </div>
+          <div>
+            <label htmlFor="faq-content" className="mb-1.5 block text-sm font-medium text-slate-700">
+              Content
+            </label>
+            <Textarea
+              id="faq-content"
+              rows={12}
+              value={draft.content}
+              onChange={(event) =>
+                setDraft((current) =>
+                  current ? { ...current, content: event.target.value } : current,
+                )
+              }
+            />
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            {canPublish ? (
+              <Button
+                type="button"
+                onClick={() => void publishFaq()}
+                disabled={isPublishing || !draft.title.trim() || !draft.content.trim()}
+              >
+                {isPublishing ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Publishing...
+                  </>
+                ) : (
+                  "Add to knowledge base"
+                )}
+              </Button>
+            ) : (
+              <p className="text-sm text-slate-500">
+                Ask an admin to publish this draft to the knowledge base.
+              </p>
+            )}
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                setDraft(null);
+                setActiveTopic(null);
+              }}
+            >
+              Discard
+            </Button>
+          </div>
+        </div>
+      ) : null}
+
+      {error ? <p className="mt-4 text-sm text-rose-600">{error}</p> : null}
+      {success ? (
+        <div className="mt-4 flex flex-wrap items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
+          <span>{success}</span>
+          <Link
+            href="/knowledge"
+            className="inline-flex items-center gap-1 font-medium text-emerald-900 hover:underline"
+          >
+            Open knowledge
+            <ArrowRight className="h-3.5 w-3.5" />
+          </Link>
+        </div>
+      ) : null}
+    </Card>
+  );
+}

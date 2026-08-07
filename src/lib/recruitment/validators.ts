@@ -48,6 +48,33 @@ export const updateCandidateSchema = z
     rawText: z.string().trim().min(50).max(appConfig.maxResumeTextChars).optional(),
     status: candidateStatusSchema.optional(),
     notes: z.string().trim().max(4000).nullable().optional(),
+    interviewScorecard: z
+      .object({
+        skillScores: z
+          .array(
+            z.object({
+              skill: z.string().trim().min(1).max(80),
+              score: z.number().int().min(1).max(5).nullable(),
+              notes: z.string().trim().max(500),
+            }),
+          )
+          .max(20),
+        questionScores: z
+          .array(
+            z.object({
+              question: z.string().trim().min(1).max(400),
+              asked: z.boolean(),
+              score: z.number().int().min(1).max(5).nullable(),
+              notes: z.string().trim().max(500),
+            }),
+          )
+          .max(12),
+        overallNotes: z.string().trim().max(4000),
+        recommendation: z
+          .enum(["strong_yes", "yes", "maybe", "no"])
+          .nullable(),
+      })
+      .optional(),
   })
   .refine((value) => Object.values(value).some((field) => field !== undefined), {
     message: "At least one candidate field must be provided.",
@@ -66,4 +93,19 @@ export type AllowedUploadMime = (typeof ALLOWED_UPLOAD_MIME_TYPES)[number];
 
 export function isAllowedUploadMime(mime: string): mime is AllowedUploadMime {
   return (ALLOWED_UPLOAD_MIME_TYPES as readonly string[]).includes(mime);
+}
+
+/** Prefer browser MIME; fall back to extension when type is empty/octet-stream. */
+export function resolveUploadMime(
+  mime: string,
+  fileName: string,
+): AllowedUploadMime | null {
+  if (isAllowedUploadMime(mime)) return mime;
+
+  const lower = fileName.toLowerCase();
+  if (lower.endsWith(".pdf")) return "application/pdf";
+  if (lower.endsWith(".docx")) {
+    return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+  }
+  return null;
 }

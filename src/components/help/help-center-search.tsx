@@ -129,13 +129,13 @@ export function HelpCenterSearch({
                   className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
                 >
                   <div className="flex flex-wrap items-start justify-between gap-3">
-                    <p className="text-sm font-medium text-indigo-700">
+                    <p className="text-sm font-medium text-blue-900">
                       {result.documentTitle}
                     </p>
                     {widgetKey && onAskAi ? (
                       <button
                         type="button"
-                        className="text-xs font-medium text-indigo-600 hover:text-indigo-500"
+                        className="text-xs font-medium text-blue-900 hover:text-blue-800"
                         onClick={() => askAi(result.content.slice(0, 120))}
                       >
                         Ask AI
@@ -179,7 +179,7 @@ export function HelpCenterSearch({
                     aria-controls={panelId}
                   >
                     <div className="flex items-center gap-3">
-                      <div className="rounded-lg bg-indigo-50 p-2 text-indigo-600">
+                      <div className="rounded-lg bg-blue-50 p-2 text-blue-900">
                         <FileText className="h-4 w-4" />
                       </div>
                       <div>

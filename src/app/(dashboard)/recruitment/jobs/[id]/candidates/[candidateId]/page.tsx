@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { Header } from "@/components/layout/header";
 import { CandidateDetailPanel } from "@/components/recruitment/candidate-detail-panel";
+import { InterviewScorecardPanel } from "@/components/recruitment/interview-scorecard-panel";
 import { ScoreBadge } from "@/components/recruitment/score-badge";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
@@ -41,7 +42,7 @@ export default async function CandidateDetailPage({ params }: CandidateDetailPag
         action={
           <Link
             href={`/recruitment/jobs/${jobId}`}
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-indigo-600 hover:text-indigo-500"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-blue-900 hover:text-blue-800"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to job
@@ -77,6 +78,57 @@ export default async function CandidateDetailPage({ params }: CandidateDetailPag
                     <p className="mt-1 leading-6 text-slate-600">{analysis.matchRationale}</p>
                   </div>
 
+                  {analysis.scoreBreakdown.requiredSkillEvidence &&
+                  analysis.scoreBreakdown.requiredSkillEvidence.length > 0 ? (
+                    <div>
+                      <p className="font-medium text-slate-700">Required skill evidence</p>
+                      <ul className="mt-2 space-y-2">
+                        {analysis.scoreBreakdown.requiredSkillEvidence.map((match) => (
+                          <li
+                            key={`required-${match.skill}`}
+                            className="rounded-xl border border-slate-100 bg-slate-50/70 px-3 py-2"
+                          >
+                            <p className="text-sm font-medium text-slate-800">{match.skill}</p>
+                            <p className="mt-1 text-sm leading-6 text-slate-600">
+                              &ldquo;{match.evidence}&rdquo;
+                            </p>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : null}
+
+                  {analysis.scoreBreakdown.preferredSkillEvidence &&
+                  analysis.scoreBreakdown.preferredSkillEvidence.length > 0 ? (
+                    <div>
+                      <p className="font-medium text-slate-700">Preferred skill evidence</p>
+                      <ul className="mt-2 space-y-2">
+                        {analysis.scoreBreakdown.preferredSkillEvidence.map((match) => (
+                          <li
+                            key={`preferred-${match.skill}`}
+                            className="rounded-xl border border-cyan-100 bg-cyan-50/40 px-3 py-2"
+                          >
+                            <p className="text-sm font-medium text-slate-800">{match.skill}</p>
+                            <p className="mt-1 text-sm leading-6 text-slate-600">
+                              &ldquo;{match.evidence}&rdquo;
+                            </p>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : null}
+
+                  {analysis.scoreBreakdown.notes.length > 0 ? (
+                    <div>
+                      <p className="font-medium text-slate-700">Additional notes</p>
+                      <ul className="mt-2 list-disc space-y-1 pl-5 text-slate-600">
+                        {analysis.scoreBreakdown.notes.map((note) => (
+                          <li key={note}>{note}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : null}
+
                   {analysis.extractedSkills.length > 0 ? (
                     <div>
                       <p className="font-medium text-slate-700">Extracted skills</p>
@@ -100,17 +152,6 @@ export default async function CandidateDetailPage({ params }: CandidateDetailPag
                           </Badge>
                         ))}
                       </div>
-                    </div>
-                  ) : null}
-
-                  {analysis.interviewQuestions.length > 0 ? (
-                    <div>
-                      <p className="font-medium text-slate-700">Suggested interview questions</p>
-                      <ul className="mt-2 list-disc space-y-1 pl-5 text-slate-600">
-                        {analysis.interviewQuestions.map((question) => (
-                          <li key={question}>{question}</li>
-                        ))}
-                      </ul>
                     </div>
                   ) : null}
 
@@ -164,6 +205,15 @@ export default async function CandidateDetailPage({ params }: CandidateDetailPag
                 </p>
               )}
             </Card>
+
+            <InterviewScorecardPanel
+              candidateId={candidate.id}
+              candidateName={candidate.displayName}
+              requiredSkills={job.requiredSkills}
+              interviewQuestions={analysis?.interviewQuestions ?? []}
+              missingSkills={analysis?.missingSkills ?? []}
+              initialScorecard={candidate.interviewScorecard}
+            />
 
             <Card>
               <CardTitle>Resume text</CardTitle>

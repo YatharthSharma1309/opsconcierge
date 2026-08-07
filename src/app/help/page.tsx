@@ -44,7 +44,7 @@ export default async function HelpIndexPage() {
             </p>
             <Link
               href="/sign-up"
-              className="mt-4 inline-block text-sm font-medium text-indigo-600 hover:text-indigo-500"
+              className="mt-4 inline-block text-sm font-medium text-blue-900 hover:text-blue-800"
             >
               Create your workspace →
             </Link>
@@ -55,7 +55,7 @@ export default async function HelpIndexPage() {
               <li key={org.slug}>
                 <Link
                   href={`/help/${org.slug}`}
-                  className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-5 py-4 shadow-sm transition hover:border-indigo-200 hover:shadow-md"
+                  className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-5 py-4 shadow-sm transition hover:border-blue-200 hover:shadow-md"
                 >
                   <div>
                     <p className="font-medium text-slate-900">{org.name}</p>

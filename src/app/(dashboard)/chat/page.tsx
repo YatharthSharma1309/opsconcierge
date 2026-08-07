@@ -14,17 +14,20 @@ export default async function ChatPage() {
   ]);
 
   return (
-    <>
+    <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
       <Header
         title="AI Chatbot"
-        description="RAG-powered answers with live retrieval visualization and source citations."
+        description="Ask from your knowledge base — answers stream with sources."
       />
-      <main id="main-content" className="flex-1 px-4 py-6 sm:p-6 lg:p-8">
+      <main
+        id="main-content"
+        className="flex min-h-0 flex-1 flex-col overflow-hidden px-3 py-3 sm:px-4 sm:py-4 lg:px-6"
+      >
         <ChatPanelLoader
           hasDocuments={readyDocuments > 0}
           welcomeMessage={settings.greeting}
         />
       </main>
-    </>
+    </div>
   );
 }

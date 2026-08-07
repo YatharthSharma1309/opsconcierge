@@ -135,13 +135,15 @@ In your Vercel project (https://vercel.com — project **relay-ai**):
 
 Production URLs:
 
-- https://relay-ai-app.vercel.app
-- https://support-ai-nine-mu.vercel.app (legacy alias)
+- https://support-ai-nine-mu.vercel.app (**public**)
+- https://relay-ai-app.vercel.app (legacy alias)
 
 Smoke test:
 
 ```bash
-curl https://relay-ai-app.vercel.app/api/health/xprize
+curl -s https://support-ai-nine-mu.vercel.app/api/health
+# After redeploying OpsConcierge:
+curl -s https://support-ai-nine-mu.vercel.app/api/health/xprize
 ```
 
 ## 5. Judge walkthrough

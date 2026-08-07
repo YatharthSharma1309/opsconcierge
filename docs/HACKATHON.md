@@ -23,7 +23,7 @@
 |----------|----------|
 | **India (GMT+5:30)** | **18 Aug 2026 @ 1:30 AM** |
 | Pacific (PT) | 17 Aug 2026 @ 1:00 PM PT |
-| Days left (from ~5 Aug 2026) | **~12 days** |
+| Days left (from ~7 Aug 2026) | **~11 days** |
 
 **Build window:** 19 May 2026 → 17 Aug 2026 (90 days)  
 **Judging:** 18 Aug 2026 → 15 Sep 2026  
@@ -123,11 +123,11 @@ Total pool: **$2,000,000**.
 |-------|--------|
 | **Product** | OpsConcierge |
 | **Code** | `OpsConcierge-App` (repo historically `relay-ai`) |
-| **Live** | https://relay-ai-app.vercel.app · https://support-ai-nine-mu.vercel.app |
+| **Live** | **https://support-ai-nine-mu.vercel.app** (public) · relay-ai-app is login-walled |
 | **Category** | Small Business Services |
 | **One-liner** | AI concierge that runs SMB support + hiring — Gemini answers, tickets, execution logs |
 | **Judge path** | Landing → widget chat → escalate → `/widget/intake` |
-| **Health** | `GET /api/health/xprize` |
+| **Health** | Public: `GET /api/health` · XPRIZE route after redeploy: `GET /api/health/xprize` |
 
 ---
 

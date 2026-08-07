@@ -7,10 +7,10 @@ type BadgeProps = HTMLAttributes<HTMLSpanElement> & {
 
 const tones = {
   default: "bg-slate-100 text-slate-700",
-  success: "bg-emerald-100 text-emerald-700",
-  warning: "bg-amber-100 text-amber-700",
-  danger: "bg-rose-100 text-rose-700",
-  info: "bg-indigo-100 text-indigo-700",
+  success: "bg-emerald-50 text-emerald-800 ring-1 ring-inset ring-emerald-200/80",
+  warning: "bg-amber-50 text-amber-800 ring-1 ring-inset ring-amber-200/80",
+  danger: "bg-rose-50 text-rose-800 ring-1 ring-inset ring-rose-200/80",
+  info: "bg-primary-soft text-primary ring-1 ring-inset ring-primary/15",
 };
 
 export function Badge({
@@ -21,7 +21,7 @@ export function Badge({
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium",
+        "inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium",
         tones[tone],
         className,
       )}

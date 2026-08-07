@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 function ChatPanelSkeleton() {
   return (
-    <div className="flex h-[calc(100vh-12rem)] gap-4">
+    <div className="flex h-full min-h-[28rem] gap-4">
       <Card className="hidden w-64 shrink-0 flex-col overflow-hidden p-0 lg:flex">
         <div className="border-b border-slate-100 px-4 py-3">
           <Skeleton className="h-4 w-16" />
@@ -49,12 +49,16 @@ function ChatPanelWithParams({
   const initialQuestion = searchParams.get("q");
 
   return (
-    <ChatPanel
-      hasDocuments={hasDocuments}
-      welcomeMessage={welcomeMessage}
-      initialConversationId={conversationId}
-      initialQuestion={initialQuestion}
-    />
+    <div className="min-h-0 flex-1">
+      <div className="flex h-full min-h-0 flex-col">
+        <ChatPanel
+          hasDocuments={hasDocuments}
+          welcomeMessage={welcomeMessage}
+          initialConversationId={conversationId}
+          initialQuestion={initialQuestion}
+        />
+      </div>
+    </div>
   );
 }
 
@@ -67,10 +71,12 @@ export function ChatPanelLoader({
 }) {
   return (
     <Suspense fallback={<ChatPanelSkeleton />}>
-      <ChatPanelWithParams
-        hasDocuments={hasDocuments}
-        welcomeMessage={welcomeMessage}
-      />
+      <div className="flex h-full min-h-0 flex-1 flex-col">
+        <ChatPanelWithParams
+          hasDocuments={hasDocuments}
+          welcomeMessage={welcomeMessage}
+        />
+      </div>
     </Suspense>
   );
 }

@@ -6,7 +6,7 @@ import { withRecruitmentOrg } from "@/lib/recruitment/api-handler";
 import { RecruitmentError } from "@/lib/recruitment/errors";
 import { recordRecruitmentAuditEvent } from "@/lib/recruitment/services/audit";
 import { createCandidateFromUpload } from "@/lib/recruitment/services/candidates";
-import { isAllowedUploadMime } from "@/lib/recruitment/validators";
+import { resolveUploadMime } from "@/lib/recruitment/validators";
 
 export async function POST(request: Request) {
   return withRecruitmentOrg(async ({ organization, user }) => {
@@ -31,8 +31,8 @@ export async function POST(request: Request) {
       throw new RecruitmentError("Resume file is required.", 400, "MISSING_FILE");
     }
 
-    const mimeType = file.type || "";
-    if (!isAllowedUploadMime(mimeType)) {
+    const mimeType = resolveUploadMime(file.type || "", file.name);
+    if (!mimeType) {
       throw new RecruitmentError(
         "Only PDF and DOCX files are supported.",
         400,

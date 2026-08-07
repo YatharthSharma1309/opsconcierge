@@ -39,8 +39,8 @@ Devpost UI: **Start project** · **Find teammates** · **Import from portfolio**
 | ≥1 Google Cloud product | Firebase Realtime Database agent runs |
 | Real users + revenue evidence | `evidence/customers/` + Devpost form fields |
 | Demo video **&lt; 3 min**, public YouTube/Vimeo/Youku | Film from `evidence/demo/script.md` |
-| Repo URL (public or share with testing@devpost.com / judging@hacker.fund) | GitHub `relay-ai` |
-| Live URL for judges | https://relay-ai-app.vercel.app |
+| Repo URL (public or share with testing@devpost.com / judging@hacker.fund) | https://github.com/YatharthSharma1309/opsconcierge |
+| Live URL for judges | https://support-ai-nine-mu.vercel.app (public; relay-ai-app is login-walled) |
 | Disclose pre-existing code / boilerplate | Relay AI → OpsConcierge narrative in Devpost description |
 | Category selection | Small Business Services |
 

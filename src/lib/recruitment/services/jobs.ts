@@ -24,7 +24,7 @@ async function getJobForOrganization(jobId: string, organizationId: string) {
 }
 
 export async function listJobs(organizationId: string): Promise<JobDTO[]> {
-  await processExpiredPendingHires();
+  await processExpiredPendingHires({ organizationId });
 
   const jobs = await db.job.findMany({
     where: { organizationId },
@@ -58,7 +58,7 @@ export async function getJobDetail(
   organizationId: string,
   jobId: string
 ): Promise<JobDetailDTO | null> {
-  await processExpiredPendingHires(jobId);
+  await processExpiredPendingHires({ jobId, organizationId });
 
   const job = await db.job.findFirst({
     where: { id: jobId, organizationId },

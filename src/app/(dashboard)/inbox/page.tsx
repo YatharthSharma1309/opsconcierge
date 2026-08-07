@@ -80,7 +80,7 @@ export default async function InboxPage() {
                     <div className="mt-4 flex gap-3">
                             <Link
                               href={`/inbox/${conversation.id}`}
-                              className="text-sm font-medium text-indigo-600"
+                              className="text-sm font-medium text-blue-900"
                             >
                               View transcript
                             </Link>
@@ -157,7 +157,7 @@ export default async function InboxPage() {
                             <div className="flex justify-end gap-2">
                               <Link
                                 href={`/inbox/${conversation.id}`}
-                                className="text-sm font-medium text-indigo-600 hover:text-indigo-500"
+                                className="text-sm font-medium text-blue-900 hover:text-blue-800"
                               >
                                 View transcript
                               </Link>

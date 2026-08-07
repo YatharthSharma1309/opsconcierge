@@ -33,7 +33,7 @@ Full brief: [`docs/HACKATHON.md`](./HACKATHON.md)
 - [ ] Vercel env vars: `DATABASE_URL`, Clerk, `GEMINI_*`, `FIREBASE_*`, `APP_URL`
 - [ ] Run migrations on production Neon branch
 - [ ] Seed demo org (`POST /api/demo/seed` if configured)
-- [ ] Verify https://relay-ai-app.vercel.app end-to-end
+- [ ] Verify https://support-ai-nine-mu.vercel.app end-to-end (public host)
 
 ### Aug 9 (Sat) — Demo mode
 - [ ] Enable public demo (`NEXT_PUBLIC_PUBLIC_DEMO_MODE=true` or auth bypass for judges)

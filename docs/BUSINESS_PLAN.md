@@ -1,97 +1,93 @@
 # OpsConcierge — Lean Business Plan
 
-Portfolio / hackathon length. Expand only if judges or investors request detail.
+Grounded in real SMB support/hiring behavior. Portfolio / XPRIZE length.
 
 ---
 
-## Problem
+## Problem (observed in the market)
 
-Small businesses run support and hiring on the same limited ops bandwidth:
+Founders of 5–50 person companies still run ops from **email + DMs + a spreadsheet**:
 
-- Customers ask repeat questions; owners re-type the same answers
-- Escalations land in email/DM with no audit trail
-- Hiring adds resume triage and scheduling on top of support load
-- Generic chatbots answer vaguely and cannot update tickets or show *what the AI decided*
+- **Support:** Same questions every week (returns, WISMO, password, hours, billing). Website chat helps only if answers stay grounded in *their* policies.
+- **Handoff:** Chatbots that loop without a human path destroy trust (~87% of customers want a human option when GenAI is used — [Gartner 2026](https://www.gartner.com/en/newsroom/press-releases/2026-08-04-gartner-survey-finds-87-percent-of-customers-say-companies-using-genai-for-customer-service-must-provide-access-to-a-human-agent0)).
+- **Maintenance:** AI tools die after 30 days when nobody reviews wrong answers ([SMB AI abandonment patterns](https://research.briankeefe.dev/20260319-170040-smb-ai-backlash)).
+- **Hiring:** Referrals + free Indeed/LinkedIn dumps 50–200 PDFs on a founder with no rubric ([FirstHR SMB process](https://firsthr.app/blog/hiring/recruitment-process)).
 
 ## Solution
 
-**OpsConcierge** — an AI concierge that runs business operations:
+**OpsConcierge** = company memory + two lightweight lanes:
 
-- **Support lane:** Embeddable widget → RAG over company docs → **Gemini** answers → escalate to ticket → execution log
-- **Hiring lane:** Job posts, resume scoring, interview questions, pipeline — same workspace
-- **Evidence layer:** Every run logged for owners and compliance (Postgres + Firebase RTDB)
+| Lane | Real job to be done |
+|------|---------------------|
+| **Support** | Deflect routine FAQs on the website widget; escalate with transcript; leave an execution log |
+| **Hiring** | Rank resumes with evidence; draft interview questions; human confirms (no auto-hire) |
 
-## Target customer (ICP)
+See [`REAL_WORLD_USE.md`](./REAL_WORLD_USE.md) for personas and day-to-day use.
+
+## Target customer
 
 | Attribute | Detail |
 |-----------|--------|
 | **Size** | 5–50 employees |
-| **Profile** | SaaS, agencies, e-commerce, local services with a website |
-| **Trigger** | Support volume or hiring sprint overwhelming the founder |
-| **Buyer** | Founder, ops lead, or head of support |
+| **Primary** | D2C / early SaaS with a website and a messy FAQ |
+| **Secondary** | Local services & tutoring (FAQ + occasional hiring) |
+| **Buyer** | Founder or ops lead (still answers tickets personally) |
+| **Trigger** | &gt;10 hrs/week on repeat questions **or** a hiring sprint |
 
-**Not targeting (v1):** Enterprise ITSM replacements, call centers, or regulated industries requiring on-prem.
+**Not targeting (v1):** 50+ agent contact centers, on-prem regulated ITSM, “fire the support team” buyers.
 
 ## Value proposition
 
-> One AI concierge for the ops work that repeats every week — customer intake and hiring — with answers grounded in *your* documents and a log of every AI decision.
+> Stop re-typing the same answers. When AI can’t help, hand off with the full story. When you’re hiring, read a ranked shortlist — not eighty resumes. Every decision is logged so your knowledge base gets better.
 
 ## Business model (lite)
 
-| Tier | Price | Includes |
-|------|-------|----------|
-| Free | $0 | 1 workspace, watermarked logs, basic widget |
-| Pro | $29–49/mo | Multiple agents, analytics, custom workflows |
-| Enterprise | Custom | SSO, private deploy, API, audit exports |
+| Tier | Price | Fit |
+|------|-------|-----|
+| Free | $0 | 1 workspace, widget, watermarked logs — design partners |
+| Pro | $29–49/mo | Higher volume, analytics, hiring lane unlocked |
+| Enterprise | Custom | Later (SSO, private deploy) — not the wedge |
 
-Revenue drivers: seat/workflow expansion, higher message limits, recruitment module add-on.
+Avoid per-resolution “gotcha” pricing that buyers hate on Intercom/Zendesk AI.
 
 ## Go-to-market (90 days)
 
-1. **Demo-first** — Live URL on portfolio + XPRIZE submission
-2. **Design partners** — 3–5 SMBs (see `evidence/customers/outreach-list.md`)
-3. **Content** — "AI concierge vs chatbot" posts, Loom demos, FAQ upload guide
-4. **Channels** — Founder networks, indie SaaS communities, local business groups
-5. **Proof** — Testimonials and ticket-deflection metrics from pilots (real quotes only)
+1. **Persona-led demos** — PipelineKit (SaaS FAQ) and GlowTheory (returns FAQ) scripts  
+2. **Design partners** — 3–5 real SMBs from `evidence/customers/outreach-list.md`  
+3. **Wedge channel** — Website widget only (prove value before WhatsApp/IG)  
+4. **Proof** — Deflection %, escalations with context, hiring hours saved (real numbers only)  
+5. **XPRIZE** — Small Business Services category; Gemini + Firebase evidence  
 
 ## Competition (honest)
 
-| Alternative | Gap OpsConcierge fills |
-|-------------|------------------------|
-| Intercom / Zendesk AI | Heavy, expensive; weak hiring lane |
-| Raw ChatGPT | No RAG, tickets, or audit logs |
-| Point HR tools | No shared company memory with support |
-
-**Moat (early):** Unified ops memory + auditable Gemini runs + fast embed for SMBs.
+| Alternative | Gap we fill |
+|-------------|-------------|
+| Intercom / Zendesk | Cheaper ops desk + hiring lane; less admin |
+| Gorgias | Works beyond Shopify; shared memory with hiring |
+| Tidio / cheap bots | Tickets + execution audit, not just chat |
+| ChatGPT | Org memory, escalate, log |
+| Greenhouse / Lever | Too heavy; we are the founder’s resume inbox |
 
 ## Traction (fill with real numbers)
 
-| Metric | Current | Target (90d) |
-|--------|---------|--------------|
-| Live demo URL | ✅ | Maintain uptime |
-| Design partner conversations | _[count]_ | 5 |
-| Widget conversations / week | _[count]_ | 50+ |
-| Ticket deflection rate | _[%]_ | Measure in analytics |
-
-## Team
-
-_[Your name]_ — full-stack builder; product, Next.js, AI integration, deploy.
-
-## Ask (context-dependent)
-
-- **XPRIZE:** Recognition + validation of Gemini + GCP stack for ops automation
-- **Pilot customers:** 30-day free Pro for feedback + testimonial
-- **Future:** Pre-seed only after 3+ paying SMBs (not required for hackathon submit)
+| Metric | Current | 90d target |
+|--------|---------|------------|
+| Live demo | ✅ | Uptime |
+| Design-partner talks | _[n]_ | 5 |
+| Widget sessions / week | _[n]_ | 50+ |
+| FAQ deflection (pilot) | _[%]_ | 40–60% routine |
+| Paying SMBs | _[n]_ | ≥1 arms-length if chasing XPRIZE viability |
 
 ## Risks
 
 | Risk | Mitigation |
 |------|------------|
-| LLM hallucination | RAG + cite sources + escalate path |
-| Demo fragility | Health endpoint, seeded FAQ, rehearsal script |
-| SMB churn | Start with narrow ICP and onboarding checklist |
+| Hallucinations | RAG + citations + mandatory escalate |
+| Over-promising autonomy | Market 40–60% deflection, not 90% |
+| Bot abandonment | Weekly execution-log → KB ritual |
+| Hiring legal exposure | Advisory ranking only; human decision; no auto-reject |
 
 ---
 
-**Live demo:** https://relay-ai-app.vercel.app  
-**Docs:** `docs/PRODUCT_VISION.md` · `evidence/demo/script.md`
+**Playbook:** [`REAL_WORLD_USE.md`](./REAL_WORLD_USE.md)  
+**Live:** https://support-ai-nine-mu.vercel.app · https://relay-ai-app.vercel.app (protected)

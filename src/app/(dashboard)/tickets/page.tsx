@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Headphones } from "lucide-react";
 import { Header } from "@/components/layout/header";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { buttonClassName } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { requireOrgMembershipOrRedirect } from "@/lib/auth";
@@ -23,27 +23,21 @@ export default async function TicketsPage() {
         title="Tickets"
         description="Track, assign, and resolve customer support requests."
         action={
-          <Link href="/tickets/new">
-            <Button size="sm">New ticket</Button>
+          <Link href="/tickets/new" className={buttonClassName({ size: "sm" })}>
+            New ticket
           </Link>
         }
       />
 
       <main id="main-content" className="flex-1 space-y-6 px-4 py-6 sm:p-6 lg:p-8">
-        <div className="flex justify-end">
-          <Link href="/tickets/new">
-            <Button>Create ticket</Button>
-          </Link>
-        </div>
-
         {tickets.length === 0 ? (
           <EmptyState
             icon={Headphones}
             title="No tickets yet"
             description="Create one manually or escalate from the chatbot when AI cannot resolve a question."
             action={
-              <Link href="/tickets/new">
-                <Button>Create ticket</Button>
+              <Link href="/tickets/new" className={buttonClassName()}>
+                Create ticket
               </Link>
             }
           />

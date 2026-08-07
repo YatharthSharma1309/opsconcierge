@@ -1,61 +1,65 @@
 # OpsConcierge
 
-**Folder:** `OpsConcierge-App`  
-**Repo:** https://github.com/YatharthSharma1309/opsconcierge  
-**Product:** OpsConcierge — the AI concierge that runs your business operations.
+**The AI ops desk for small businesses** — deflect FAQs on your site, escalate with full chat context, and shortlist hires from resume PDFs. Every AI step leaves an execution log.
 
-Next.js multi-tenant support + hiring agents. Formerly the Relay AI codebase; public brand for XPRIZE is **OpsConcierge**.
+| | |
+|---|---|
+| **Repo** | https://github.com/YatharthSharma1309/opsconcierge |
+| **Folder** | `OpsConcierge-App` |
+| **Hackathon** | [Build with Gemini XPRIZE](https://xprize.devpost.com) — Small Business Services · deadline **18 Aug 2026 @ 1:30 AM GMT+5:30** |
 
-| Agent lane | What it does |
-|------------|----------------|
-| **Support concierge** | Widget intake → RAG answer → ticket update + execution log |
-| **Hiring concierge** | Resume screen, match score, interview questions, pipeline |
+## Two agent lanes
 
-**Mandatory stack for judges** ([Build with Gemini XPRIZE](https://xprize.devpost.com) — $2M)
-
-- **Gemini API** (production LLM on the hero widget/chat path)
-- **Firebase Realtime Database** (free Google Cloud evidence of agent runs)
-- Deployed app (Vercel) + Neon Postgres
-
-**Deadline:** 18 Aug 2026 @ 1:30 AM GMT+5:30 · Category: Small Business Services · See [docs/HACKATHON.md](./docs/HACKATHON.md)
-
-## Live demo
-
-**https://relay-ai-app.vercel.app** (also https://support-ai-nine-mu.vercel.app)
-
-Judge path: landing → widget chat → escalate/ticket → `/widget/intake` execution log.
+| Lane | Flow |
+|------|------|
+| **Support** | Widget → FAQ / RAG answer → escalate → ticket → **execution log** (`/widget/intake`) |
+| **Hiring** | Job post → resume upload → AI match score / shortlist → pipeline |
 
 ## Quick start
 
 ```bash
 npm install
 cp .env.example .env
-# Required: DATABASE_URL
-# Free LLM (no payment): OPENROUTER_API_KEY + AI_PROVIDER_PREFERENCE=openrouter
-# For XPRIZE later: GEMINI_API_KEY + FIREBASE_DATABASE_URL + AI_PROVIDER_PREFERENCE=auto
-# Optional: Clerk keys or AUTH_BYPASS=true for local demo
+# Required: DATABASE_URL (Postgres / Neon)
+# Free LLM: OPENROUTER_API_KEY + AI_PROVIDER_PREFERENCE=openrouter
+# Optional: Clerk keys, or AUTH_BYPASS=true for local demo without Clerk
 npm run db:migrate
 npm run db:seed
 npm run dev
 ```
 
-### Free LLM path (no payment)
+Open **http://localhost:3000**.
 
-Gemini free-tier quota is sometimes **0** on new Google keys. Until a free Gemini quota works, use **OpenRouter free models** (already supported):
+See [`.env.example`](./.env.example) for all variables. Never commit real API keys.
+
+### Demo mode (no Clerk)
+
+In `.env` (local only — never enable bypass on a real production tenant):
 
 ```
-OPENROUTER_API_KEY=...          # https://openrouter.ai/keys — free
+AUTH_BYPASS=true
+NEXT_PUBLIC_AUTH_BYPASS=true
+PUBLIC_DEMO_MODE=true
+NEXT_PUBLIC_PUBLIC_DEMO_MODE=true
+```
+
+Then `npm run db:seed` and use the dashboard without signing in.
+
+### Free LLM (OpenRouter — no payment)
+
+Gemini free-tier quota is sometimes unavailable on new Google keys. For local/demo chat:
+
+```
+OPENROUTER_API_KEY=...          # https://openrouter.ai/keys
 OPENROUTER_CHAT_MODEL=openrouter/free
 AI_PROVIDER_PREFERENCE=openrouter
 ```
 
-Chat skips Gemini and uses OpenRouter. When you get a working free Gemini key, set `AI_PROVIDER_PREFERENCE=auto` (Gemini first, OpenRouter fallback).
+Details: [docs/FREE_LLM.md](./docs/FREE_LLM.md).
 
-### Free Gemini + Firebase (XPRIZE — still $0)
+### Gemini + Firebase (XPRIZE evidence)
 
-1. Gemini key: https://aistudio.google.com/apikey (use a project with free generate quota)
-2. Firebase project → enable **Realtime Database** (Spark / test mode OK for demo)
-3. Add to `.env`:
+When free Gemini quota works:
 
 ```
 GEMINI_API_KEY=...
@@ -64,33 +68,48 @@ FIREBASE_DATABASE_URL=https://YOUR_PROJECT-default-rtdb.firebaseio.com
 AI_PROVIDER_PREFERENCE=auto
 ```
 
-Full steps: [docs/GCP_AND_GEMINI_SETUP.md](./docs/GCP_AND_GEMINI_SETUP.md)
+Full steps: [docs/GCP_AND_GEMINI_SETUP.md](./docs/GCP_AND_GEMINI_SETUP.md).  
+Readiness: `GET /api/health/xprize`.
 
-## Modules
+## Live demo
 
-### Support (`/dashboard`, `/knowledge`, `/chat`, `/inbox`, `/tickets`, `/widget`)
+| Host | Status (checked Aug 2026) |
+|------|---------------------------|
+| **https://support-ai-nine-mu.vercel.app** | **Public** — use this for judges |
+| https://relay-ai-app.vercel.app | Deployment-protected (Vercel login) — not public |
 
-- Upload PDF, DOCX, TXT, Markdown → chunked RAG index
-- Streaming admin + widget chat (Gemini when configured)
-- Ticket escalation + analytics
-- **Widget intake demo / execution logs:** `/widget/intake`
+**Note:** The public host may still show the legacy **Relay AI** shell until you redeploy the latest OpsConcierge build. Local/`main` is already OpsConcierge-branded.
 
-### Recruitment (`/recruitment`)
+**Health:** `GET /api/health` → ok on the public host. `GET /api/health/xprize` is in this repo but **404 on the current public deploy** until redeploy.
 
-- Job posts, resume parsing, AI match scoring, hiring pipeline
+**Judge path:** landing → widget chat → escalate / ticket → `/widget/intake` execution log → optional `/recruitment` shortlist.
 
 ## Stack
 
-Next.js 16 · React 19 · TypeScript · Prisma + PostgreSQL · Clerk · Gemini · OpenRouter fallback · Firebase RTDB (evidence)
+Next.js 16 · React 19 · TypeScript · Prisma + Neon Postgres · Clerk (demo bypass optional) · Gemini / OpenRouter · Firebase RTDB (optional evidence) · Vercel
 
-## Related
+## Modules (dashboard)
 
-- [Hackathon brief](./docs/HACKATHON.md) — Build with Gemini XPRIZE ($2M)
-- [Documentation index](./docs/README.md)
-- [Technical foundation](./docs/FOUNDATION.md)
-- [Architecture](./docs/ARCHITECTURE.md)
-- [Gemini + Firebase setup](./docs/GCP_AND_GEMINI_SETUP.md)
-- [Production deployment](./DEPLOY.md)
+| Area | Routes |
+|------|--------|
+| Support | `/dashboard`, `/knowledge`, `/chat`, `/inbox`, `/tickets`, `/widget` |
+| Execution logs | `/widget/intake`, `/widget/intake/[runId]` |
+| Hiring | `/recruitment`, jobs + candidates |
+| Analytics | `/analytics` |
+| Public | `/help/[slug]`, `/widget/embed` |
+
+## Docs
+
+| Doc | Why |
+|-----|-----|
+| [docs/README.md](./docs/README.md) | Full documentation index |
+| [docs/HACKATHON.md](./docs/HACKATHON.md) | XPRIZE brief, deadline, prizes |
+| [docs/REAL_WORLD_USE.md](./docs/REAL_WORLD_USE.md) | SMB personas & workflows |
+| [docs/FOUNDATION.md](./docs/FOUNDATION.md) | What exists in the codebase |
+| [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) | System design |
+| [DEPLOY.md](./DEPLOY.md) | Vercel + Neon + Clerk production |
+| [evidence/README.md](./evidence/README.md) | Submission evidence |
+
 ## License
 
 Private / portfolio — see repo owner for terms.

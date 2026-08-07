@@ -77,7 +77,7 @@ export function ConversationReview({ conversation }: ConversationReviewProps) {
                 >
                   <div
                     className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
-                      isUser ? "bg-slate-100 text-slate-600" : "bg-indigo-100 text-indigo-600"
+                      isUser ? "bg-slate-100 text-slate-600" : "bg-blue-100 text-blue-900"
                     }`}
                   >
                     {isUser ? (
@@ -90,7 +90,7 @@ export function ConversationReview({ conversation }: ConversationReviewProps) {
                     className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-6 ${
                       isUser
                         ? "bg-slate-100 text-slate-800"
-                        : "bg-indigo-50 text-slate-800"
+                        : "bg-blue-50 text-slate-800"
                     }`}
                   >
                     <p className="whitespace-pre-wrap">{message.content}</p>

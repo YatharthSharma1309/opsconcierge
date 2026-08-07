@@ -55,7 +55,7 @@ function TypingIndicator() {
       {[0, 1, 2].map((index) => (
         <span
           key={index}
-          className="h-2 w-2 rounded-full bg-indigo-400"
+          className="h-2 w-2 rounded-full bg-primary"
           style={{
             animation: "pulse-dot 1.2s infinite",
             animationDelay: `${index * 0.15}s`,
@@ -69,8 +69,8 @@ function TypingIndicator() {
 
 function RagPipeline({ step }: { step: number }) {
   return (
-    <div className="rounded-2xl border border-cyan-100 bg-cyan-50/50 px-4 py-3">
-      <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-cyan-700">
+    <div className="rounded-xl border border-slate-200 bg-slate-50/80 px-4 py-3">
+      <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-slate-600">
         <Zap className="h-3.5 w-3.5" />
         RAG pipeline
       </div>
@@ -78,9 +78,9 @@ function RagPipeline({ step }: { step: number }) {
         {RAG_STEPS.map((label, index) => (
           <span
             key={label}
-            className={`rounded-full px-2.5 py-1 text-xs ${
+            className={`rounded-md px-2 py-1 text-xs font-medium ${
               index <= step
-                ? "bg-cyan-600 text-white"
+                ? "bg-primary text-white"
                 : "bg-white text-slate-400 ring-1 ring-slate-200"
             }`}
           >
@@ -105,12 +105,12 @@ function SourceCitation({
     <button
       type="button"
       onClick={() => setExpanded((value) => !value)}
-      className="w-full rounded-xl border border-slate-200 bg-white p-3 text-left transition hover:border-indigo-200"
+      className="w-full rounded-xl border border-slate-200 bg-white p-3.5 text-left transition hover:border-primary/25"
     >
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <FileText className="h-3.5 w-3.5 text-indigo-500" />
-          <span className="text-xs font-medium text-slate-700">
+          <FileText className="h-3.5 w-3.5 text-primary" />
+          <span className="text-sm font-medium text-slate-800">
             Source {index + 1}: {source.documentTitle ?? "Document"}
           </span>
         </div>
@@ -120,8 +120,12 @@ function SourceCitation({
           <ChevronDown className="h-3.5 w-3.5 text-slate-400" />
         )}
       </div>
-      <p className="mt-2 text-xs leading-5 text-slate-500">
-        {expanded ? source.content : `${source.content.slice(0, 140)}...`}
+      <p className="mt-2 text-sm leading-6 text-slate-600">
+        {expanded
+          ? source.content
+          : source.content.length > 320
+            ? `${source.content.slice(0, 320)}…`
+            : source.content}
       </p>
     </button>
   );
@@ -131,10 +135,14 @@ function MessageBubble({
   message,
   onFeedback,
   showEscalateHint,
+  feedbackPendingId,
+  compact = false,
 }: {
   message: ChatMessage;
   onFeedback?: (messageId: string, helpful: boolean) => void;
   showEscalateHint?: boolean;
+  feedbackPendingId?: string | null;
+  compact?: boolean;
 }) {
   const canRate =
     message.role === "assistant" &&
@@ -148,19 +156,25 @@ function MessageBubble({
       className={`flex gap-3 ${message.role === "user" ? "justify-end" : ""}`}
     >
       {message.role === "assistant" ? (
-        <div className="mt-1 rounded-full bg-indigo-100 p-2 text-indigo-600">
+        <div className="mt-1 shrink-0 rounded-full bg-primary-soft p-2 text-primary">
           <Bot className="h-4 w-4" />
         </div>
       ) : null}
 
       <div
-        className={`max-w-2xl rounded-2xl px-4 py-3 text-sm leading-6 ${
+        className={`rounded-2xl px-4 py-3 leading-7 ${
           message.role === "user"
-            ? "bg-indigo-600 text-white shadow-sm"
+            ? "max-w-[min(100%,28rem)] bg-primary text-white shadow-sm"
+            : compact
+              ? "max-w-full flex-1 text-sm"
+              : "w-full max-w-4xl text-[15px]"
+        } ${
+          message.role === "user"
+            ? ""
             : "bg-white text-slate-800 ring-1 ring-slate-100"
         }`}
       >
-        <p className="whitespace-pre-wrap">{message.content}</p>
+        <p className="whitespace-pre-wrap break-words">{message.content}</p>
 
         {message.retrievalMode ? (
           <div className="mt-3 flex flex-wrap gap-2">
@@ -212,7 +226,8 @@ function MessageBubble({
               type="button"
               aria-label="Mark answer as helpful"
               aria-pressed={message.helpful === true}
-              onClick={() => onFeedback(message.id, true)}
+              disabled={feedbackPendingId === message.id}
+              onClick={() => onFeedback?.(message.id, true)}
               className={`rounded-lg p-1.5 transition ${
                 message.helpful === true
                   ? "bg-emerald-100 text-emerald-700"
@@ -225,7 +240,8 @@ function MessageBubble({
               type="button"
               aria-label="Mark answer as not helpful"
               aria-pressed={message.helpful === false}
-              onClick={() => onFeedback(message.id, false)}
+              disabled={feedbackPendingId === message.id}
+              onClick={() => onFeedback?.(message.id, false)}
               className={`rounded-lg p-1.5 transition ${
                 message.helpful === false
                   ? "bg-rose-100 text-rose-700"
@@ -300,7 +316,7 @@ function ChatHistoryPanel({
               onClick={() => onSelect(conversation.id)}
               className={`mb-1 w-full rounded-xl px-3 py-2.5 text-left transition ${
                 conversationId === conversation.id
-                  ? "bg-indigo-50 text-indigo-700"
+                  ? "bg-primary-soft text-primary"
                   : "hover:bg-slate-50"
               }`}
             >
@@ -349,7 +365,22 @@ export function ChatPanel({
     escalateToTicket,
     submitFeedback,
     canEscalate,
+    escalatedTicketId,
+    getStoredVisitorEmail,
+    saveVisitorEmail,
+    feedbackPendingId,
   } = useChat(hasDocuments, welcomeMessage, { mode, widgetKey, widgetChannel });
+  const [visitorEmail, setVisitorEmail] = useState("");
+  const canSend =
+    hasDocuments &&
+    !isSending &&
+    input.trim().length > 0 &&
+    (mode !== "widget" || sessionReady);
+
+  useEffect(() => {
+    if (mode !== "widget") return;
+    setVisitorEmail(getStoredVisitorEmail());
+  }, [getStoredVisitorEmail, mode]);
 
   useEffect(() => {
     if (initializedRef.current) return;
@@ -403,9 +434,15 @@ export function ChatPanel({
   }
 
   return (
-    <div className={compact ? "flex h-[520px] gap-0" : "flex h-[calc(100vh-12rem)] gap-4"}>
+    <div
+      className={
+        compact
+          ? "flex h-[min(70dvh,680px)] max-h-[calc(100dvh-6.5rem)] min-h-[320px] gap-0"
+          : "flex h-full min-h-0 gap-4"
+      }
+    >
       {!compact ? (
-        <Card className="hidden w-64 shrink-0 flex-col overflow-hidden p-0 lg:flex">
+        <Card className="hidden w-72 shrink-0 flex-col overflow-hidden p-0 lg:flex">
           <ChatHistoryPanel
             className="flex h-full flex-col"
             conversations={conversations}
@@ -444,7 +481,7 @@ export function ChatPanel({
       ) : null}
 
       <Card className="flex min-w-0 flex-1 flex-col overflow-hidden p-0">
-        <div className="border-b border-slate-100 bg-gradient-to-r from-indigo-50/80 to-cyan-50/50 px-6 py-4">
+        <div className={`border-b border-slate-100 bg-slate-50/80 ${compact ? "px-4 py-3" : "px-6 py-4"}`}>
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-start gap-3">
               {!compact ? (
@@ -459,9 +496,9 @@ export function ChatPanel({
               ) : null}
               <div>
                 <div className="flex items-center gap-2">
-                  <Sparkles className="h-4 w-4 text-indigo-600" />
+                  <Sparkles className="h-4 w-4 text-primary" />
                   <h2 className="text-lg font-semibold text-slate-900">
-                    {compact ? "Relay Widget" : "AI Support Chat"}
+                    {compact ? "Support widget" : "AI Support Chat"}
                   </h2>
                 </div>
                 <p className="mt-1 text-sm text-slate-500">
@@ -475,13 +512,20 @@ export function ChatPanel({
           </div>
         </div>
 
-        <div ref={scrollRef} className="flex-1 space-y-4 overflow-y-auto px-6 py-5">
+        <div
+          ref={scrollRef}
+          className={`flex-1 space-y-5 overflow-y-auto ${
+            compact ? "px-4 py-4" : "px-5 py-5 sm:px-8 sm:py-6"
+          }`}
+        >
           {messages.map((message) => (
             <div key={message.id} className="animate-fade-up">
               <MessageBubble
                 message={message}
                 onFeedback={submitFeedback}
                 showEscalateHint
+                feedbackPendingId={feedbackPendingId}
+                compact={compact}
               />
             </div>
           ))}
@@ -496,7 +540,7 @@ export function ChatPanel({
                   key={prompt}
                   type="button"
                   onClick={() => sendMessage(prompt)}
-                  className="rounded-full border border-indigo-100 bg-indigo-50 px-3 py-1.5 text-xs text-indigo-700 transition hover:bg-indigo-100"
+                  className="rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:border-primary/25 hover:bg-primary-soft hover:text-primary"
                 >
                   {prompt}
                 </button>
@@ -505,7 +549,7 @@ export function ChatPanel({
           ) : null}
         </div>
 
-        <div className="border-t border-slate-100 bg-white px-6 py-4">
+        <div className={`border-t border-slate-100 bg-white ${compact ? "px-4 py-3" : "px-6 py-4"}`}>
           {handoffNotice ? (
             <p className="mb-3 rounded-xl bg-amber-50 px-3 py-2 text-sm text-amber-800">
               {handoffNotice}
@@ -518,43 +562,87 @@ export function ChatPanel({
           ) : null}
 
           {compact ? (
-            <div className="mb-3 flex justify-end">
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={escalateToTicket}
-                disabled={!canEscalate}
-              >
-                {isEscalating ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    Creating...
-                  </>
-                ) : (
-                  "Contact support"
-                )}
-              </Button>
+            <div className="mb-3 space-y-2">
+              {escalatedTicketId ? (
+                <p className="text-xs font-medium text-emerald-700">
+                  Ticket #{escalatedTicketId.slice(-6)} created — a teammate will follow up.
+                </p>
+              ) : canEscalate ? (
+                <div>
+                  <label htmlFor="visitor-email" className="mb-1 block text-xs font-medium text-slate-600">
+                    Email for follow-up
+                  </label>
+                  <Input
+                    id="visitor-email"
+                    type="email"
+                    value={visitorEmail}
+                    onChange={(event) => setVisitorEmail(event.target.value)}
+                    placeholder="you@company.com"
+                    autoComplete="email"
+                  />
+                  <div className="mt-2 flex justify-end">
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => {
+                        saveVisitorEmail(visitorEmail);
+                        void escalateToTicket({ requesterEmail: visitorEmail.trim() });
+                      }}
+                      disabled={!visitorEmail.trim() || isEscalating}
+                    >
+                      {isEscalating ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          Creating...
+                        </>
+                      ) : (
+                        "Contact support"
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-xs text-slate-400">
+                  Send a message first to contact support with the full transcript.
+                </p>
+              )}
             </div>
           ) : (
             <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
               <p className="text-xs text-slate-400">
-                Escalate when AI cannot resolve — transcript is attached
+                {escalatedTicketId
+                  ? `Ticket #${escalatedTicketId.slice(-6)} — transcript attached`
+                  : "Escalate when AI cannot resolve — transcript is attached"}
               </p>
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={escalateToTicket}
-                disabled={!canEscalate}
-              >
-                {isEscalating ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    Creating...
-                  </>
-                ) : (
-                  "Escalate to ticket"
-                )}
-              </Button>
+              <div className="flex flex-wrap items-center gap-2">
+                {escalatedTicketId ? (
+                  <a
+                    href={`/tickets/${escalatedTicketId}`}
+                    className="text-sm font-medium text-primary hover:text-primary"
+                  >
+                    View ticket
+                  </a>
+                ) : null}
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => void escalateToTicket()}
+                  disabled={!canEscalate}
+                >
+                  {isEscalating ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Creating...
+                    </>
+                  ) : escalatedTicketId ? (
+                    "Ticket created"
+                  ) : (
+                    "Escalate to ticket"
+                  )}
+                </Button>
+              </div>
             </div>
           )}
 
@@ -568,7 +656,7 @@ export function ChatPanel({
               onChange={(event) => setInput(event.target.value)}
               placeholder={compact ? "Ask a question..." : "Ask a support question..."}
             />
-            <Button type="submit" disabled={isSending || !input.trim()}>
+            <Button type="submit" disabled={!canSend}>
               <Send className="h-4 w-4" />
               Send
             </Button>

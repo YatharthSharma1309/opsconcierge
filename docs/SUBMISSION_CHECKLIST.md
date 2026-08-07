@@ -26,9 +26,9 @@ Full brief: [`docs/HACKATHON.md`](./HACKATHON.md). Official rules: https://www.g
 
 | Item | Value | Done |
 |------|-------|------|
-| Primary live URL | https://relay-ai-app.vercel.app | [ ] |
-| Legacy alias | https://support-ai-nine-mu.vercel.app | [ ] |
-| GitHub | `YatharthSharma1309/opsconcierge` (legacy: `relay-ai`) | [ ] |
+| Primary live URL | https://support-ai-nine-mu.vercel.app (public) | [ ] |
+| Protected / secondary | https://relay-ai-app.vercel.app (Vercel login wall — not for judges) | [ ] |
+| GitHub | `YatharthSharma1309/opsconcierge` (legacy remote: `relay-ai`) | [ ] |
 | Demo video (&lt; 3 min, public) | YouTube / Vimeo / Youku link | [ ] |
 
 ---
@@ -106,7 +106,9 @@ Verify in Vercel project settings:
 
 ```bash
 # Production health
-curl -s https://relay-ai-app.vercel.app/api/health/xprize | jq
+curl -s https://support-ai-nine-mu.vercel.app/api/health | jq
+# After redeploy:
+curl -s https://support-ai-nine-mu.vercel.app/api/health/xprize | jq
 ```
 
 - [ ] `readyForXprizeDemo` is `true`

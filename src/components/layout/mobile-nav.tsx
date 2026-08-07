@@ -128,7 +128,7 @@ export const MobileMenuButton = forwardRef<
     <button
       ref={ref}
       type="button"
-      className="inline-flex items-center justify-center rounded-xl border border-slate-200 p-2 text-slate-600 hover:bg-slate-50"
+      className="inline-flex items-center justify-center rounded-xl border border-slate-200 p-2 text-slate-600 transition-[color,background-color,border-color,box-shadow] duration-200 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600/70 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
       aria-label={open ? "Close navigation menu" : "Open navigation menu"}
       aria-expanded={open}
       aria-controls={controlsId}

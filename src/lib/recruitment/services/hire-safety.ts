@@ -251,11 +251,15 @@ export async function finalizePendingHire(
   return removedCount;
 }
 
-export async function processExpiredPendingHires(jobId?: string): Promise<number> {
+export async function processExpiredPendingHires(options?: {
+  jobId?: string;
+  organizationId?: string;
+}): Promise<number> {
   const now = new Date();
   const jobs = await db.job.findMany({
     where: {
-      ...(jobId ? { id: jobId } : {}),
+      ...(options?.jobId ? { id: options.jobId } : {}),
+      ...(options?.organizationId ? { organizationId: options.organizationId } : {}),
       pendingHireCandidateId: { not: null },
       pendingHireExpiresAt: { lte: now },
     },

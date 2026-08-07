@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MessageCircle, X } from "lucide-react";
 import { ChatPanel } from "@/components/chat/chat-panel";
+import { WIDGET_MESSAGE_TYPE } from "@/lib/widget/embed-snippet";
 import { cn } from "@/lib/utils";
 
 type FloatingWidgetProps = {
@@ -37,36 +38,41 @@ export function FloatingWidget({
     onOpenChange?.(next);
   }
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    window.parent?.postMessage(
+      { type: WIDGET_MESSAGE_TYPE, open },
+      "*",
+    );
+  }, [open]);
+
   return (
-    <div className="pointer-events-none fixed inset-0 z-50 flex items-end justify-end p-4 sm:p-6">
+    <div className="pointer-events-none fixed inset-0 z-50 flex items-end justify-end p-3 sm:p-5">
       <div className="pointer-events-auto flex flex-col items-end gap-3">
-        <div
-          className={cn(
-            "origin-bottom-right transition-all duration-300",
-            open
-              ? "scale-100 opacity-100"
-              : "pointer-events-none scale-95 opacity-0",
-          )}
-        >
-          <div className="w-[min(100vw-2rem,400px)] overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl">
-            <ChatPanel
-              hasDocuments={hasDocuments}
-              welcomeMessage={welcomeMessage}
-              mode="widget"
-              widgetKey={widgetKey}
-              widgetChannel={widgetChannel}
-              initialQuestion={initialQuestion}
-              compact
-            />
+        {open ? (
+          <div className="origin-bottom-right animate-fade-up">
+            <div className="w-[min(100vw-1.5rem,28rem)] overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl sm:w-[min(100vw-2.5rem,32rem)]">
+              <ChatPanel
+                hasDocuments={hasDocuments}
+                welcomeMessage={welcomeMessage}
+                mode="widget"
+                widgetKey={widgetKey}
+                widgetChannel={widgetChannel}
+                initialQuestion={initialQuestion}
+                compact
+              />
+            </div>
           </div>
-        </div>
+        ) : null}
 
         <button
           type="button"
           aria-label={open ? "Close support chat" : "Open support chat"}
           aria-expanded={open}
           onClick={() => setOpen(!open)}
-          className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-indigo-600 via-violet-600 to-cyan-500 text-white shadow-lg shadow-indigo-300/40 transition hover:scale-105"
+          className={cn(
+            "flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-white shadow-lg shadow-slate-900/20 transition hover:scale-[1.03] hover:bg-[var(--primary-hover)]",
+          )}
         >
           {open ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
         </button>

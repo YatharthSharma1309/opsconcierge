@@ -18,6 +18,7 @@ for (const line of raw.split("\n")) {
 const demoSecret =
   parsed.DEMO_SEED_SECRET || process.env.DEMO_SEED_SECRET || "";
 const appUrl =
+  // Public demo host (relay-ai-app is deployment-protected / not public).
   parsed.APP_URL ||
   process.env.APP_URL ||
   "https://support-ai-nine-mu.vercel.app";

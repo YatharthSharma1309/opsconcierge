@@ -175,49 +175,358 @@ async function seedDemoConversationsAndTickets(organizationId: string) {
 }
 
 async function seedDemoRecruitment(organizationId: string) {
-  const existing = await db.job.findFirst({
-    where: { organizationId, title: "Full-Stack Engineer (Demo)" },
+  const demoJobTitle = "Full-Stack Engineer (Demo)";
+
+  let job = await db.job.findFirst({
+    where: { organizationId, title: demoJobTitle },
   });
 
-  if (existing) {
-    return { created: false, jobId: existing.id };
+  if (!job) {
+    job = await db.job.create({
+      data: {
+        organizationId,
+        title: demoJobTitle,
+        description:
+          "Build customer-facing SaaS features with Next.js, TypeScript, and PostgreSQL. Own API design, RAG integrations, and polished recruiter/support dashboards.",
+        requiredSkills: JSON.stringify([
+          "TypeScript",
+          "React",
+          "Next.js",
+          "PostgreSQL",
+          "REST APIs",
+        ]),
+        preferredSkills: JSON.stringify(["Prisma", "OpenRouter", "RAG"]),
+        experienceLevel: "Mid-level",
+        minYearsExperience: 2,
+        educationRequirements: JSON.stringify(["Bachelor's in CS or equivalent"]),
+        certifications: JSON.stringify([]),
+        roleType: "Full-time",
+      },
+    });
   }
 
-  const job = await db.job.create({
-    data: {
-      organizationId,
-      title: "Full-Stack Engineer (Demo)",
-      description:
-        "Build customer-facing SaaS features with Next.js, TypeScript, and PostgreSQL. Own API design, RAG integrations, and polished recruiter/support dashboards.",
-      requiredSkills: JSON.stringify([
-        "TypeScript",
-        "React",
-        "Next.js",
-        "PostgreSQL",
-        "REST APIs",
-      ]),
-      preferredSkills: JSON.stringify(["Prisma", "OpenRouter", "RAG"]),
-      experienceLevel: "Mid-level",
-      minYearsExperience: 2,
-      educationRequirements: JSON.stringify(["Bachelor's in CS or equivalent"]),
-      certifications: JSON.stringify([]),
-      roleType: "Full-time",
-    },
-  });
-
-  await db.candidate.create({
-    data: {
-      jobId: job.id,
+  const demoCandidates = [
+    {
       displayName: "Alex Rivera",
+      status: "shortlisted",
       rawText:
-        "Alex Rivera — Full-Stack Engineer with 3 years building React/Next.js SaaS products. Shipped RAG chat features, Prisma/PostgreSQL APIs, and multi-tenant dashboards. Skills: TypeScript, React, Next.js, Node.js, PostgreSQL, Prisma, REST, LLM integrations.",
-      parseStatus: "manual",
-      status: "new",
-      filePath: null,
+        "Alex Rivera — Full-Stack Engineer with 3 years building React/Next.js SaaS products. Shipped RAG chat features, Prisma/PostgreSQL APIs, and multi-tenant dashboards. Skills: TypeScript, React, Next.js, Node.js, PostgreSQL, Prisma, REST, LLM integrations. BS Computer Science, State University.",
+      analysis: {
+        summary:
+          "Strong full-stack profile with direct Next.js, TypeScript, and PostgreSQL experience plus RAG delivery history.",
+        extractedSkills: [
+          "TypeScript",
+          "React",
+          "Next.js",
+          "PostgreSQL",
+          "Prisma",
+          "REST APIs",
+          "RAG",
+        ],
+        matchScore: 88,
+        matchRationale:
+          "Alex matches all required skills with resume evidence and adds preferred Prisma/RAG experience. Three years aligns with the mid-level bar.",
+        missingSkills: [] as string[],
+        interviewQuestions: [
+          "Walk through the RAG chat feature you shipped — retrieval, grounding, and failure modes.",
+          "How did you structure multi-tenant APIs with Prisma and PostgreSQL?",
+          "Describe a production Next.js performance issue you resolved.",
+        ],
+        scoreBreakdown: {
+          requiredSkills: 48,
+          preferredSkills: 14,
+          roleAlignment: 9,
+          experience: 9,
+          educationCertifications: 8,
+          parseQuality: 5,
+          penalties: 0,
+          matchedRequiredSkills: [
+            "TypeScript",
+            "React",
+            "Next.js",
+            "PostgreSQL",
+            "REST APIs",
+          ],
+          matchedPreferredSkills: ["Prisma", "RAG"],
+          missingRequiredSkills: [],
+          missingPreferredSkills: ["OpenRouter"],
+          requiredSkillEvidence: [
+            {
+              skill: "TypeScript",
+              evidence: "Skills: TypeScript, React, Next.js",
+              confidence: 0.95,
+              matchType: "exact",
+            },
+            {
+              skill: "React",
+              evidence: "3 years building React/Next.js SaaS products",
+              confidence: 0.92,
+              matchType: "exact",
+            },
+            {
+              skill: "Next.js",
+              evidence: "Shipped RAG chat features on Next.js stack",
+              confidence: 0.9,
+              matchType: "exact",
+            },
+            {
+              skill: "PostgreSQL",
+              evidence: "Prisma/PostgreSQL APIs",
+              confidence: 0.88,
+              matchType: "exact",
+            },
+            {
+              skill: "REST APIs",
+              evidence: "Own API design and REST integrations",
+              confidence: 0.85,
+              matchType: "semantic",
+            },
+          ],
+          preferredSkillEvidence: [
+            {
+              skill: "Prisma",
+              evidence: "Prisma/PostgreSQL APIs",
+              confidence: 0.9,
+              matchType: "exact",
+            },
+            {
+              skill: "RAG",
+              evidence: "Shipped RAG chat features",
+              confidence: 0.88,
+              matchType: "exact",
+            },
+          ],
+          notes: [
+            "Resume shows end-to-end SaaS delivery aligned with full-stack role.",
+            "3 years experience meets mid-level requirement.",
+          ],
+        },
+      },
     },
-  });
+    {
+      displayName: "Jordan Kim",
+      status: "interviewing",
+      rawText:
+        "Jordan Kim — Software Engineer, 2.5 years. Built customer dashboards with React and Node REST services on AWS RDS (PostgreSQL). Comfortable with TypeScript and modern React patterns. Limited Next.js exposure; mostly CRA and Vite. No LLM/RAG work yet.",
+      analysis: {
+        summary:
+          "Solid React/TypeScript backend engineer with PostgreSQL experience; lighter on Next.js and no RAG history.",
+        extractedSkills: ["TypeScript", "React", "PostgreSQL", "REST APIs", "Node.js"],
+        matchScore: 72,
+        matchRationale:
+          "Jordan covers most core stack requirements but Next.js experience is thin and preferred AI tooling is absent.",
+        missingSkills: ["Next.js"],
+        interviewQuestions: [
+          "What would you need to ramp on Next.js App Router for this role?",
+          "Describe your PostgreSQL schema design for a multi-tenant dashboard.",
+          "How have you tested and documented REST APIs for frontend teams?",
+        ],
+        scoreBreakdown: {
+          requiredSkills: 38,
+          preferredSkills: 4,
+          roleAlignment: 7,
+          experience: 8,
+          educationCertifications: 6,
+          parseQuality: 4,
+          penalties: 4,
+          matchedRequiredSkills: ["TypeScript", "React", "PostgreSQL", "REST APIs"],
+          matchedPreferredSkills: [],
+          missingRequiredSkills: ["Next.js"],
+          missingPreferredSkills: ["Prisma", "OpenRouter", "RAG"],
+          requiredSkillEvidence: [
+            {
+              skill: "TypeScript",
+              evidence: "Comfortable with TypeScript and modern React patterns",
+              confidence: 0.9,
+              matchType: "exact",
+            },
+            {
+              skill: "React",
+              evidence: "Built customer dashboards with React",
+              confidence: 0.92,
+              matchType: "exact",
+            },
+            {
+              skill: "PostgreSQL",
+              evidence: "Node REST services on AWS RDS (PostgreSQL)",
+              confidence: 0.86,
+              matchType: "semantic",
+            },
+            {
+              skill: "REST APIs",
+              evidence: "Node REST services",
+              confidence: 0.84,
+              matchType: "exact",
+            },
+          ],
+          preferredSkillEvidence: [],
+          notes: [
+            "Limited Next.js exposure; mostly CRA and Vite.",
+            "2.5 years experience is close to the 2-year minimum.",
+          ],
+        },
+      },
+    },
+    {
+      displayName: "Sam Patel",
+      status: "new",
+      rawText:
+        "Sam Patel — Junior developer, 1 year freelance. Built landing pages with React and basic Express APIs. Uses MySQL for side projects. Learning TypeScript. Interested in AI products but no production LLM work.",
+      analysis: {
+        summary:
+          "Early-career frontend-leaning profile with gaps on Next.js, PostgreSQL, and depth of API experience.",
+        extractedSkills: ["React", "TypeScript", "REST APIs"],
+        matchScore: 54,
+        matchRationale:
+          "Sam shows React interest and some TypeScript learning but lacks the PostgreSQL/Next.js depth and years of experience for this role.",
+        missingSkills: ["Next.js", "PostgreSQL"],
+        interviewQuestions: [
+          "What production React projects have you shipped end-to-end?",
+          "How would you migrate a MySQL side project to PostgreSQL?",
+          "Describe the most complex API you have designed so far.",
+        ],
+        scoreBreakdown: {
+          requiredSkills: 22,
+          preferredSkills: 0,
+          roleAlignment: 5,
+          experience: 4,
+          educationCertifications: 4,
+          parseQuality: 4,
+          penalties: 8,
+          matchedRequiredSkills: ["React", "TypeScript", "REST APIs"],
+          matchedPreferredSkills: [],
+          missingRequiredSkills: ["Next.js", "PostgreSQL"],
+          missingPreferredSkills: ["Prisma", "OpenRouter", "RAG"],
+          requiredSkillEvidence: [
+            {
+              skill: "React",
+              evidence: "Built landing pages with React",
+              confidence: 0.82,
+              matchType: "exact",
+            },
+            {
+              skill: "TypeScript",
+              evidence: "Learning TypeScript",
+              confidence: 0.55,
+              matchType: "inferred",
+            },
+            {
+              skill: "REST APIs",
+              evidence: "Basic Express APIs",
+              confidence: 0.6,
+              matchType: "semantic",
+            },
+          ],
+          preferredSkillEvidence: [],
+          notes: [
+            "Uses MySQL for side projects rather than PostgreSQL.",
+            "1 year experience is below the 2-year minimum.",
+          ],
+        },
+      },
+    },
+    {
+      displayName: "Morgan Lee",
+      status: "rejected",
+      rawText:
+        "Morgan Lee — QA engineer transitioning to development. 4 years test automation with Selenium and Cypress. Writes small Python scripts; no professional React or TypeScript delivery. Familiar with SQL reporting queries.",
+      analysis: {
+        summary:
+          "QA background with automation strengths but insufficient application engineering evidence for a full-stack hire.",
+        extractedSkills: ["SQL", "Cypress", "Selenium", "Python"],
+        matchScore: 38,
+        matchRationale:
+          "Morgan lacks demonstrated React, Next.js, TypeScript, and REST API ownership required for this opening.",
+        missingSkills: ["TypeScript", "React", "Next.js", "PostgreSQL", "REST APIs"],
+        interviewQuestions: [
+          "Have you contributed production frontend code outside test automation?",
+          "What would your 90-day plan look like to reach full-stack competency?",
+        ],
+        scoreBreakdown: {
+          requiredSkills: 8,
+          preferredSkills: 0,
+          roleAlignment: 3,
+          experience: 5,
+          educationCertifications: 3,
+          parseQuality: 4,
+          penalties: 12,
+          matchedRequiredSkills: [],
+          matchedPreferredSkills: [],
+          missingRequiredSkills: [
+            "TypeScript",
+            "React",
+            "Next.js",
+            "PostgreSQL",
+            "REST APIs",
+          ],
+          missingPreferredSkills: ["Prisma", "OpenRouter", "RAG"],
+          requiredSkillEvidence: [],
+          preferredSkillEvidence: [],
+          notes: [
+            "QA engineer profile; no professional React or TypeScript delivery cited.",
+            "Familiar with SQL reporting but not PostgreSQL application development.",
+          ],
+        },
+      },
+    },
+  ];
 
-  return { created: true, jobId: job.id };
+  let createdCount = 0;
+
+  for (const demo of demoCandidates) {
+    const existingCandidate = await db.candidate.findFirst({
+      where: { jobId: job.id, displayName: demo.displayName },
+      include: { analysis: true },
+    });
+
+    if (existingCandidate?.analysis) {
+      continue;
+    }
+
+    if (existingCandidate) {
+      await db.candidateAnalysis.create({
+        data: {
+          candidateId: existingCandidate.id,
+          summary: demo.analysis.summary,
+          extractedSkills: JSON.stringify(demo.analysis.extractedSkills),
+          matchScore: demo.analysis.matchScore,
+          scoreBreakdown: JSON.stringify(demo.analysis.scoreBreakdown),
+          matchRationale: demo.analysis.matchRationale,
+          missingSkills: JSON.stringify(demo.analysis.missingSkills),
+          interviewQuestions: JSON.stringify(demo.analysis.interviewQuestions),
+          modelId: "demo-seed",
+        },
+      });
+      createdCount += 1;
+      continue;
+    }
+
+    await db.candidate.create({
+      data: {
+        jobId: job.id,
+        displayName: demo.displayName,
+        rawText: demo.rawText,
+        parseStatus: "manual",
+        status: demo.status,
+        filePath: null,
+        analysis: {
+          create: {
+            summary: demo.analysis.summary,
+            extractedSkills: JSON.stringify(demo.analysis.extractedSkills),
+            matchScore: demo.analysis.matchScore,
+            scoreBreakdown: JSON.stringify(demo.analysis.scoreBreakdown),
+            matchRationale: demo.analysis.matchRationale,
+            missingSkills: JSON.stringify(demo.analysis.missingSkills),
+            interviewQuestions: JSON.stringify(demo.analysis.interviewQuestions),
+            modelId: "demo-seed",
+          },
+        },
+      },
+    });
+    createdCount += 1;
+  }
+
+  return { created: createdCount > 0, jobId: job.id };
 }
 
 export async function seedDemoWorkspace() {

@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 import { StatCard } from "@/components/dashboard/stat-card";
+import { KnowledgeGapsCard } from "@/components/analytics/knowledge-gaps-card";
 
 type AnalyticsDashboardProps = {
   overview: {
@@ -39,6 +40,7 @@ type AnalyticsDashboardProps = {
   activityByDay: Array<{ date: string; conversations: number; tickets: number }>;
   knowledgeGaps: Array<{ topic: string; count: number }>;
   conversationsByChannel: Array<{ channel: string; count: number }>;
+  canPublishFaq?: boolean;
 };
 
 export function AnalyticsDashboard({
@@ -47,6 +49,7 @@ export function AnalyticsDashboard({
   activityByDay,
   knowledgeGaps,
   conversationsByChannel,
+  canPublishFaq = false,
 }: AnalyticsDashboardProps) {
   return (
     <div className="space-y-6">
@@ -143,21 +146,25 @@ export function AnalyticsDashboard({
           <CardTitle>Tickets by status</CardTitle>
           <CardDescription>Current workload distribution.</CardDescription>
           <div className="mt-6 h-72">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={ticketsByStatus}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="status" tick={{ fontSize: 12 }} />
-                <YAxis allowDecimals={false} tick={{ fontSize: 12 }} />
-                <Tooltip />
-                <Legend />
-                <Bar
-                  name="Tickets"
-                  dataKey="count"
-                  fill="#4f46e5"
-                  radius={[8, 8, 0, 0]}
-                />
-              </BarChart>
-            </ResponsiveContainer>
+            {ticketsByStatus.length === 0 ? (
+              <p className="text-sm text-slate-500">No tickets yet.</p>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={ticketsByStatus}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="status" tick={{ fontSize: 12 }} />
+                  <YAxis allowDecimals={false} tick={{ fontSize: 12 }} />
+                  <Tooltip />
+                  <Legend />
+                  <Bar
+                    name="Tickets"
+                    dataKey="count"
+                    fill="#4f46e5"
+                    radius={[8, 8, 0, 0]}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
           </div>
         </Card>
 
@@ -190,32 +197,10 @@ export function AnalyticsDashboard({
         </Card>
       </section>
 
-      <Card>
-        <CardTitle>Knowledge gaps</CardTitle>
-        <CardDescription>
-          Topics escalated from chat — add these to your knowledge base to improve
-          deflection.
-        </CardDescription>
-        <div className="mt-5 space-y-3">
-          {knowledgeGaps.length === 0 ? (
-            <p className="text-sm text-slate-500">
-              No escalations yet. When users escalate from chat, topics appear here.
-            </p>
-          ) : (
-            knowledgeGaps.map((gap, index) => (
-              <div
-                key={`${gap.topic}-${index}`}
-                className="flex items-center justify-between rounded-xl border border-amber-100 bg-amber-50/50 px-4 py-3"
-              >
-                <p className="text-sm font-medium text-slate-800">{gap.topic}</p>
-                <span className="text-xs text-amber-700">
-                  Escalated{gap.count > 1 ? ` · ${gap.count}x` : ""}
-                </span>
-              </div>
-            ))
-          )}
-        </div>
-      </Card>
+      <KnowledgeGapsCard
+        knowledgeGaps={knowledgeGaps}
+        canPublish={canPublishFaq}
+      />
     </div>
   );
 }

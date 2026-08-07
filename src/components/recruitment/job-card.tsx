@@ -16,11 +16,11 @@ export function JobCard({ job }: JobCardProps) {
 
   return (
     <Link href={`/recruitment/jobs/${job.id}`}>
-      <Card className="transition hover:border-indigo-200 hover:shadow-md">
+      <Card className="transition hover:border-teal-200 hover:shadow-md">
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-accent-soft text-accent">
                 <Briefcase className="h-4 w-4" />
               </div>
               <CardTitle className="truncate">{job.title}</CardTitle>
@@ -49,8 +49,8 @@ export function JobCard({ job }: JobCardProps) {
         </div>
 
         {job.bestCandidate ? (
-          <div className="mt-3 flex items-center gap-2 rounded-xl border border-slate-100 bg-slate-50/60 px-3 py-2 text-sm">
-            <span className="text-slate-500">Top match:</span>
+          <div className="mt-4 flex items-center justify-between rounded-xl border border-teal-100 bg-accent-soft/70 px-3 py-2 text-sm">
+            <span className="text-teal-800/80">Top match:</span>
             <span className="font-medium text-slate-900">{job.bestCandidate.displayName}</span>
             <CandidateStatusBadge status={job.bestCandidate.status} />
           </div>

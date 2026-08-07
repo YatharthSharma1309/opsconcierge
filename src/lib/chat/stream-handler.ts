@@ -91,6 +91,12 @@ export async function createChatStreamResponse({
           model: modelForEvidence,
           decision: laneDecision,
           latencyMs: Date.now() - laneRoutingStartAt,
+          metadata: {
+            chunksMatched: prepared.chunksMatched,
+            confidence: prepared.confidence,
+            retrievalMode: prepared.retrievalMode,
+            sourceCount: prepared.sources.length,
+          },
         },
       });
     }
@@ -198,6 +204,14 @@ export async function createChatStreamResponse({
                     assistantMessageId: assistantMessage.id,
                     provider: llmProvider,
                     retrievalMode: prepared.retrievalMode,
+                    chunksMatched: prepared.chunksMatched,
+                    confidence: prepared.confidence,
+                    outcome:
+                      prepared.chunksMatched === 0
+                        ? "low_knowledge"
+                        : prepared.confidence === "low"
+                          ? "low_confidence"
+                          : "deflected",
                   },
                 },
               });

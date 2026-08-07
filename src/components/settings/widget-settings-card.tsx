@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Dialog } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { buildWidgetLauncherScript } from "@/lib/widget/embed-snippet";
 
 type WidgetSettingsCardProps = {
   widgetPublicKey: string | null;
@@ -29,6 +30,7 @@ export function WidgetSettingsCard({
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isRotating, setIsRotating] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [rotateDialogOpen, setRotateDialogOpen] = useState(false);
 
   const embedUrl = widgetKey
@@ -63,6 +65,27 @@ export function WidgetSettingsCard({
     setIsSaving(false);
   }
 
+  async function generateKey() {
+    setIsGenerating(true);
+    setError(null);
+    setMessage(null);
+
+    const response = await fetch("/api/settings/widget", {
+      method: "POST",
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      setError(data.error ?? "Failed to generate widget key");
+      setIsGenerating(false);
+      return;
+    }
+
+    setWidgetKey(data.widgetPublicKey);
+    setMessage("Widget key generated. Copy the launcher script below.");
+    setIsGenerating(false);
+  }
+
   async function rotateKey() {
     setIsRotating(true);
     setError(null);
@@ -86,10 +109,18 @@ export function WidgetSettingsCard({
   }
 
   async function copyEmbed() {
-    await navigator.clipboard.writeText(
-      `<iframe src="${embedUrl}" title="OpsConcierge chat widget" style="border:0;position:fixed;inset:0;width:100%;height:100%;z-index:9999;background:transparent"></iframe>`,
-    );
-    setMessage("Embed snippet copied to clipboard.");
+    if (!widgetKey) {
+      setError("Generate a widget key before copying the embed script.");
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(buildWidgetLauncherScript(embedUrl));
+      setMessage("Launcher script copied to clipboard.");
+      setError(null);
+    } catch {
+      setError("Copy failed — select the snippet manually.");
+    }
   }
 
   return (
@@ -113,16 +144,23 @@ export function WidgetSettingsCard({
             Publishable widget key
           </label>
           <div className="flex gap-2">
-            <Input id="widget-key" value={widgetKey} readOnly />
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => setRotateDialogOpen(true)}
-              disabled={isRotating}
-            >
-              {isRotating ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
-              Rotate
-            </Button>
+            <Input id="widget-key" value={widgetKey} readOnly placeholder="No key yet" />
+            {widgetKey ? (
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => setRotateDialogOpen(true)}
+                disabled={isRotating}
+              >
+                {isRotating ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+                Rotate
+              </Button>
+            ) : (
+              <Button type="button" variant="secondary" onClick={generateKey} disabled={isGenerating}>
+                {isGenerating ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+                Generate key
+              </Button>
+            )}
           </div>
         </div>
 
@@ -152,9 +190,9 @@ export function WidgetSettingsCard({
           <Button type="button" onClick={saveWidgetSettings} disabled={isSaving}>
             {isSaving ? "Saving..." : "Save widget settings"}
           </Button>
-          <Button type="button" variant="secondary" onClick={copyEmbed}>
+          <Button type="button" variant="secondary" onClick={copyEmbed} disabled={!widgetKey}>
             <Copy className="h-4 w-4" />
-            Copy embed snippet
+            Copy launcher script
           </Button>
         </div>
 

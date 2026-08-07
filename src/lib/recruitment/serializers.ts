@@ -1,6 +1,7 @@
 import type { Candidate, CandidateAnalysis, Job } from "@/generated/prisma/client";
 import { parseJsonObject, parseStringArray } from "@/lib/recruitment/json";
 import { isArchivedStatus } from "@/lib/recruitment/hire-safety";
+import { parseInterviewScorecard } from "@/lib/recruitment/interview-scorecard";
 import type {
   AnalysisDTO,
   ActiveCandidateStatus,
@@ -134,16 +135,26 @@ export function toCandidateDTO(candidate: CandidateWithAnalysis): CandidateDTO {
 }
 
 export function toAnalysisDTO(analysis: CandidateAnalysis): AnalysisDTO {
+  const parsed = parseJsonObject<Partial<ScoreBreakdown>>(
+    analysis.scoreBreakdown,
+    {},
+  );
+
   return {
     id: analysis.id,
     candidateId: analysis.candidateId,
     summary: analysis.summary,
     extractedSkills: parseStringArray(analysis.extractedSkills),
     matchScore: analysis.matchScore,
-    scoreBreakdown: parseJsonObject<ScoreBreakdown>(
-      analysis.scoreBreakdown,
-      emptyScoreBreakdown
-    ),
+    scoreBreakdown: {
+      ...emptyScoreBreakdown,
+      ...parsed,
+      matchedRequiredSkills: parsed.matchedRequiredSkills ?? [],
+      matchedPreferredSkills: parsed.matchedPreferredSkills ?? [],
+      missingRequiredSkills: parsed.missingRequiredSkills ?? [],
+      missingPreferredSkills: parsed.missingPreferredSkills ?? [],
+      notes: parsed.notes ?? [],
+    },
     matchRationale: analysis.matchRationale,
     missingSkills: parseStringArray(analysis.missingSkills),
     interviewQuestions: parseStringArray(analysis.interviewQuestions),
@@ -159,6 +170,9 @@ export function toCandidateDetailDTO(
     ...toCandidateDTO(candidate),
     rawText: candidate.rawText,
     analysis: candidate.analysis ? toAnalysisDTO(candidate.analysis) : null,
+    interviewScorecard: candidate.interviewScorecard
+      ? parseInterviewScorecard(candidate.interviewScorecard)
+      : null,
   };
 }
 

@@ -25,10 +25,12 @@ export function HelpCenterExperience({
 }: HelpCenterExperienceProps) {
   const [widgetOpen, setWidgetOpen] = useState(false);
   const [pendingQuestion, setPendingQuestion] = useState<string | null>(null);
+  const [askId, setAskId] = useState(0);
 
   function handleAskAi(question: string) {
     if (!widgetKey) return;
     setPendingQuestion(question.trim());
+    setAskId((current) => current + 1);
     setWidgetOpen(true);
   }
 
@@ -42,7 +44,7 @@ export function HelpCenterExperience({
 
       {widgetKey ? (
         <FloatingWidget
-          key={pendingQuestion ?? "idle"}
+          key={askId}
           hasDocuments={hasDocuments}
           welcomeMessage={welcomeMessage}
           widgetKey={widgetKey}

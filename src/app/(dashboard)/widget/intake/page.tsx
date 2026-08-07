@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { Header } from "@/components/layout/header";
 import { ExecutionLogTable } from "@/components/execution/execution-log-table";
+import { ExecutionRunStoryboard } from "@/components/execution/execution-run-storyboard";
 import { WidgetIntakeRunSelector } from "@/components/execution/widget-intake-run-selector";
 import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
-import { Button } from "@/components/ui/button";
+import { buttonClassName } from "@/components/ui/button";
 import { requireOrgMembershipOrRedirect } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { Inbox } from "lucide-react";
@@ -20,6 +21,7 @@ export default async function WidgetIntakePage() {
       id: true,
       createdAt: true,
       conversationId: true,
+      channel: true,
     },
   });
 
@@ -38,21 +40,36 @@ export default async function WidgetIntakePage() {
           model: true,
           decision: true,
           latencyMs: true,
+          metadata: true,
         },
       })
     : [];
+
+  const linkedTicket =
+    latestRun?.conversationId
+      ? await db.ticket.findFirst({
+          where: {
+            organizationId: organization.id,
+            conversationId: latestRun.conversationId,
+            title: { startsWith: "Escalation:" },
+          },
+          orderBy: { createdAt: "desc" },
+          select: { id: true },
+        })
+      : null;
 
   return (
     <>
       <Header
         title="Widget intake demo"
-        description="Widget intake -> lane routing -> Gemini -> ticket update. Execution log rows are screenshot-friendly."
+        description="Storyboard of widget intake → retrieve → model → deflect or escalate. Raw log rows stay screenshot-friendly below."
         action={
           latestRun ? (
-            <Link href={`/widget/intake/${latestRun.id}`}>
-              <Button size="sm" variant="secondary">
-                Open selected run
-              </Button>
+            <Link
+              href={`/widget/intake/${latestRun.id}`}
+              className={buttonClassName({ size: "sm", variant: "secondary" })}
+            >
+              Open full storyboard
             </Link>
           ) : null
         }
@@ -63,10 +80,10 @@ export default async function WidgetIntakePage() {
           <EmptyState
             icon={Inbox}
             title="No widget runs yet"
-            description="Send a message via the embedded widget, then escalate to a ticket. Execution log rows appear here."
+            description="Send a message via the embedded widget preview. Runs appear here automatically; escalate optionally to attach a ticket link in the storyboard."
             action={
-              <Link href="/widget">
-                <Button size="sm">Preview widget</Button>
+              <Link href="/widget" className={buttonClassName({ size: "sm" })}>
+                Preview widget
               </Link>
             }
             className="py-8"
@@ -81,6 +98,16 @@ export default async function WidgetIntakePage() {
             </Card>
 
             <Card className="p-6">
+              <ExecutionRunStoryboard
+                logs={logs}
+                conversationId={latestRun!.conversationId}
+                conversationChannel={latestRun!.channel}
+                ticketId={linkedTicket?.id ?? null}
+                compact
+              />
+            </Card>
+
+            <Card className="p-6">
               <ExecutionLogTable logs={logs} />
             </Card>
           </div>
@@ -89,4 +116,3 @@ export default async function WidgetIntakePage() {
     </>
   );
 }
-

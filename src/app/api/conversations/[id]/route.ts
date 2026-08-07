@@ -16,6 +16,15 @@ export async function GET(_request: Request, context: RouteContext) {
         messages: {
           orderBy: { createdAt: "asc" },
         },
+        tickets: {
+          where: {
+            status: { in: ["OPEN", "IN_PROGRESS"] },
+            title: { startsWith: "Escalation:" },
+          },
+          orderBy: { createdAt: "desc" },
+          take: 1,
+          select: { id: true },
+        },
       },
     });
 
@@ -26,6 +35,17 @@ export async function GET(_request: Request, context: RouteContext) {
       );
     }
 
-    return NextResponse.json({ conversation });
+    const openTicketId = conversation.tickets[0]?.id ?? null;
+
+    return NextResponse.json({
+      conversation: {
+        id: conversation.id,
+        title: conversation.title,
+        channel: conversation.channel,
+        updatedAt: conversation.updatedAt,
+        messages: conversation.messages,
+      },
+      openTicketId,
+    });
   });
 }

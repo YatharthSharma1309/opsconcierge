@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 export type ChatMessage = {
   id: string;
@@ -37,6 +37,12 @@ function getVisitorTokenStorageKey(widgetKey?: string) {
   return widgetKey
     ? `relayai_visitor_token_${widgetKey}`
     : "relayai_visitor_token_admin";
+}
+
+function getVisitorEmailStorageKey(widgetKey?: string) {
+  return widgetKey
+    ? `relayai_visitor_email_${widgetKey}`
+    : "relayai_visitor_email_admin";
 }
 
 function readStoredValue(primaryKey: string, legacyKey: string) {
@@ -130,10 +136,15 @@ export function useChat(
   ]);
   const [conversations, setConversations] = useState<ConversationItem[]>([]);
   const [conversationId, setConversationId] = useState<string | null>(null);
+  const [escalatedTicketId, setEscalatedTicketId] = useState<string | null>(
+    null,
+  );
   const [isSending, setIsSending] = useState(false);
   const [isEscalating, setIsEscalating] = useState(false);
   const [ragStep, setRagStep] = useState(-1);
   const [error, setError] = useState<string | null>(null);
+  const [feedbackPendingId, setFeedbackPendingId] = useState<string | null>(null);
+  const escalateLockRef = useRef(false);
 
   useEffect(() => {
     if (!isWidget || !widgetKey || !visitorId) return;
@@ -187,6 +198,9 @@ export function useChat(
       }
 
       setConversationId(id);
+      setEscalatedTicketId(
+        typeof data.openTicketId === "string" ? data.openTicketId : null,
+      );
       setMessages(
         data.conversation.messages
           .filter(
@@ -263,6 +277,7 @@ export function useChat(
       ]);
 
       try {
+        const priorConversationId = conversationId;
         const headers: Record<string, string> = {
           "Content-Type": "application/json",
         };
@@ -284,7 +299,7 @@ export function useChat(
 
         if (!response.ok || !response.body) {
           const data = await response.json().catch(() => ({}));
-          if (response.status === 404) {
+          if (response.status === 404 || !priorConversationId) {
             setConversationId(null);
           }
           setMessages((current) =>
@@ -378,6 +393,9 @@ export function useChat(
 
         await loadConversations();
       } catch (chatError) {
+        // Only drop conversationId when the turn had no prior conversation
+        // (first-message rollback) or the server already 404'd it above.
+        // Multi-turn failures must keep the id so escalate still works.
         setMessages((current) =>
           current.filter(
             (message) =>
@@ -411,6 +429,7 @@ export function useChat(
 
   const startNewChat = useCallback(() => {
     setConversationId(null);
+    setEscalatedTicketId(null);
     setMessages([
       {
         id: "welcome",
@@ -426,8 +445,13 @@ export function useChat(
     setError(null);
   }, [defaultWelcome, hasDocuments, isWidget]);
 
-  const escalateToTicket = useCallback(async () => {
-    if (isEscalating || isSending) return;
+  const escalateToTicket = useCallback(async (options?: {
+    requesterEmail?: string;
+    requesterName?: string;
+  }) => {
+    if (isEscalating || isSending || escalatedTicketId || escalateLockRef.current) {
+      return;
+    }
 
     if (!conversationId) {
       setError("Wait for the chat to connect before escalating to a ticket.");
@@ -443,19 +467,35 @@ export function useChat(
       return;
     }
 
+    let requesterEmail = options?.requesterEmail?.trim() || undefined;
+    const requesterName = options?.requesterName?.trim() || undefined;
+
+    if (isWidget && widgetKey && !requesterEmail) {
+      requesterEmail =
+        readStoredValue(
+          getVisitorEmailStorageKey(widgetKey),
+          `supportai_visitor_email_${widgetKey}`,
+        )?.trim() || undefined;
+    }
+
+    if (isWidget && !requesterEmail) {
+      setError("Add your email so support can follow up on this ticket.");
+      return;
+    }
+
+    escalateLockRef.current = true;
     setIsEscalating(true);
     setError(null);
 
     try {
-      const transcript = messages
-        .filter(
-          (message) =>
-            message.id !== "welcome" &&
-            message.content.trim().length > 0 &&
-            message.persisted !== false,
-        )
-        .map((message) => `${message.role}: ${message.content}`)
-        .join("\n\n");
+      const transcript =
+        messages
+          .filter(
+            (message) =>
+              message.id !== "welcome" && message.content.trim().length > 0,
+          )
+          .map((message) => `${message.role}: ${message.content}`)
+          .join("\n\n") || `user: ${lastUserMessage.content}`;
 
       const headers: Record<string, string> = {
         "Content-Type": "application/json",
@@ -472,7 +512,9 @@ export function useChat(
           description: transcript,
           conversationId,
           priority: "HIGH",
-          ...(isWidget ? { visitorId, visitorToken } : {}),
+          ...(isWidget
+            ? { visitorId, visitorToken, requesterEmail, requesterName }
+            : {}),
         }),
       });
 
@@ -482,14 +524,28 @@ export function useChat(
       }
 
       const ticket = data.ticket as { id: string };
-      const suffix = data.duplicate ? " (existing open ticket)" : "";
+      const shortId = ticket.id.slice(-6);
+      const duplicate = Boolean(data.duplicate);
+      setEscalatedTicketId(ticket.id);
+
+      if (isWidget && widgetKey && requesterEmail) {
+        localStorage.setItem(getVisitorEmailStorageKey(widgetKey), requesterEmail);
+      }
+
+      const content = isWidget
+        ? duplicate
+          ? `You already have open ticket #${shortId}. A teammate will follow up with this chat transcript.`
+          : `Ticket #${shortId} created. Full transcript attached — a teammate will follow up.`
+        : duplicate
+          ? `Open ticket #${shortId} already exists for this chat.`
+          : `Ticket #${shortId} created with the full transcript.`;
 
       setMessages((current) => [
         ...current,
         {
           id: crypto.randomUUID(),
           role: "assistant",
-          content: `Escalated to ticket #${ticket.id.slice(-6)}${suffix}. Full transcript attached.`,
+          content,
           persisted: false,
         },
       ]);
@@ -500,10 +556,12 @@ export function useChat(
           : "Failed to create ticket",
       );
     } finally {
+      escalateLockRef.current = false;
       setIsEscalating(false);
     }
   }, [
     conversationId,
+    escalatedTicketId,
     isEscalating,
     isSending,
     isWidget,
@@ -516,7 +574,10 @@ export function useChat(
 
   const submitFeedback = useCallback(
     async (messageId: string, helpful: boolean) => {
-      if (messageId === "welcome") return;
+      if (messageId === "welcome" || feedbackPendingId) return;
+      if (isWidget && (!sessionReady || !visitorToken)) return;
+
+      setFeedbackPendingId(messageId);
 
       const headers: Record<string, string> = {
         "Content-Type": "application/json",
@@ -541,6 +602,7 @@ export function useChat(
       if (!response.ok) {
         const data = await response.json().catch(() => ({}));
         setError(data.error ?? "Failed to save feedback");
+        setFeedbackPendingId(null);
         return;
       }
 
@@ -549,16 +611,40 @@ export function useChat(
           message.id === messageId ? { ...message, helpful } : message,
         ),
       );
+      setFeedbackPendingId(null);
     },
-    [isWidget, visitorId, visitorToken, widgetKey],
+    [feedbackPendingId, isWidget, sessionReady, visitorId, visitorToken, widgetKey],
   );
 
-  const canEscalate = Boolean(conversationId) && !isSending && !isEscalating;
+  const canEscalate =
+    Boolean(conversationId) &&
+    !isSending &&
+    !isEscalating &&
+    !escalatedTicketId;
+
+  const getStoredVisitorEmail = useCallback(() => {
+    if (!isWidget || !widgetKey || typeof window === "undefined") return "";
+    return (
+      readStoredValue(
+        getVisitorEmailStorageKey(widgetKey),
+        `supportai_visitor_email_${widgetKey}`,
+      ) ?? ""
+    );
+  }, [isWidget, widgetKey]);
+
+  const saveVisitorEmail = useCallback(
+    (email: string) => {
+      if (!isWidget || !widgetKey || typeof window === "undefined") return;
+      localStorage.setItem(getVisitorEmailStorageKey(widgetKey), email.trim());
+    },
+    [isWidget, widgetKey],
+  );
 
   return {
     messages,
     conversations,
     conversationId,
+    escalatedTicketId,
     isSending,
     isEscalating,
     canEscalate,
@@ -570,5 +656,8 @@ export function useChat(
     loadConversation,
     escalateToTicket,
     submitFeedback,
+    feedbackPendingId,
+    getStoredVisitorEmail,
+    saveVisitorEmail,
   };
 }

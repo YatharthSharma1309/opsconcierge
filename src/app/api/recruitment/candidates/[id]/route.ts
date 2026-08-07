@@ -45,7 +45,11 @@ export async function PATCH(request: Request, context: RouteContext) {
 
     await recordRecruitmentAuditEvent({
       organizationId: organization.id,
-      action: parsed.data.rawText ? "candidate.update_resume" : "candidate.update",
+      action: parsed.data.rawText
+        ? "candidate.update_resume"
+        : parsed.data.interviewScorecard
+          ? "candidate.update_scorecard"
+          : "candidate.update",
       entityType: "candidate",
       entityId: candidate.id,
       actorId: user.id,
@@ -53,6 +57,7 @@ export async function PATCH(request: Request, context: RouteContext) {
         jobId: candidate.jobId,
         status: parsed.data.status ?? null,
         changedResumeText: Boolean(parsed.data.rawText),
+        updatedScorecard: Boolean(parsed.data.interviewScorecard),
         archivedCandidateCount: candidate.archivedCandidateCount ?? 0,
         pendingHireExpiresAt: candidate.pendingHireExpiresAt ?? null,
       },

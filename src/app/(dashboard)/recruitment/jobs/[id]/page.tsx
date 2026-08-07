@@ -2,17 +2,15 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Pencil } from "lucide-react";
 import { Header } from "@/components/layout/header";
-import { CandidateStatusBadge } from "@/components/recruitment/candidate-status-badge";
+import { CandidatePipelineTable } from "@/components/recruitment/candidate-pipeline-table";
 import { JobActivityLog } from "@/components/recruitment/job-activity-log";
 import { ManualCandidateForm } from "@/components/recruitment/manual-candidate-form";
 import { PendingHireBanner } from "@/components/recruitment/pending-hire-banner";
 import { ResumeUploader } from "@/components/recruitment/resume-uploader";
-import { ScoreBadge } from "@/components/recruitment/score-badge";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { buttonClassName } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
-import { RelativeTime } from "@/components/ui/relative-time";
 import { requireOrgMembershipOrRedirect } from "@/lib/auth";
 import { listJobAuditEvents } from "@/lib/recruitment/services/audit";
 import { getJobDetail } from "@/lib/recruitment/services/jobs";
@@ -43,11 +41,12 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
         title={job.title}
         description="Manage candidates and review AI match scores."
         action={
-          <Link href={`/recruitment/jobs/${job.id}/edit`}>
-            <Button variant="secondary" size="sm">
-              <Pencil className="h-4 w-4" />
-              Edit job
-            </Button>
+          <Link
+            href={`/recruitment/jobs/${job.id}/edit`}
+            className={buttonClassName({ variant: "secondary", size: "sm" })}
+          >
+            <Pencil className="h-4 w-4" />
+            Edit job
           </Link>
         }
       />
@@ -150,60 +149,7 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
               description="Upload a resume or add candidate text to start building your pipeline."
             />
           ) : (
-            <Card className="overflow-hidden p-0">
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-sm">
-                  <thead className="border-b border-slate-200 bg-slate-50/80 text-xs font-medium uppercase tracking-wide text-slate-500">
-                    <tr>
-                      <th className="px-4 py-3">Name</th>
-                      <th className="px-4 py-3">Status</th>
-                      <th className="px-4 py-3">Match</th>
-                      <th className="px-4 py-3">Parse</th>
-                      <th className="px-4 py-3">Added</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100">
-                    {activeCandidates.map((candidate) => (
-                      <tr key={candidate.id} className="hover:bg-slate-50/60">
-                        <td className="px-4 py-3">
-                          <Link
-                            href={`/recruitment/jobs/${job.id}/candidates/${candidate.id}`}
-                            className="font-medium text-indigo-600 hover:text-indigo-500"
-                          >
-                            {candidate.displayName}
-                          </Link>
-                          {candidate.fileName ? (
-                            <p className="text-xs text-slate-400">{candidate.fileName}</p>
-                          ) : null}
-                        </td>
-                        <td className="px-4 py-3">
-                          <CandidateStatusBadge status={candidate.status} />
-                        </td>
-                        <td className="px-4 py-3">
-                          <ScoreBadge score={candidate.matchScore} />
-                        </td>
-                        <td className="px-4 py-3">
-                          <Badge
-                            tone={
-                              candidate.parseStatus === "ok" || candidate.parseStatus === "manual"
-                                ? "success"
-                                : candidate.parseStatus === "failed"
-                                  ? "danger"
-                                  : "warning"
-                            }
-                          >
-                            {candidate.parseStatus}
-                          </Badge>
-                        </td>
-                        <td className="px-4 py-3 text-slate-500">
-                          <RelativeTime date={candidate.createdAt} />
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </Card>
+            <CandidatePipelineTable jobId={job.id} candidates={activeCandidates} />
           )}
         </section>
 

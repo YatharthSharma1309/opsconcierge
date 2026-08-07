@@ -21,29 +21,42 @@ export function CandidateDetailPanel({
 }: CandidateDetailPanelProps) {
   const router = useRouter();
   const [notes, setNotes] = useState(candidate.notes ?? "");
+  const [resumeText, setResumeText] = useState(candidate.rawText ?? "");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const needsResumeText =
+    candidate.parseStatus === "failed" || candidate.rawText.trim().length < 50;
 
   async function updateCandidate(body: Record<string, unknown>) {
     setBusy(true);
     setError(null);
 
-    const response = await fetch(`/api/recruitment/candidates/${candidate.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-    const data = await response.json();
+    try {
+      const response = await fetch(`/api/recruitment/candidates/${candidate.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      const data = await response.json();
 
-    if (!response.ok) {
-      setError(data.error ?? "Update failed");
-      setBusy(false);
+      if (!response.ok) {
+        setError(data.error ?? "Update failed");
+        return false;
+      }
+
+      if (body.status === "hired") {
+        router.push(`/recruitment/jobs/${candidate.jobId}`);
+        return true;
+      }
+
+      router.refresh();
+      return true;
+    } catch {
+      setError("Network error — please try again.");
       return false;
+    } finally {
+      setBusy(false);
     }
-
-    router.refresh();
-    setBusy(false);
-    return true;
   }
 
   async function handleStatusChange(nextStatus: CandidateStatus) {
@@ -64,6 +77,14 @@ export function CandidateDetailPanel({
     await updateCandidate({ notes: notes.trim() || null });
   }
 
+  async function handleSaveResumeText() {
+    if (resumeText.trim().length < 50) {
+      setError("Paste at least 50 characters of resume text before saving.");
+      return;
+    }
+    await updateCandidate({ rawText: resumeText.trim() });
+  }
+
   const pipelineActions = getPipelineActions(candidate.status);
 
   return (
@@ -82,6 +103,7 @@ export function CandidateDetailPanel({
           {pipelineActions.map((action) => (
             <Button
               key={action.nextStatus}
+              type="button"
               variant={action.tone === "danger" ? "danger" : action.tone === "secondary" ? "secondary" : "primary"}
               size="sm"
               disabled={busy}
@@ -90,6 +112,34 @@ export function CandidateDetailPanel({
               {action.label}
             </Button>
           ))}
+        </div>
+      ) : null}
+
+      {needsResumeText ? (
+        <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-4">
+          <label htmlFor="candidate-resume-text" className="mb-2 block text-sm font-medium text-amber-950">
+            Paste resume text
+          </label>
+          <p className="mb-3 text-xs leading-5 text-amber-900/80">
+            Parsing failed or text is too short. Paste the resume content here, then run analysis.
+          </p>
+          <Textarea
+            id="candidate-resume-text"
+            value={resumeText}
+            onChange={(event) => setResumeText(event.target.value)}
+            rows={8}
+            placeholder="Paste full resume text..."
+          />
+          <Button
+            type="button"
+            variant="secondary"
+            size="sm"
+            className="mt-2"
+            disabled={busy}
+            onClick={handleSaveResumeText}
+          >
+            {busy ? "Saving..." : "Save resume text"}
+          </Button>
         </div>
       ) : null}
 

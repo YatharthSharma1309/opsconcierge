@@ -146,7 +146,7 @@ export function AgentSettingsForm({ initialSettings }: AgentSettingsFormProps) {
 
       <Card>
         <div className="mb-4 flex items-center gap-2">
-          <Sparkles className="h-4 w-4 text-indigo-600" />
+          <Sparkles className="h-4 w-4 text-blue-900" />
           <h2 className="text-sm font-semibold text-slate-900">Test sandbox</h2>
         </div>
         <p className="mb-4 text-sm text-slate-500">
