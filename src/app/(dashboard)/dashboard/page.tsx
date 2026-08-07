@@ -42,7 +42,7 @@ export default async function DashboardPage() {
   return (
     <>
       <Header
-        title="Home"
+        title="Overview"
         description={`Start here — support health for ${organization.name}.`}
         readyDocuments={data.readyDocuments}
         aiConfigured={aiConfigured}

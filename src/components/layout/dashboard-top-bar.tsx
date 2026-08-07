@@ -2,6 +2,7 @@
 
 import { OrganizationSwitcher, UserButton } from "@clerk/nextjs";
 import { BrandLogo } from "@/components/layout/brand-logo";
+import { DashboardNav } from "@/components/layout/dashboard-nav";
 import { MobileMenuButton } from "@/components/layout/mobile-nav";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { clerkAppearance } from "@/lib/clerk-appearance";
@@ -22,32 +23,37 @@ type DashboardTopBarProps = {
   mobileNavOpen: boolean;
   onMobileNavToggle: () => void;
   menuButtonRef: React.RefObject<HTMLButtonElement | null>;
+  organizationSlug?: string;
+  role?: MemberRole;
 };
 
 export function DashboardTopBar({
   mobileNavOpen,
   onMobileNavToggle,
   menuButtonRef,
+  organizationSlug,
+  role = "AGENT",
 }: DashboardTopBarProps) {
   const demoMode = isDemoToolsEnabled();
 
   return (
-    <div className="sticky top-0 z-30 glass-panel border-b border-border px-4 py-2.5 sm:px-6 lg:pl-6">
-      <div className="flex items-center justify-between gap-3">
-        <div className="flex items-center gap-3 lg:hidden">
+    <header className="sticky top-0 z-30 border-b border-border bg-surface/90 backdrop-blur-md">
+      <div className="flex h-14 items-center gap-3 px-4 sm:gap-4 sm:px-6">
+        <div className="flex min-w-0 shrink-0 items-center gap-2 border-r border-border pr-3 sm:pr-4">
           <MobileMenuButton
             ref={menuButtonRef}
             open={mobileNavOpen}
             controlsId="mobile-nav-menu"
             onClick={onMobileNavToggle}
+            className="md:hidden"
           />
-          <BrandLogo href="/dashboard" size="sm" />
+          <BrandLogo href="/dashboard" size="sm" collapseWordmark />
         </div>
 
-        <div className="hidden flex-1 lg:block" />
+        <DashboardNav role={role} organizationSlug={organizationSlug} />
 
-        <div className="flex items-center gap-2 sm:gap-3">
-          <ThemeToggle />
+        <div className="ml-auto flex shrink-0 items-center gap-1.5 border-l border-border pl-3 sm:gap-2 sm:pl-4">
+          <ThemeToggle className="h-8 w-8 rounded-lg border-0 bg-transparent shadow-none hover:bg-foreground/[0.05]" />
           {demoMode ? null : (
             <>
               <OrganizationSwitcher
@@ -57,7 +63,7 @@ export function DashboardTopBar({
                   elements: {
                     ...clerkAppearance.elements,
                     organizationSwitcherTrigger:
-                      "rounded-xl border border-border px-3 py-1.5 text-sm",
+                      "h-8 rounded-lg border border-border px-2.5 text-sm",
                   },
                 }}
               />
@@ -66,7 +72,7 @@ export function DashboardTopBar({
           )}
         </div>
       </div>
-    </div>
+    </header>
   );
 }
 

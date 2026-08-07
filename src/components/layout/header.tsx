@@ -19,20 +19,20 @@ export function Header({
     readyDocuments !== undefined && aiConfigured !== undefined;
 
   return (
-    <header className="border-b border-border bg-surface px-4 py-3 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <div className="border-b border-border px-4 py-5 sm:px-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div className="min-w-0">
-          <h1 className="text-xl font-semibold text-slate-900 sm:text-2xl">
+          <h1 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             {title}
           </h1>
           {description ? (
-            <p className="mt-1 line-clamp-2 text-sm text-muted sm:line-clamp-1">
+            <p className="mt-1 max-w-2xl text-sm leading-6 text-muted">
               {description}
             </p>
           ) : null}
         </div>
 
-        {(showStatus || action) && (
+        {showStatus || action ? (
           <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             {showStatus ? (
               <WorkspaceStatusBadge
@@ -42,8 +42,8 @@ export function Header({
             ) : null}
             {action}
           </div>
-        )}
+        ) : null}
       </div>
-    </header>
+    </div>
   );
 }

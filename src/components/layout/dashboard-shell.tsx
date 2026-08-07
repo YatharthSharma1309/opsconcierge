@@ -2,7 +2,6 @@
 
 import { useRef, useState } from "react";
 import { DashboardTopBar } from "@/components/layout/dashboard-top-bar";
-import { Sidebar } from "@/components/layout/sidebar";
 import { MobileNavDrawer } from "@/components/layout/mobile-nav";
 import { SiteFooter } from "@/components/layout/site-footer";
 import type { MemberRole } from "@/generated/prisma/client";
@@ -22,8 +21,7 @@ export function DashboardShell({
   const menuButtonRef = useRef<HTMLButtonElement>(null);
 
   return (
-    <div className="flex min-h-screen bg-background">
-      <Sidebar organizationSlug={organizationSlug} role={role} />
+    <div className="flex min-h-screen flex-col bg-background">
       <MobileNavDrawer
         open={mobileNavOpen}
         onOpenChange={setMobileNavOpen}
@@ -31,18 +29,18 @@ export function DashboardShell({
         organizationSlug={organizationSlug}
         role={role}
       />
-      <div className="flex min-h-screen min-w-0 flex-1 flex-col lg:h-dvh lg:min-h-0 lg:overflow-hidden">
-        <DashboardTopBar
-          mobileNavOpen={mobileNavOpen}
-          onMobileNavToggle={() => setMobileNavOpen((value) => !value)}
-          menuButtonRef={menuButtonRef}
-        />
-        <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
-          <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
-            {children}
-          </div>
-          <SiteFooter variant="app" />
+      <DashboardTopBar
+        mobileNavOpen={mobileNavOpen}
+        onMobileNavToggle={() => setMobileNavOpen((value) => !value)}
+        menuButtonRef={menuButtonRef}
+        organizationSlug={organizationSlug}
+        role={role}
+      />
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden lg:h-[calc(100dvh-3.5rem)]">
+        <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+          {children}
         </div>
+        <SiteFooter variant="app" />
       </div>
     </div>
   );

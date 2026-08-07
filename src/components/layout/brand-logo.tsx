@@ -10,6 +10,10 @@ type BrandLogoProps = {
   size?: "sm" | "md";
   /** Light surfaces (default) or dark footer bands */
   tone?: "light" | "dark";
+  /** Hide the OpsConcierge text (mark only) */
+  showWordmark?: boolean;
+  /** Hide wordmark until wide screens — keeps app navbar from crowding */
+  collapseWordmark?: boolean;
   className?: string;
   onNavigate?: () => void;
 };
@@ -19,10 +23,12 @@ export function BrandLogo({
   showTagline = false,
   size = "md",
   tone = "light",
+  showWordmark = true,
+  collapseWordmark = false,
   className,
   onNavigate,
 }: BrandLogoProps) {
-  const markSize = size === "sm" ? 34 : 40;
+  const markSize = size === "sm" ? 30 : 40;
   const dark = tone === "dark";
 
   const content = (
@@ -37,27 +43,37 @@ export function BrandLogo({
             : "shadow-md shadow-slate-900/15 ring-1 ring-slate-900/10 dark:shadow-black/40 dark:ring-white/10",
         )}
       />
-      <div className="min-w-0 leading-tight">
-        <p
+      {showWordmark ? (
+        <div
           className={cn(
-            "truncate font-semibold tracking-[-0.02em] transition-colors duration-200",
-            dark ? "text-white" : "text-foreground",
-            size === "sm" ? "text-[15px]" : "text-[17px]",
+            "min-w-0 leading-tight",
+            collapseWordmark && "hidden min-[1180px]:block",
           )}
         >
-          OpsConcierge
-        </p>
-        {showTagline ? (
           <p
             className={cn(
-              "mt-0.5 truncate text-[11px] font-medium tracking-[0.02em]",
-              dark ? "text-slate-400" : "text-muted",
+              "truncate font-semibold tracking-[-0.02em] transition-colors duration-200",
+              dark ? "text-white" : "text-foreground",
+              size === "sm" ? "text-[15px]" : "text-[17px]",
             )}
           >
-            Ops desk for small businesses
+            OpsConcierge
           </p>
-        ) : null}
-      </div>
+          {showTagline ? (
+            <p
+              className={cn(
+                "mt-0.5 truncate text-[11px] font-medium tracking-[0.02em]",
+                dark ? "text-slate-400" : "text-muted",
+              )}
+            >
+              Ops desk for small businesses
+            </p>
+          ) : null}
+        </div>
+      ) : null}
+      {(!showWordmark || collapseWordmark) && (
+        <span className="sr-only">OpsConcierge</span>
+      )}
     </div>
   );
 
