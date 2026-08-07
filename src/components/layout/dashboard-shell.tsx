@@ -33,14 +33,17 @@ export function DashboardShell({
         mobileNavOpen={mobileNavOpen}
         onMobileNavToggle={() => setMobileNavOpen((value) => !value)}
         menuButtonRef={menuButtonRef}
-        organizationSlug={organizationSlug}
         role={role}
       />
       <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden lg:h-[calc(100dvh-3.5rem)]">
         <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
           {children}
         </div>
-        <SiteFooter variant="app" />
+        <SiteFooter
+          variant="app"
+          role={role}
+          organizationSlug={organizationSlug}
+        />
       </div>
     </div>
   );

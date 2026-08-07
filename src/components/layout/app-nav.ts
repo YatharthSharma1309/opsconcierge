@@ -33,7 +33,7 @@ export const appPrimaryNav: AppNavItem[] = [
   { href: "/analytics", label: "Analytics", icon: BarChart3 },
 ];
 
-/** Secondary links — desktop "More" menu + full mobile list */
+/** Secondary links — app footer on desktop + full mobile drawer */
 export const appSecondaryNav: AppNavItem[] = [
   { href: "/widget/intake", label: "Runs", icon: ClipboardList },
   { href: "/chat", label: "Chat", icon: Bot },

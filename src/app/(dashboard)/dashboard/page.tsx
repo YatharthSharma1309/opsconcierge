@@ -3,6 +3,8 @@ import {
   ArrowRight,
   BookOpen,
   Bot,
+  CheckCircle2,
+  Circle,
   ClipboardList,
   Headphones,
   MessageSquare,
@@ -10,13 +12,22 @@ import {
 import { Header } from "@/components/layout/header";
 import { SetupHealthCard } from "@/components/dashboard/setup-health-card";
 import { GettingStartedWorkflow } from "@/components/dashboard/getting-started-workflow";
+import { Badge } from "@/components/ui/badge";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 import { buttonClassName } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { requireOrgMembershipOrRedirect } from "@/lib/auth";
 import { getWorkspaceHealth } from "@/lib/demo";
 import { db } from "@/lib/db";
-import { isAiConfigured, isEmbeddingEnabled } from "@/lib/ai";
+import {
+  getAiProviderPreference,
+  getChatModel,
+  isAiConfigured,
+  isEmbeddingEnabled,
+  isOpenRouterConfigured,
+  shouldAttemptGemini,
+} from "@/lib/ai";
+import { getGeminiChatModel, isGeminiConfigured } from "@/lib/gemini";
 import { RelativeTime } from "@/components/ui/relative-time";
 import { cn } from "@/lib/utils";
 
@@ -38,6 +49,73 @@ export default async function DashboardPage() {
   const { organization } = await requireOrgMembershipOrRedirect();
   const data = await getDashboardData(organization.id);
   const aiConfigured = isAiConfigured();
+  const embeddingEnabled = isEmbeddingEnabled();
+  const geminiReady = isGeminiConfigured();
+  const openRouterReady = isOpenRouterConfigured();
+  const preference = getAiProviderPreference();
+  const activeModel = shouldAttemptGemini()
+    ? getGeminiChatModel()
+    : openRouterReady
+      ? getChatModel()
+      : "keyword fallback";
+  const providerLabel = !aiConfigured
+    ? "Keyword only"
+    : shouldAttemptGemini()
+      ? preference === "auto" && openRouterReady
+        ? "Gemini → OpenRouter"
+        : "Gemini"
+      : "OpenRouter";
+  const engineMode = !data.readyDocuments
+    ? "Setup"
+    : aiConfigured
+      ? shouldAttemptGemini()
+        ? "Gemini"
+        : "OpenRouter"
+      : "Keyword";
+  const engineHint = !data.readyDocuments
+    ? "Upload knowledge docs first"
+    : aiConfigured
+      ? `Active: ${activeModel}`
+      : "Works without API key";
+  const quickActions = [
+    { href: "/knowledge", label: "Upload documents", variant: "primary" as const },
+    { href: "/chat", label: "Test chatbot", variant: "secondary" as const },
+    { href: "/widget", label: "Open widget", variant: "secondary" as const },
+    { href: "/analytics", label: "View analytics", variant: "secondary" as const },
+  ];
+  const aiEngineRows = [
+    {
+      label: "Provider path",
+      value: providerLabel,
+      done: aiConfigured,
+    },
+    {
+      label: "Active model",
+      value: activeModel,
+      done: aiConfigured,
+    },
+    {
+      label: "Retrieval",
+      value: embeddingEnabled ? "Embeddings + keyword" : "Keyword (free)",
+      done: true,
+    },
+    {
+      label: "Knowledge ready",
+      value:
+        data.readyDocuments > 0
+          ? `${data.readyDocuments} indexed doc${data.readyDocuments === 1 ? "" : "s"}`
+          : "No ready docs yet",
+      done: data.readyDocuments > 0,
+    },
+    {
+      label: "Chat tested",
+      value:
+        data.conversations > 0
+          ? `${data.conversations} conversation${data.conversations === 1 ? "" : "s"}`
+          : "Not tested yet",
+      done: data.conversations > 0,
+    },
+  ];
 
   return (
     <>
@@ -92,11 +170,11 @@ export default async function DashboardPage() {
           readyDocuments={data.readyDocuments}
           conversations={data.conversations}
           aiConfigured={aiConfigured}
-          embeddingEnabled={isEmbeddingEnabled()}
+          embeddingEnabled={embeddingEnabled}
         />
 
-        {/* Compact queue summary — progressive disclosure vs equal stat cards */}
-        <section className="grid gap-3 sm:grid-cols-3">
+        {/* Compact queue summary — includes AI Engine mode from the original 4-up */}
+        <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {[
             {
               label: "Open tickets",
@@ -114,7 +192,14 @@ export default async function DashboardPage() {
               label: "Conversations",
               value: data.conversations,
               href: "/inbox",
+              icon: MessageSquare,
+            },
+            {
+              label: "AI engine",
+              value: engineMode,
+              href: "/chat",
               icon: Bot,
+              hint: engineHint,
             },
           ].map((item) => {
             const Icon = item.icon;
@@ -127,13 +212,18 @@ export default async function DashboardPage() {
                   "hover:border-primary/25 hover:bg-primary-soft/40",
                 )}
               >
-                <div>
+                <div className="min-w-0">
                   <p className="text-xs font-medium text-muted">{item.label}</p>
-                  <p className="mt-1 text-2xl font-semibold tabular-nums text-foreground">
+                  <p className="mt-1 truncate text-2xl font-semibold tabular-nums text-foreground">
                     {item.value}
                   </p>
+                  {"hint" in item && item.hint ? (
+                    <p className="mt-1 truncate text-[11px] text-muted">
+                      {item.hint}
+                    </p>
+                  ) : null}
                 </div>
-                <Icon className="h-5 w-5 text-muted" aria-hidden />
+                <Icon className="h-5 w-5 shrink-0 text-muted" aria-hidden />
               </Link>
             );
           })}
@@ -191,27 +281,70 @@ export default async function DashboardPage() {
           </Card>
 
           <Card>
-            <CardTitle>AI engine</CardTitle>
-            <CardDescription>
-              {data.readyDocuments
-                ? aiConfigured
-                  ? "Gemini / OpenRouter ready for grounded answers."
-                  : "Keyword fallback — add an API key for full RAG chat."
-                : "Upload knowledge docs before expecting strong deflection."}
-            </CardDescription>
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <CardTitle>AI engine</CardTitle>
+                <CardDescription>
+                  Jump into core workflows, then check provider and retrieval
+                  readiness.
+                </CardDescription>
+              </div>
+              <Badge tone={aiConfigured ? "success" : "warning"}>
+                {engineMode}
+              </Badge>
+            </div>
+
             <div className="mt-5 flex flex-wrap gap-3">
-              <Link
-                href="/knowledge"
-                className={buttonClassName({ variant: "secondary" })}
-              >
-                Knowledge base
-              </Link>
-              <Link
-                href="/analytics"
-                className={buttonClassName({ variant: "ghost" })}
-              >
-                Analytics
-              </Link>
+              {quickActions.map((action) => (
+                <Link
+                  key={action.href}
+                  href={action.href}
+                  className={buttonClassName({
+                    variant:
+                      action.variant === "primary" ? "primary" : "secondary",
+                  })}
+                >
+                  {action.label}
+                </Link>
+              ))}
+            </div>
+
+            <ul className="mt-5 divide-y divide-border rounded-xl border border-border">
+              {aiEngineRows.map((row) => {
+                const StatusIcon = row.done ? CheckCircle2 : Circle;
+                return (
+                  <li
+                    key={row.label}
+                    className="flex items-start gap-3 px-3.5 py-2.5"
+                  >
+                    <StatusIcon
+                      className={cn(
+                        "mt-0.5 h-4 w-4 shrink-0",
+                        row.done ? "text-success" : "text-muted",
+                      )}
+                      aria-hidden
+                    />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs font-medium text-muted">
+                        {row.label}
+                      </p>
+                      <p className="mt-0.5 truncate text-sm font-medium text-foreground">
+                        {row.value}
+                      </p>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+
+            <div className="mt-2 flex flex-wrap gap-2 px-0.5 text-[11px] text-muted">
+              <span>
+                Gemini: {geminiReady ? "configured" : "missing key"}
+              </span>
+              <span aria-hidden>·</span>
+              <span>
+                OpenRouter: {openRouterReady ? "configured" : "missing key"}
+              </span>
             </div>
           </Card>
         </section>

@@ -23,7 +23,6 @@ type DashboardTopBarProps = {
   mobileNavOpen: boolean;
   onMobileNavToggle: () => void;
   menuButtonRef: React.RefObject<HTMLButtonElement | null>;
-  organizationSlug?: string;
   role?: MemberRole;
 };
 
@@ -31,7 +30,6 @@ export function DashboardTopBar({
   mobileNavOpen,
   onMobileNavToggle,
   menuButtonRef,
-  organizationSlug,
   role = "AGENT",
 }: DashboardTopBarProps) {
   const demoMode = isDemoToolsEnabled();
@@ -39,7 +37,7 @@ export function DashboardTopBar({
   return (
     <header className="sticky top-0 z-30 border-b border-border bg-surface/90 backdrop-blur-md">
       <div className="flex h-14 items-center gap-3 px-4 sm:gap-4 sm:px-6">
-        <div className="flex min-w-0 shrink-0 items-center gap-2 border-r border-border pr-3 sm:pr-4">
+        <div className="flex min-w-0 shrink-0 items-center gap-2 border-r border-border pr-4 sm:pr-5">
           <MobileMenuButton
             ref={menuButtonRef}
             open={mobileNavOpen}
@@ -50,7 +48,7 @@ export function DashboardTopBar({
           <BrandLogo href="/dashboard" size="sm" collapseWordmark />
         </div>
 
-        <DashboardNav role={role} organizationSlug={organizationSlug} />
+        <DashboardNav role={role} />
 
         <div className="ml-auto flex shrink-0 items-center gap-1.5 border-l border-border pl-3 sm:gap-2 sm:pl-4">
           <ThemeToggle className="h-8 w-8 rounded-lg border-0 bg-transparent shadow-none hover:bg-foreground/[0.05]" />

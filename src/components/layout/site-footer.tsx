@@ -1,10 +1,17 @@
 import Link from "next/link";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { BrandLogo } from "@/components/layout/brand-logo";
+import {
+  appSecondaryNav,
+  filterNavByRole,
+  helpHrefForOrg,
+  helpNavItem,
+} from "@/components/layout/app-nav";
 import { DemoShortcuts } from "@/components/marketing/demo-shortcuts";
 import { buttonClassName } from "@/components/ui/button";
 import { isMarketingDemoMode } from "@/lib/env/marketing-demo";
 import { cn } from "@/lib/utils";
+import type { MemberRole } from "@/generated/prisma/client";
 
 function GitHubIcon({ className }: { className?: string }) {
   return (
@@ -22,6 +29,9 @@ function GitHubIcon({ className }: { className?: string }) {
 type SiteFooterProps = {
   variant?: "full" | "minimal" | "app";
   className?: string;
+  /** Used by app footer for role-gated secondary links */
+  role?: MemberRole;
+  organizationSlug?: string;
 };
 
 const productLinks = [
@@ -91,7 +101,12 @@ function FooterColumn({
   );
 }
 
-export function SiteFooter({ variant = "full", className }: SiteFooterProps) {
+export function SiteFooter({
+  variant = "full",
+  className,
+  role = "AGENT",
+  organizationSlug,
+}: SiteFooterProps) {
   const year = 2026;
   const demoMode = isMarketingDemoMode();
   const footerResourceLinks = demoMode ? demoResourceLinks : resourceLinks;
@@ -99,6 +114,13 @@ export function SiteFooter({ variant = "full", className }: SiteFooterProps) {
   const secondaryCtaHref = demoMode ? "/widget" : "/help";
 
   if (variant === "app") {
+    const secondary = filterNavByRole(appSecondaryNav, role);
+    const helpHref = helpHrefForOrg(organizationSlug);
+    const appLinks = [
+      ...secondary.map((item) => ({ href: item.href, label: item.label })),
+      { href: helpHref, label: helpNavItem.label },
+    ];
+
     return (
       <footer
         className={cn(
@@ -106,16 +128,24 @@ export function SiteFooter({ variant = "full", className }: SiteFooterProps) {
           className,
         )}
       >
-        <div className="flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
+        <div className="flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-6 lg:px-8">
           <p className="text-xs text-muted">
             © {year} OpsConcierge · Ops desk for small businesses
           </p>
-          <Link
-            href="/help"
-            className="text-xs font-medium text-slate-600 transition-colors hover:text-primary"
+          <nav
+            aria-label="Secondary"
+            className="flex flex-wrap items-center gap-x-4 gap-y-2"
           >
-            Help
-          </Link>
+            {appLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="text-xs font-medium text-muted transition-colors hover:text-primary"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
         </div>
       </footer>
     );
