@@ -88,17 +88,17 @@ export function SetupHealthCard({
   }
 
   return (
-    <Card className="hero-gradient overflow-hidden border-blue-100 p-0">
+    <Card className="overflow-hidden border-border p-0">
       <div className="grid gap-6 p-6 lg:grid-cols-[1.2fr_1fr]">
         <div>
-          <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-900">
+          <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-primary-soft px-3 py-1 text-xs font-medium text-primary">
             <Sparkles className="h-3.5 w-3.5" />
             Workspace readiness
           </div>
-          <h2 className="text-2xl font-semibold tracking-tight text-slate-900">
+          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
             Support Health Command Center
           </h2>
-          <p className="mt-2 max-w-xl text-sm leading-6 text-slate-600">
+          <p className="mt-2 max-w-xl text-sm leading-6 text-muted">
             Upload knowledge, test the chatbot, and embed the widget on your site
             when you are ready to go live.
           </p>
@@ -134,20 +134,20 @@ export function SetupHealthCard({
           </div>
 
           {message ? (
-            <p className="mt-3 text-sm text-emerald-700">{message}</p>
+            <p className="mt-3 text-sm text-success">{message}</p>
           ) : null}
         </div>
 
-        <div className="rounded-2xl border border-white/70 bg-white/80 p-5 shadow-sm">
+        <div className="rounded-2xl border border-border bg-background/60 p-5 shadow-sm dark:bg-background/40">
           <div className="mb-4 flex items-center justify-between">
-            <p className="text-sm font-medium text-slate-700">Setup progress</p>
-            <span className="text-2xl font-semibold text-blue-900">
+            <p className="text-sm font-medium text-foreground">Setup progress</p>
+            <span className="text-2xl font-semibold text-primary">
               {readiness}%
             </span>
           </div>
-          <div className="mb-5 h-2 overflow-hidden rounded-full bg-slate-100">
+          <div className="mb-5 h-2 overflow-hidden rounded-full bg-primary-soft">
             <div
-              className="h-full rounded-full bg-gradient-to-r from-blue-800 to-teal-500 transition-all duration-500"
+              className="h-full rounded-full bg-gradient-to-r from-primary to-accent transition-all duration-500"
               style={{ width: `${readiness}%` }}
             />
           </div>
@@ -155,20 +155,20 @@ export function SetupHealthCard({
             {steps.map((step) => (
               <div key={step.label} className="flex items-start gap-3">
                 {step.done ? (
-                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" />
+                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-success" />
                 ) : (
-                  <Circle className="mt-0.5 h-4 w-4 shrink-0 text-slate-300" />
+                  <Circle className="mt-0.5 h-4 w-4 shrink-0 text-muted" />
                 )}
                 <div>
-                  <p className="text-sm font-medium text-slate-800">
+                  <p className="text-sm font-medium text-foreground">
                     {step.label}
                   </p>
-                  <p className="text-xs text-slate-500">{step.hint}</p>
+                  <p className="text-xs text-muted">{step.hint}</p>
                 </div>
               </div>
             ))}
           </div>
-          <p className="mt-4 text-xs text-slate-400">
+          <p className="mt-4 text-xs text-muted">
             Retrieval: {embeddingEnabled ? "vector + keyword" : "keyword (free)"}
           </p>
         </div>

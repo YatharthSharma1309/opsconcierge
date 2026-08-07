@@ -36,13 +36,11 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <head>
-        <ThemeScript />
-      </head>
       <body
         className="min-h-full bg-background font-sans text-foreground"
         suppressHydrationWarning
       >
+        <ThemeScript />
         <a href="#main-content" className="skip-link">
           Skip to main content
         </a>

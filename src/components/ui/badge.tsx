@@ -6,7 +6,7 @@ type BadgeProps = HTMLAttributes<HTMLSpanElement> & {
 };
 
 const tones = {
-  default: "bg-slate-100 text-slate-700",
+  default: "bg-primary-soft text-foreground ring-1 ring-inset ring-border",
   success: "bg-emerald-50 text-emerald-800 ring-1 ring-inset ring-emerald-200/80",
   warning: "bg-amber-50 text-amber-800 ring-1 ring-inset ring-amber-200/80",
   danger: "bg-rose-50 text-rose-800 ring-1 ring-inset ring-rose-200/80",

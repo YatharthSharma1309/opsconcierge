@@ -12,7 +12,7 @@ const variants = {
   secondary:
     "border border-border bg-surface text-foreground hover:border-primary/30 hover:bg-primary-soft active:bg-primary-soft disabled:text-muted",
   ghost:
-    "text-muted hover:bg-primary-soft hover:text-foreground active:bg-primary-soft/80 disabled:text-muted/60",
+    "text-foreground/75 hover:bg-primary-soft hover:text-foreground active:bg-primary-soft/80 disabled:text-muted/60",
   danger:
     "bg-danger text-white shadow-sm shadow-rose-600/20 hover:bg-rose-500 active:bg-rose-700 disabled:bg-rose-300 disabled:shadow-none",
 };

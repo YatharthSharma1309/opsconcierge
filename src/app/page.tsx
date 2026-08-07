@@ -59,23 +59,23 @@ export default function LandingPage() {
 
       <main id="main-content" className="flex-1">
         {/* Hero — brand + one headline + support + CTAs + product preview */}
-        <section className="hero-gradient border-b border-slate-200/80">
+        <section className="hero-gradient border-b border-border/80">
           <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 pb-14 pt-10 sm:px-6 sm:pb-18 sm:pt-14 lg:grid-cols-2 lg:gap-14 lg:pb-20 lg:pt-14">
             <div>
-              <h1 className="max-w-xl text-5xl font-bold tracking-[-0.03em] text-slate-900 md:text-6xl md:leading-[1.05]">
+              <h1 className="max-w-xl text-5xl font-bold tracking-[-0.03em] text-foreground md:text-6xl md:leading-[1.05]">
                 OpsConcierge
               </h1>
-              <p className="mt-4 max-w-xl text-xl font-medium leading-8 tracking-tight text-slate-800 md:text-2xl md:leading-9">
+              <p className="mt-4 max-w-xl text-xl font-medium leading-8 tracking-tight text-foreground/90 md:text-2xl md:leading-9">
                 The ops desk for small businesses that still live in email and
                 DMs
               </p>
-              <p className="mt-5 max-w-xl text-base leading-7 text-slate-600">
+              <p className="mt-5 max-w-xl text-base leading-7 text-muted">
                 Deflect FAQs on your site, escalate messy cases with the full
                 chat, and shortlist hires from resumes — with a log of every AI
                 decision.
               </p>
               {demoMode ? (
-                <p className="mt-3 max-w-xl text-sm leading-6 text-slate-500">
+                <p className="mt-3 max-w-xl text-sm leading-6 text-muted">
                   Built for Build with Gemini XPRIZE · Small Business Services
                 </p>
               ) : null}
