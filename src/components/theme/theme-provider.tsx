@@ -5,7 +5,7 @@ import {
   useCallback,
   useContext,
   useEffect,
-  useState,
+  useSyncExternalStore,
   type ReactNode,
 } from "react";
 
@@ -20,6 +20,9 @@ type ThemeContextValue = {
 };
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
+
+const listeners = new Set<() => void>();
+let memoryTheme: Theme | null = null;
 
 function applyTheme(theme: Theme) {
   const root = document.documentElement;
@@ -37,28 +40,60 @@ function readStoredTheme(): Theme {
   return "light";
 }
 
+function getThemeSnapshot(): Theme {
+  if (memoryTheme) return memoryTheme;
+  memoryTheme = readStoredTheme();
+  return memoryTheme;
+}
+
+function getServerSnapshot(): Theme {
+  return "light";
+}
+
+function subscribe(listener: () => void) {
+  listeners.add(listener);
+  const onStorage = (event: StorageEvent) => {
+    if (event.key === STORAGE_KEY || event.key === null) {
+      memoryTheme = null;
+      listener();
+    }
+  };
+  window.addEventListener("storage", onStorage);
+  return () => {
+    listeners.delete(listener);
+    window.removeEventListener("storage", onStorage);
+  };
+}
+
+function commitTheme(next: Theme) {
+  memoryTheme = next;
+  applyTheme(next);
+  try {
+    localStorage.setItem(STORAGE_KEY, next);
+  } catch {
+    /* ignore */
+  }
+  listeners.forEach((listener) => listener());
+}
+
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>("light");
+  const theme = useSyncExternalStore(
+    subscribe,
+    getThemeSnapshot,
+    getServerSnapshot,
+  );
 
   useEffect(() => {
-    const initial = readStoredTheme();
-    setThemeState(initial);
-    applyTheme(initial);
-  }, []);
+    applyTheme(theme);
+  }, [theme]);
 
   const setTheme = useCallback((next: Theme) => {
-    setThemeState(next);
-    applyTheme(next);
-    try {
-      localStorage.setItem(STORAGE_KEY, next);
-    } catch {
-      /* ignore */
-    }
+    commitTheme(next);
   }, []);
 
   const toggleTheme = useCallback(() => {
-    setTheme(theme === "dark" ? "light" : "dark");
-  }, [setTheme, theme]);
+    commitTheme(theme === "dark" ? "light" : "dark");
+  }, [theme]);
 
   return (
     <ThemeContext.Provider value={{ theme, setTheme, toggleTheme }}>

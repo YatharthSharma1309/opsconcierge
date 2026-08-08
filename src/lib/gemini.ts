@@ -91,11 +91,20 @@ export async function geminiChatCompletion({
     throw new Error(`Gemini API request failed (${res.status}): ${details}`);
   }
 
-  const data = (await res.json().catch(() => null)) as any;
+  type GeminiPart = { text?: string };
+  type GeminiResponse = {
+    candidates?: Array<{
+      content?: {
+        parts?: GeminiPart[];
+      };
+    }>;
+  };
+
+  const data = (await res.json().catch(() => null)) as GeminiResponse | null;
   const text: string =
     data?.candidates?.[0]?.content?.parts
-      ?.map((p: any) => p?.text)
-      ?.filter(Boolean)
+      ?.map((part) => part?.text)
+      ?.filter((value): value is string => Boolean(value))
       ?.join("") ?? "";
 
   if (!text.trim()) {

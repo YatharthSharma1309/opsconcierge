@@ -6,7 +6,7 @@ import {
   isEmbeddingEnabled,
   shouldAttemptGemini,
 } from "@/lib/ai";
-import { geminiChatCompletion, isGeminiConfigured } from "@/lib/gemini";
+import { geminiChatCompletion } from "@/lib/gemini";
 import { notifyOpsWorker } from "@/lib/ops-worker";
 import { computeGroundingConfidence, type GroundingConfidence } from "@/lib/rag/confidence";
 import { MAX_RAG_CHUNKS_FETCH } from "@/lib/rag/constants";

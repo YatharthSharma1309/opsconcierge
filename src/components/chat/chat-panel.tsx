@@ -370,17 +370,14 @@ export function ChatPanel({
     saveVisitorEmail,
     feedbackPendingId,
   } = useChat(hasDocuments, welcomeMessage, { mode, widgetKey, widgetChannel });
-  const [visitorEmail, setVisitorEmail] = useState("");
+  const [visitorEmail, setVisitorEmail] = useState(() =>
+    mode === "widget" ? getStoredVisitorEmail() : "",
+  );
   const canSend =
     hasDocuments &&
     !isSending &&
     input.trim().length > 0 &&
     (mode !== "widget" || sessionReady);
-
-  useEffect(() => {
-    if (mode !== "widget") return;
-    setVisitorEmail(getStoredVisitorEmail());
-  }, [getStoredVisitorEmail, mode]);
 
   useEffect(() => {
     if (initializedRef.current) return;

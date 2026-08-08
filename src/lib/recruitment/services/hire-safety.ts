@@ -22,7 +22,8 @@ async function getJobForOrganization(jobId: string, organizationId: string) {
   });
 }
 
-async function deleteResumeFile(_filePath: string | null | undefined): Promise<void> {
+async function deleteResumeFile(filePath: string | null | undefined): Promise<void> {
+  void filePath;
   // no-op: resumes are processed in-memory only
 }
 

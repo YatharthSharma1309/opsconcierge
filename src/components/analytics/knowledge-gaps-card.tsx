@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { ArrowRight, Loader2, Sparkles, Wand2 } from "lucide-react";
@@ -36,7 +36,7 @@ export function KnowledgeGapsCard({
   const [activeTopic, setActiveTopic] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [autoDrafted, setAutoDrafted] = useState(false);
+  const autoDraftedRef = useRef(false);
 
   async function draftFaq(topic: string) {
     setIsDrafting(true);
@@ -72,12 +72,15 @@ export function KnowledgeGapsCard({
   }
 
   useEffect(() => {
-    if (autoDrafted) return;
+    if (autoDraftedRef.current) return;
     const gapTopic = searchParams.get("gap")?.trim();
     if (!gapTopic) return;
-    setAutoDrafted(true);
-    void draftFaq(gapTopic);
-  }, [autoDrafted, searchParams]);
+    autoDraftedRef.current = true;
+    const timer = window.setTimeout(() => {
+      void draftFaq(gapTopic);
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [searchParams]);
 
   async function publishFaq() {
     if (!draft || !canPublish) return;
