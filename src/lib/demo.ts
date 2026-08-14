@@ -80,144 +80,6 @@ async function seedDemoConversationsAndTickets(organizationId: string) {
     ],
   });
 
-  const escalationConversation = await db.conversation.create({
-    data: {
-      organizationId,
-      title: "Demo: API rate limits",
-      channel: "WIDGET",
-      visitorId: "demo-widget-visitor",
-      createdAt: oneDayAgo,
-      updatedAt: new Date(Date.now() - 6 * 60 * 60 * 1000),
-    },
-  });
-
-  await db.message.createMany({
-    data: [
-      {
-        conversationId: escalationConversation.id,
-        role: "USER",
-        content: "We keep hitting API rate limits during batch imports.",
-        createdAt: oneDayAgo,
-      },
-      {
-        conversationId: escalationConversation.id,
-        role: "ASSISTANT",
-        content:
-          "I found general API limit info, but batch import throttling may need an engineer to review your workspace settings.",
-        helpful: false,
-        createdAt: new Date(Date.now() - 8 * 60 * 60 * 1000),
-      },
-    ],
-  });
-
-  await db.ticket.create({
-    data: {
-      organizationId,
-      conversationId: escalationConversation.id,
-      title: "Escalation: API rate limits during batch imports",
-      description:
-        "user: We keep hitting API rate limits during batch imports.\n\nassistant: I found general API limit info, but batch import throttling may need an engineer to review your workspace settings.",
-      status: "OPEN",
-      priority: "HIGH",
-      createdAt: new Date(Date.now() - 6 * 60 * 60 * 1000),
-      triage: {
-        priority: "HIGH",
-        category: "product",
-        reasonCode: "rate_limit_batch_import",
-        brief: [
-          "Batch import throttling is not covered by the current FAQ.",
-          "Ask which workspace and import size triggered the 429s.",
-          "Check whether the customer is on Pro API limits before escalating to engineering.",
-        ],
-        model: "gemini-2.0-flash",
-        source: "ai",
-      },
-    },
-  });
-
-  const userMessage = await db.message.findFirst({
-    where: {
-      conversationId: escalationConversation.id,
-      role: "USER",
-    },
-    orderBy: { createdAt: "asc" },
-  });
-
-  if (userMessage) {
-    const existingRun = await db.executionRun.findFirst({
-      where: {
-        workspaceId: organizationId,
-        conversationId: escalationConversation.id,
-        trigger: "widget_intake",
-      },
-    });
-
-    if (!existingRun) {
-      await db.executionRun.create({
-        data: {
-          workspaceId: organizationId,
-          conversationId: escalationConversation.id,
-          userMessageId: userMessage.id,
-          channel: "WIDGET",
-          trigger: "widget_intake",
-          createdAt: new Date(Date.now() - 6 * 60 * 60 * 1000),
-          logs: {
-            create: [
-              {
-                workspaceId: organizationId,
-                conversationId: escalationConversation.id,
-                userMessageId: userMessage.id,
-                agent: "lane-router",
-                trigger: "widget_intake",
-                model: "gemini-2.0-flash",
-                decision: "route_to_gemini",
-                latencyMs: 18,
-                metadata: {
-                  chunksMatched: 2,
-                  confidence: 0.42,
-                  retrievalMode: "keyword",
-                  seeded: true,
-                },
-              },
-              {
-                workspaceId: organizationId,
-                conversationId: escalationConversation.id,
-                userMessageId: userMessage.id,
-                agent: "support-concierge",
-                trigger: "widget_intake",
-                model: "gemini-2.0-flash",
-                decision: "gemini_success",
-                latencyMs: 840,
-                metadata: {
-                  provider: "gemini",
-                  outcome: "needs_human",
-                  seeded: true,
-                },
-              },
-              {
-                workspaceId: organizationId,
-                conversationId: escalationConversation.id,
-                userMessageId: userMessage.id,
-                agent: "escalation-triage",
-                trigger: "ticket_update",
-                model: "gemini-2.0-flash",
-                decision: "triage_ready",
-                latencyMs: 310,
-                metadata: {
-                  priority: "HIGH",
-                  category: "product",
-                  reasonCode: "rate_limit_batch_import",
-                  source: "ai",
-                  seeded: true,
-                },
-              },
-            ],
-          },
-        },
-      });
-    }
-  }
-
   await db.ticket.createMany({
     data: [
       {
@@ -265,6 +127,152 @@ async function seedDemoConversationsAndTickets(organizationId: string) {
       },
     },
   });
+
+  return { created: true };
+}
+
+async function seedDemoTriagedEscalation(organizationId: string) {
+  const existing = await db.conversation.findFirst({
+    where: {
+      organizationId,
+      title: "Demo: API rate limits",
+    },
+  });
+
+  if (existing) {
+    return { created: false };
+  }
+
+  const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+  const sixHoursAgo = new Date(Date.now() - 6 * 60 * 60 * 1000);
+
+  const escalationConversation = await db.conversation.create({
+    data: {
+      organizationId,
+      title: "Demo: API rate limits",
+      channel: "WIDGET",
+      visitorId: "demo-widget-visitor",
+      createdAt: oneDayAgo,
+      updatedAt: sixHoursAgo,
+    },
+  });
+
+  await db.message.createMany({
+    data: [
+      {
+        conversationId: escalationConversation.id,
+        role: "USER",
+        content: "We keep hitting API rate limits during batch imports.",
+        createdAt: oneDayAgo,
+      },
+      {
+        conversationId: escalationConversation.id,
+        role: "ASSISTANT",
+        content:
+          "I found general API limit info, but batch import throttling may need an engineer to review your workspace settings.",
+        helpful: false,
+        createdAt: new Date(Date.now() - 8 * 60 * 60 * 1000),
+      },
+    ],
+  });
+
+  await db.ticket.create({
+    data: {
+      organizationId,
+      conversationId: escalationConversation.id,
+      title: "Escalation: API rate limits during batch imports",
+      description:
+        "user: We keep hitting API rate limits during batch imports.\n\nassistant: I found general API limit info, but batch import throttling may need an engineer to review your workspace settings.",
+      status: "OPEN",
+      priority: "HIGH",
+      createdAt: sixHoursAgo,
+      triage: {
+        priority: "HIGH",
+        category: "product",
+        reasonCode: "rate_limit_batch_import",
+        brief: [
+          "Batch import throttling is not covered by the current FAQ.",
+          "Ask which workspace and import size triggered the 429s.",
+          "Check whether the customer is on Pro API limits before escalating to engineering.",
+        ],
+        model: "gemini-2.0-flash",
+        source: "ai",
+      },
+    },
+  });
+
+  const userMessage = await db.message.findFirst({
+    where: {
+      conversationId: escalationConversation.id,
+      role: "USER",
+    },
+    orderBy: { createdAt: "asc" },
+  });
+
+  if (userMessage) {
+    await db.executionRun.create({
+      data: {
+        workspaceId: organizationId,
+        conversationId: escalationConversation.id,
+        userMessageId: userMessage.id,
+        channel: "WIDGET",
+        trigger: "widget_intake",
+        createdAt: sixHoursAgo,
+        logs: {
+          create: [
+            {
+              workspaceId: organizationId,
+              conversationId: escalationConversation.id,
+              userMessageId: userMessage.id,
+              agent: "lane-router",
+              trigger: "widget_intake",
+              model: "gemini-2.0-flash",
+              decision: "route_to_gemini",
+              latencyMs: 18,
+              metadata: {
+                chunksMatched: 2,
+                confidence: 0.42,
+                retrievalMode: "keyword",
+                seeded: true,
+              },
+            },
+            {
+              workspaceId: organizationId,
+              conversationId: escalationConversation.id,
+              userMessageId: userMessage.id,
+              agent: "support-concierge",
+              trigger: "widget_intake",
+              model: "gemini-2.0-flash",
+              decision: "gemini_success",
+              latencyMs: 840,
+              metadata: {
+                provider: "gemini",
+                outcome: "needs_human",
+                seeded: true,
+              },
+            },
+            {
+              workspaceId: organizationId,
+              conversationId: escalationConversation.id,
+              userMessageId: userMessage.id,
+              agent: "escalation-triage",
+              trigger: "ticket_update",
+              model: "gemini-2.0-flash",
+              decision: "triage_ready",
+              latencyMs: 310,
+              metadata: {
+                priority: "HIGH",
+                category: "product",
+                reasonCode: "rate_limit_batch_import",
+                source: "ai",
+                seeded: true,
+              },
+            },
+          ],
+        },
+      },
+    });
+  }
 
   return { created: true };
 }
@@ -628,12 +636,13 @@ export async function seedDemoWorkspace() {
   const knowledge = await seedDemoKnowledgeBase();
   const { organization } = await getDemoOrganizationContext();
   const workspace = await seedDemoConversationsAndTickets(organization.id);
+  const triaged = await seedDemoTriagedEscalation(organization.id);
   const recruitment = await seedDemoRecruitment(organization.id);
 
   return {
     document: knowledge.document,
     knowledgeCreated: knowledge.created,
-    workspaceCreated: workspace.created,
+    workspaceCreated: workspace.created || triaged.created,
     recruitmentCreated: recruitment.created,
     recruitmentJobId: recruitment.jobId,
   };
