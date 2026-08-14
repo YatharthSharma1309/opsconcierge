@@ -37,10 +37,10 @@ Full brief: [`docs/HACKATHON.md`](./HACKATHON.md). Official rules: https://www.g
 
 | Stack piece | How to prove | Done |
 |-------------|--------------|------|
-| **Gemini API** | Widget/chat response; execution log `model` column; `/api/health/xprize` → `gemini.configured: true` | [ ] |
-| **Firebase RTDB** | Firebase console screenshot; `/api/health/xprize` → `googleCloudEvidence.provider: "firebase_rtdb"` | [ ] |
-| **Vercel** | Production URL loads; Vercel dashboard deploy screenshot | [ ] |
-| **Neon Postgres** | Tickets, execution runs persist after refresh; optional Neon console screenshot | [ ] |
+| **Gemini API** | Widget/chat response; execution log `model` column; `/api/health/xprize` → `gemini.configured: true` | [x] production `gemini-3.5-flash` + `gemini_success` |
+| **Firebase RTDB** | Firebase console screenshot; `/api/health/xprize` → `googleCloudEvidence.provider: "firebase_rtdb"` | [x] `opsconcierge_agent_runs` row |
+| **Vercel** | Production URL loads; Vercel dashboard deploy screenshot | [x] live URL; optional dashboard shot skipped |
+| **Neon Postgres** | Tickets, execution runs persist after refresh; optional Neon console screenshot | [x] ticket + AI Runs persist |
 
 **Health endpoint:** `GET /api/health/xprize`  
 Target response: `"readyForXprizeDemo": true`
@@ -49,12 +49,12 @@ Target response: `"readyForXprizeDemo": true`
 
 ## Judge demo path (must work live)
 
-1. [ ] Landing `/` — hero mentions Gemini + ops workflow
-2. [ ] Enter app → `/dashboard` (demo mode or sign-in)
-3. [ ] `/widget` — open floating bubble, ask FAQ question (e.g. refund policy)
-4. [ ] Gemini streams an answer grounded in knowledge base
-5. [ ] **Escalate to ticket** — ticket created
-6. [ ] `/widget/intake` — execution log shows run with agent, model, latency, decision
+1. [x] Landing `/` — hero mentions Gemini + ops workflow
+2. [x] Enter app → `/dashboard` (demo mode or sign-in)
+3. [x] `/widget` — open floating bubble, ask FAQ question (e.g. refund policy)
+4. [x] Gemini streams an answer grounded in knowledge base
+5. [x] **Escalate to ticket** — ticket created
+6. [x] `/widget/intake` — execution log shows run with agent, model, latency, decision
 7. [ ] Optional: `/widget/intake/[runId]` — deep link to specific run
 8. [ ] Optional: `/recruitment` — second agent lane (30 sec)
 
@@ -68,13 +68,13 @@ Store under `evidence/screenshots/` (create subfolders as needed).
 
 | # | Screen | Filename (suggested) | Done |
 |---|--------|----------------------|------|
-| 1 | Landing hero | `01-landing.png` | [ ] |
-| 2 | Widget chat + answer | `02-widget-chat.png` | [ ] |
-| 3 | Ticket / escalation | `03-ticket.png` | [ ] |
-| 4 | Execution log table | `04-execution-log.png` | [ ] |
-| 5 | XPRIZE health JSON | `05-health-xprize.png` | [ ] |
-| 6 | Firebase RTDB node | `06-firebase-rtdb.png` | [ ] |
-| 7 | Recruitment lane (optional) | `07-recruitment.png` | [ ] |
+| 1 | Landing hero | `01-landing.png` | [x] |
+| 2 | Widget chat + answer | `02-widget-chat.png` | [x] |
+| 3 | Ticket / escalation | `03-ticket.png` | [x] |
+| 4 | Execution log table | `04-execution-log.png` | [x] |
+| 5 | XPRIZE health JSON | `05-health-xprize.png` | [x] |
+| 6 | Firebase RTDB node | `06-firebase-rtdb.png` | [x] |
+| 7 | Recruitment lane (optional) | `07-recruitment.png` | [ ] optional |
 
 ---
 
@@ -98,7 +98,7 @@ Verify in Vercel project settings:
 
 - [x] `DATABASE_URL` (Neon pooled)
 - [x] `GEMINI_API_KEY` + `GEMINI_CHAT_MODEL`
-- [x] `FIREBASE_DATABASE_URL` + `FIREBASE_RTDB_PATH` (set; needs production redeploy)
+- [x] `FIREBASE_DATABASE_URL` + `FIREBASE_RTDB_PATH` (production, redeployed)
 - [x] `APP_URL` = primary Vercel URL
 - [x] Clerk keys (or public demo mode flags)
 - [x] `DEMO_SEED_SECRET` if using demo seed endpoint
@@ -115,10 +115,10 @@ curl -s https://support-ai-nine-mu.vercel.app/api/health | jq
 curl -s https://support-ai-nine-mu.vercel.app/api/health/xprize | jq
 ```
 
-- [ ] `readyForXprizeDemo` is `true`
-- [ ] Full demo script completed once on production
+- [x] `readyForXprizeDemo` is `true`
+- [x] Full demo script completed once on production (Gemini refund FAQ → escalate → AI Runs → Firebase)
 - [ ] Video link works for judges (not private-only)
-- [ ] No secrets in screenshots or committed files
+- [x] No API keys in committed files; crop the Google account chip in `06-firebase-rtdb.png` before a public Devpost upload
 
 ---
 
@@ -132,7 +132,7 @@ curl -s https://support-ai-nine-mu.vercel.app/api/health/xprize | jq
 | Marketing / CAC spend | **$0** | [x] draft |
 | Related-party revenue | **$0** | [x] draft |
 | Real users | Demo workspace only; not claimed as customers | [x] honest |
-| Production evidence | Screenshots pending live Gemini+Firebase run | [ ] |
+| Production evidence | Screenshots in `evidence/screenshots/` from a live Gemini+Firebase run | [x] |
 
 ---
 

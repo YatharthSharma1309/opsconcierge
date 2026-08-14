@@ -16,12 +16,12 @@ Repo: https://github.com/YatharthSharma1309/opsconcierge
 
 | File | What | Status |
 |------|------|--------|
-| `01-landing.png` | Hero + XPRIZE line | Capture after deploy |
-| `02-widget-chat.png` | Grounded Gemini answer + sources | Capture after live widget turn |
-| `03-ticket.png` | Escalation + operator brief | Capture after escalate |
-| `04-execution-log.png` | `/widget/intake` storyboard | Capture after Gemini run |
-| `05-health-xprize.png` | `/api/health/xprize` JSON | Capture when `readyForXprizeDemo: true` |
-| `06-firebase-rtdb.png` | RTDB `opsconcierge_agent_runs` node | Capture after `gemini_success` |
+| `01-landing.png` | Hero + XPRIZE line | Captured 14 Aug 2026 |
+| `02-widget-chat.png` | Widget after grounded Gemini refund answer | Captured 14 Aug 2026 |
+| `03-ticket.png` | Escalation + operator brief | Captured 14 Aug 2026 |
+| `04-execution-log.png` | `/widget/intake` storyboard (`gemini_success`) | Captured 14 Aug 2026 |
+| `05-health-xprize.png` | `/api/health/xprize` JSON `readyForXprizeDemo: true` | Captured 14 Aug 2026 |
+| `06-firebase-rtdb.png` | RTDB `opsconcierge_agent_runs` `gemini_success` row | Captured 14 Aug 2026 — **crop the Google account chip before public upload** |
 | `07-recruitment.png` | Optional candidate evidence | Optional |
 | `08-vercel-deploy.png` | Optional Vercel production deploy | Optional |
 
@@ -40,9 +40,9 @@ Redact emails, API keys, and account IDs.
 
 | Check | Expected |
 |-------|----------|
-| Gemini in deployed app | Widget/chat uses Gemini when quota works; health `gemini.configured: true` |
-| Google Cloud product | Firebase RTDB writes on `gemini_success` (`opsconcierge-xprize`, test-mode rules through mid-Sep 2026) |
-| Health | `readyForXprizeDemo: true` after `FIREBASE_DATABASE_URL` is set and production is redeployed |
+| Gemini in deployed app | Widget refund FAQ used `gemini-3.5-flash`; health `gemini.configured: true`; AI Runs `gemini_success` |
+| Google Cloud product | Firebase RTDB write on `gemini_success` (`opsconcierge-xprize` / `opsconcierge_agent_runs`) |
+| Health | `readyForXprizeDemo: true` (`gemini.model`: `gemini-3.5-flash`, `googleCloudEvidence.provider`: `firebase_rtdb`) |
 
 ## User-only before Devpost submit
 
