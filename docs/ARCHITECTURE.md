@@ -86,7 +86,7 @@ Priority in `src/lib/chat/service.ts`:
 
 Model selection:
 
-- Gemini: `GEMINI_CHAT_MODEL` (default `gemini-2.0-flash`) via `src/lib/gemini.ts`
+- Gemini: `GEMINI_CHAT_MODEL` (default `gemini-3.5-flash`) via `src/lib/gemini.ts`
 - OpenRouter: `OPENROUTER_CHAT_MODEL` (default `openrouter/free`) via `src/lib/ai.ts`
 
 `isAiConfigured()` returns true if either Gemini or OpenRouter is configured.

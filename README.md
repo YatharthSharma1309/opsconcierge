@@ -63,7 +63,7 @@ When free Gemini quota works:
 
 ```
 GEMINI_API_KEY=...
-GEMINI_CHAT_MODEL=gemini-2.0-flash
+GEMINI_CHAT_MODEL=gemini-3.5-flash
 FIREBASE_DATABASE_URL=https://YOUR_PROJECT-default-rtdb.firebaseio.com
 AI_PROVIDER_PREFERENCE=auto
 ```

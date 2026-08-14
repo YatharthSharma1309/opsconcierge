@@ -18,7 +18,7 @@ const vars = {
   OPENROUTER_API_KEY: parsed.OPENROUTER_API_KEY,
   OPENROUTER_CHAT_MODEL: parsed.OPENROUTER_CHAT_MODEL || "openrouter/free",
   GEMINI_API_KEY: parsed.GEMINI_API_KEY,
-  GEMINI_CHAT_MODEL: parsed.GEMINI_CHAT_MODEL || "gemini-2.0-flash",
+  GEMINI_CHAT_MODEL: parsed.GEMINI_CHAT_MODEL || "gemini-3.5-flash",
   AI_PROVIDER_PREFERENCE: "auto",
   APP_URL: appUrl,
   NEXT_PUBLIC_DEMO_RELAY_AI_URL: appUrl,

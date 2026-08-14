@@ -22,10 +22,10 @@ Add to `.env` (local) or Vercel environment variables (production):
 
 ```bash
 GEMINI_API_KEY=your-key-here
-GEMINI_CHAT_MODEL=gemini-2.0-flash
+GEMINI_CHAT_MODEL=gemini-3.5-flash
 ```
 
-`GEMINI_CHAT_MODEL` is optional; default is `gemini-2.0-flash` (see `src/lib/gemini.ts`).
+`GEMINI_CHAT_MODEL` is optional; default is `gemini-3.5-flash` (see `src/lib/gemini.ts`).
 
 ### Where Gemini is used
 
@@ -46,7 +46,7 @@ npm run dev
 curl http://localhost:3000/api/health/xprize
 ```
 
-Expect `"gemini": { "configured": true, "model": "gemini-2.0-flash" }`.
+Expect `"gemini": { "configured": true, "model": "gemini-3.5-flash" }`.
 
 Then open `/chat` or the widget preview at `/widget` and ask a question grounded in uploaded docs.
 
@@ -114,7 +114,7 @@ Add alongside your existing `DATABASE_URL` and optional Clerk keys:
 ```bash
 # Gemini (primary support LLM)
 GEMINI_API_KEY=your-gemini-api-key
-GEMINI_CHAT_MODEL=gemini-2.0-flash
+GEMINI_CHAT_MODEL=gemini-3.5-flash
 
 # Firebase RTDB (GCP evidence)
 FIREBASE_DATABASE_URL=https://YOUR_PROJECT-default-rtdb.firebaseio.com

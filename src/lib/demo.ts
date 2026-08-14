@@ -195,7 +195,7 @@ async function seedDemoTriagedEscalation(organizationId: string) {
           "Ask which workspace and import size triggered the 429s.",
           "Check whether the customer is on Pro API limits before escalating to engineering.",
         ],
-        model: "gemini-2.0-flash",
+        model: "gemini-3.5-flash",
         source: "ai",
       },
     },
@@ -226,7 +226,7 @@ async function seedDemoTriagedEscalation(organizationId: string) {
               userMessageId: userMessage.id,
               agent: "lane-router",
               trigger: "widget_intake",
-              model: "gemini-2.0-flash",
+              model: "gemini-3.5-flash",
               decision: "route_to_gemini",
               latencyMs: 18,
               metadata: {
@@ -242,7 +242,7 @@ async function seedDemoTriagedEscalation(organizationId: string) {
               userMessageId: userMessage.id,
               agent: "support-concierge",
               trigger: "widget_intake",
-              model: "gemini-2.0-flash",
+              model: "gemini-3.5-flash",
               decision: "gemini_success",
               latencyMs: 840,
               metadata: {
@@ -257,7 +257,7 @@ async function seedDemoTriagedEscalation(organizationId: string) {
               userMessageId: userMessage.id,
               agent: "escalation-triage",
               trigger: "ticket_update",
-              model: "gemini-2.0-flash",
+              model: "gemini-3.5-flash",
               decision: "triage_ready",
               latencyMs: 310,
               metadata: {

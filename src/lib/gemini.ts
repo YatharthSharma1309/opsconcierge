@@ -8,7 +8,7 @@ export type GeminiChatCompletionArgs = {
   maxOutputTokens?: number;
 };
 
-const DEFAULT_GEMINI_CHAT_MODEL = "gemini-2.0-flash";
+const DEFAULT_GEMINI_CHAT_MODEL = "gemini-3.5-flash";
 
 const PLACEHOLDER_KEYS = new Set([
   "",
@@ -65,6 +65,7 @@ export async function geminiChatCompletion({
     generationConfig: {
       temperature,
       maxOutputTokens,
+      thinkingConfig: { thinkingBudget: 0 },
     },
   };
 
