@@ -65,7 +65,6 @@ export async function geminiChatCompletion({
     generationConfig: {
       temperature,
       maxOutputTokens,
-      thinkingConfig: { thinkingBudget: 0 },
     },
   };
 
