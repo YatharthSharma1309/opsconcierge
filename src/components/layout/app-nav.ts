@@ -35,7 +35,7 @@ export const appPrimaryNav: AppNavItem[] = [
 
 /** Secondary links — app footer on desktop + full mobile drawer */
 export const appSecondaryNav: AppNavItem[] = [
-  { href: "/widget/intake", label: "Runs", icon: ClipboardList },
+  { href: "/widget/intake", label: "AI Runs", icon: ClipboardList },
   { href: "/chat", label: "Chat", icon: Bot },
   { href: "/inbox", label: "Inbox", icon: Inbox },
   { href: "/settings", label: "Settings", icon: Settings, adminOnly: true },

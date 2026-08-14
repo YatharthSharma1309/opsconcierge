@@ -63,6 +63,8 @@ Firestore is **not** used for evidence — RTDB allows simple REST writes withou
 5. Choose a region (e.g. `us-central1`)
 6. For demo/judge use: start in **test mode** (open read/write rules). For production, restrict rules.
 
+**XPRIZE demo project (Aug 2026):** `opsconcierge-xprize`, US (`us-central1`), URL `https://opsconcierge-xprize-default-rtdb.firebaseio.com`. Test-mode rules are enabled through mid-September 2026 (after the contest deadline). Writes go to `opsconcierge_agent_runs`.
+
 Copy the database URL shown at the top, e.g.:
 
 ```

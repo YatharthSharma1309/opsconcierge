@@ -185,7 +185,7 @@ export function SiteFooter({
               Ready when you are
             </p>
             <h2 className="mt-3 text-2xl font-semibold tracking-tight text-white sm:text-3xl">
-              Put your FAQ to work — and keep a trail of every AI decision
+              Put your FAQ to work — and keep a trail of auditable support runs
             </h2>
             <p className="mt-3 text-sm leading-6 text-slate-400">
               Deflect routine questions on your site, escalate with the full

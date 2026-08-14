@@ -61,7 +61,7 @@ export default async function WidgetIntakePage() {
   return (
     <>
       <Header
-        title="Widget intake demo"
+        title="AI Runs"
         description="Storyboard of widget intake → retrieve → model → deflect or escalate. Raw log rows stay screenshot-friendly below."
         action={
           latestRun ? (
@@ -80,7 +80,7 @@ export default async function WidgetIntakePage() {
           <EmptyState
             icon={Inbox}
             title="No widget runs yet"
-            description="Send a message via the embedded widget preview. Runs appear here automatically; escalate optionally to attach a ticket link in the storyboard."
+            description="Send a message via the embedded widget preview. AI Runs appear here automatically; escalate optionally to attach a ticket link in the storyboard."
             action={
               <Link href="/widget" className={buttonClassName({ size: "sm" })}>
                 Preview widget

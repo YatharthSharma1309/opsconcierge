@@ -52,7 +52,7 @@ export class ChatServiceError extends Error {
   }
 }
 
-const DEFAULT_AGENT = "SaaS customer support assistant";
+const DEFAULT_AGENT = "support-concierge";
 
 function redactPII(value: string) {
   // Keep this intentionally lightweight: remove common email/phone patterns.

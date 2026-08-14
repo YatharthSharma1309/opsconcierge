@@ -58,4 +58,6 @@ next-env.d.ts
 **/credentials.json
 **/serviceAccount*.json
 **/*-firebase-adminsdk*.json
-secrets/
+# local evidence recordings (large binaries)
+/evidence/demo/*.mp4
+/evidence/demo/recording*.mp4

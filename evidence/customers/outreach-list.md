@@ -33,7 +33,7 @@ Grounding: [`docs/REAL_WORLD_USE.md`](../../docs/REAL_WORLD_USE.md)
 ## 5-line pitch (copy/adapt)
 
 > Hi {{name}} — I built OpsConcierge for teams like yours that still answer the same {{returns / password / hours}} questions every week.
-> It answers from **your** FAQ on the website widget, escalates to a ticket with the full chat when a human is needed, and logs every AI decision so you can fix the docs.
+> It answers from **your** FAQ on the website widget, escalates to a ticket with the full chat when a human is needed, and logs auditable support runs so you can fix the docs.
 > Same workspace can shortlist resumes when you’re hiring (you still post on Indeed — we don’t replace that).
 > 15-min live demo: {{demo URL}}. No long contract for pilots.
 > Open to a quick call this week?

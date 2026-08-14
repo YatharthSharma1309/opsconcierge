@@ -38,7 +38,7 @@ See [`REAL_WORLD_USE.md`](./REAL_WORLD_USE.md) for personas and day-to-day use.
 
 ## Value proposition
 
-> Stop re-typing the same answers. When AI can’t help, hand off with the full story. When you’re hiring, read a ranked shortlist — not eighty resumes. Every decision is logged so your knowledge base gets better.
+> Stop re-typing the same answers. When AI can’t help, hand off with the full story. When you’re hiring, read a ranked shortlist — not eighty resumes. Support runs are logged so your knowledge base gets better.
 
 ## Business model (lite)
 
@@ -72,11 +72,11 @@ Avoid per-resolution “gotcha” pricing that buyers hate on Intercom/Zendesk A
 
 | Metric | Current | 90d target |
 |--------|---------|------------|
-| Live demo | ✅ | Uptime |
-| Design-partner talks | _[n]_ | 5 |
-| Widget sessions / week | _[n]_ | 50+ |
-| FAQ deflection (pilot) | _[%]_ | 40–60% routine |
-| Paying SMBs | _[n]_ | ≥1 arms-length if chasing XPRIZE viability |
+| Live demo | ✅ public host | Keep uptime through judging |
+| Design-partner talks | 0 | 5 |
+| Widget sessions / week | Demo-only (not claimed as customers) | 50+ real |
+| FAQ deflection (pilot) | n/a | 40–60% routine |
+| Paying SMBs | **0** (honest) | ≥1 arms-length if chasing viability |
 
 ## Risks
 

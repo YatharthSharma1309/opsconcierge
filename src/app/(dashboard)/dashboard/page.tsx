@@ -171,6 +171,8 @@ export default async function DashboardPage() {
           conversations={data.conversations}
           aiConfigured={aiConfigured}
           embeddingEnabled={embeddingEnabled}
+          geminiReady={geminiReady}
+          providerLabel={providerLabel}
         />
 
         {/* Compact queue summary — includes AI Engine mode from the original 4-up */}

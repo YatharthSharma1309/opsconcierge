@@ -23,7 +23,9 @@ evidence/
 │   └── 06-firebase-rtdb.png
 └── customers/
     ├── outreach-list.md
-    └── testimonials.md
+    ├── testimonials.md
+    ├── revenue-draft.md
+    └── pnl-draft.md
 ```
 
 Create `screenshots/` when you capture images. Git-ignore large binaries if needed (`.mp4`).

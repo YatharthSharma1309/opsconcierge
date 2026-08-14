@@ -10,9 +10,17 @@ export type GeminiChatCompletionArgs = {
 
 const DEFAULT_GEMINI_CHAT_MODEL = "gemini-2.0-flash";
 
+const PLACEHOLDER_KEYS = new Set([
+  "",
+  "your-gemini-api-key",
+  "changeme",
+  "gemini-api-key",
+]);
+
 export function getGeminiApiKey() {
   const key = process.env.GEMINI_API_KEY?.trim();
-  return key || null;
+  if (!key || PLACEHOLDER_KEYS.has(key)) return null;
+  return key;
 }
 
 export function isGeminiConfigured() {

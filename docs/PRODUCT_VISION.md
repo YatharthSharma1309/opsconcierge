@@ -9,7 +9,7 @@
 
 OpsConcierge is an **ops desk for small businesses** — not a generic chatbot.
 
-It stops founders from re-answering the same billing/returns/hours questions, hands messy cases to a human **with the full transcript**, and helps the same person shortlist hires from resumes that arrive over email or WhatsApp — with a log of every AI decision.
+It stops founders from re-answering the same billing/returns/hours questions, hands messy cases to a human **with the full transcript**, and helps the same person shortlist hires from resumes that arrive over email or WhatsApp — with auditable support runs and evidence-backed hiring decisions.
 
 ## Who it's for (real ICP)
 

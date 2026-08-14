@@ -80,7 +80,7 @@ Priority in `src/lib/chat/service.ts`:
 
 | Condition | Provider | Evidence to Firebase |
 |-----------|----------|----------------------|
-| `GEMINI_API_KEY` set + RAG chunks found | Gemini | Yes (on `gemini_success`) |
+| `GEMINI_API_KEY` set + `shouldAttemptGemini()` + RAG chunks found | Gemini | Yes (on `gemini_success`) |
 | Gemini fails or unset | OpenRouter | No |
 | No AI configured | Static fallback from doc snippet | No |
 
@@ -110,7 +110,7 @@ Model selection:
 Postgres tables (see `prisma/schema.prisma`):
 
 - **ExecutionRun** — one row per widget message turn (`trigger: widget_intake`)
-- **ExecutionLogEntry** — steps within a run: lane-router, support-concierge, ticket-updater
+- **ExecutionLogEntry** — steps within a run: lane-router, support-concierge, escalation-triage / ticket-updater
 
 UI: `src/app/(dashboard)/widget/intake/` + `src/components/execution/execution-log-table.tsx`
 
@@ -118,8 +118,9 @@ Typical log sequence:
 
 ```
 lane-router       → route_to_gemini | route_to_openrouter | route_fallback_*
-support-concierge → gemini_success | openrouter_success | ...
-ticket-updater    → ticket_created (after escalation)
+support-concierge → gemini_success | openrouter_stream_completed | ...
+escalation-triage → triage_ready (after escalate)
+ticket-updater    → ticket_created (if triage is skipped)
 ```
 
 ## GCP evidence path

@@ -7,8 +7,8 @@
   streamChatReply,
 } from "@/lib/chat/service";
 
-import { getChatModel, isAiConfigured } from "@/lib/ai";
-import { getGeminiChatModel, isGeminiConfigured } from "@/lib/gemini";
+import { getChatModel, isAiConfigured, shouldAttemptGemini } from "@/lib/ai";
+import { getGeminiChatModel } from "@/lib/gemini";
 import { db } from "@/lib/db";
 
 function encodeSse(event: string, data: unknown) {
@@ -64,7 +64,7 @@ export async function createChatStreamResponse({
         })
       : null;
 
-    const modelForEvidence = isGeminiConfigured()
+    const modelForEvidence = shouldAttemptGemini()
       ? getGeminiChatModel()
       : isAiConfigured()
         ? getChatModel()
@@ -73,7 +73,7 @@ export async function createChatStreamResponse({
     const laneDecision =
       prepared.chunksMatched === 0
         ? "route_fallback_no_knowledge"
-        : isGeminiConfigured()
+        : shouldAttemptGemini()
           ? "route_to_gemini"
           : isAiConfigured()
             ? "route_to_openrouter"
@@ -177,9 +177,9 @@ export async function createChatStreamResponse({
 
               const agent =
                 llmProvider === "gemini"
-                  ? "gemini"
+                  ? "support-concierge"
                   : llmProvider === "openrouter"
-                    ? "openrouter"
+                    ? "support-concierge"
                     : "llm";
 
               const decision =
@@ -247,12 +247,7 @@ export async function createChatStreamResponse({
 
           if (executionRun && prepared.userMessageId) {
             const latencyMs = Date.now() - llmRequestStartedAt;
-            const agent =
-              llmProvider === "gemini"
-                ? "gemini"
-                : llmProvider === "openrouter"
-                  ? "openrouter"
-                  : "llm";
+            const agent = "support-concierge";
 
             await db.executionLogEntry.create({
               data: {

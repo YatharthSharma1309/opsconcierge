@@ -1,6 +1,6 @@
 # OpsConcierge
 
-**The AI ops desk for small businesses** — deflect FAQs on your site, escalate with full chat context, and shortlist hires from resume PDFs. Every AI step leaves an execution log.
+**The AI ops desk for small businesses** — deflect FAQs on your site, escalate with full chat context, and shortlist hires from resume PDFs. Support runs leave an auditable execution log.
 
 | | |
 |---|---|
@@ -78,11 +78,9 @@ Readiness: `GET /api/health/xprize`.
 | **https://support-ai-nine-mu.vercel.app** | **Public** — use this for judges |
 | https://relay-ai-app.vercel.app | Deployment-protected (Vercel login) — not public |
 
-**Note:** The public host may still show the legacy **Relay AI** shell until you redeploy the latest OpsConcierge build. Local/`main` is already OpsConcierge-branded.
+**Health:** `GET /api/health` and `GET /api/health/xprize` on the public host. `readyForXprizeDemo` is true when Gemini **and** Firebase RTDB are configured.
 
-**Health:** `GET /api/health` → ok on the public host. `GET /api/health/xprize` is in this repo but **404 on the current public deploy** until redeploy.
-
-**Judge path:** landing → widget chat → escalate / ticket → `/widget/intake` execution log → optional `/recruitment` shortlist.
+**Judge path:** landing → widget chat → escalate / ticket operator brief → `/widget/intake` AI run → optional `/recruitment` shortlist.
 
 ## Stack
 
@@ -104,6 +102,7 @@ Next.js 16 · React 19 · TypeScript · Prisma + Neon Postgres · Clerk (demo by
 |-----|-----|
 | [docs/README.md](./docs/README.md) | Full documentation index |
 | [docs/HACKATHON.md](./docs/HACKATHON.md) | XPRIZE brief, deadline, prizes |
+| [docs/DEVPOST_DESCRIPTION.md](./docs/DEVPOST_DESCRIPTION.md) | Paste-ready Devpost narrative |
 | [docs/REAL_WORLD_USE.md](./docs/REAL_WORLD_USE.md) | SMB personas & workflows |
 | [docs/FOUNDATION.md](./docs/FOUNDATION.md) | What exists in the codebase |
 | [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) | System design |

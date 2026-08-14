@@ -120,8 +120,103 @@ async function seedDemoConversationsAndTickets(organizationId: string) {
       status: "OPEN",
       priority: "HIGH",
       createdAt: new Date(Date.now() - 6 * 60 * 60 * 1000),
+      triage: {
+        priority: "HIGH",
+        category: "product",
+        reasonCode: "rate_limit_batch_import",
+        brief: [
+          "Batch import throttling is not covered by the current FAQ.",
+          "Ask which workspace and import size triggered the 429s.",
+          "Check whether the customer is on Pro API limits before escalating to engineering.",
+        ],
+        model: "gemini-2.0-flash",
+        source: "ai",
+      },
     },
   });
+
+  const userMessage = await db.message.findFirst({
+    where: {
+      conversationId: escalationConversation.id,
+      role: "USER",
+    },
+    orderBy: { createdAt: "asc" },
+  });
+
+  if (userMessage) {
+    const existingRun = await db.executionRun.findFirst({
+      where: {
+        workspaceId: organizationId,
+        conversationId: escalationConversation.id,
+        trigger: "widget_intake",
+      },
+    });
+
+    if (!existingRun) {
+      await db.executionRun.create({
+        data: {
+          workspaceId: organizationId,
+          conversationId: escalationConversation.id,
+          userMessageId: userMessage.id,
+          channel: "WIDGET",
+          trigger: "widget_intake",
+          createdAt: new Date(Date.now() - 6 * 60 * 60 * 1000),
+          logs: {
+            create: [
+              {
+                workspaceId: organizationId,
+                conversationId: escalationConversation.id,
+                userMessageId: userMessage.id,
+                agent: "lane-router",
+                trigger: "widget_intake",
+                model: "gemini-2.0-flash",
+                decision: "route_to_gemini",
+                latencyMs: 18,
+                metadata: {
+                  chunksMatched: 2,
+                  confidence: 0.42,
+                  retrievalMode: "keyword",
+                  seeded: true,
+                },
+              },
+              {
+                workspaceId: organizationId,
+                conversationId: escalationConversation.id,
+                userMessageId: userMessage.id,
+                agent: "support-concierge",
+                trigger: "widget_intake",
+                model: "gemini-2.0-flash",
+                decision: "gemini_success",
+                latencyMs: 840,
+                metadata: {
+                  provider: "gemini",
+                  outcome: "needs_human",
+                  seeded: true,
+                },
+              },
+              {
+                workspaceId: organizationId,
+                conversationId: escalationConversation.id,
+                userMessageId: userMessage.id,
+                agent: "escalation-triage",
+                trigger: "ticket_update",
+                model: "gemini-2.0-flash",
+                decision: "triage_ready",
+                latencyMs: 310,
+                metadata: {
+                  priority: "HIGH",
+                  category: "product",
+                  reasonCode: "rate_limit_batch_import",
+                  source: "ai",
+                  seeded: true,
+                },
+              },
+            ],
+          },
+        },
+      });
+    }
+  }
 
   await db.ticket.createMany({
     data: [

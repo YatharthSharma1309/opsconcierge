@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import {
   Bot,
   ChevronDown,
@@ -561,9 +562,25 @@ export function ChatPanel({
           {compact ? (
             <div className="mb-3 space-y-2">
               {escalatedTicketId ? (
-                <p className="text-xs font-medium text-emerald-700">
-                  Ticket #{escalatedTicketId.slice(-6)} created — a teammate will follow up.
-                </p>
+                <div className="space-y-2">
+                  <p className="text-xs font-medium text-emerald-700">
+                    Ticket #{escalatedTicketId.slice(-6)} created — a teammate will follow up.
+                  </p>
+                  <div className="flex flex-wrap gap-3">
+                    <Link
+                      href={`/tickets/${escalatedTicketId}`}
+                      className="text-xs font-medium text-primary hover:underline"
+                    >
+                      Open operator brief
+                    </Link>
+                    <Link
+                      href="/widget/intake"
+                      className="text-xs font-medium text-primary hover:underline"
+                    >
+                      View AI Runs
+                    </Link>
+                  </div>
+                </div>
               ) : canEscalate ? (
                 <div>
                   <label htmlFor="visitor-email" className="mb-1 block text-xs font-medium text-slate-600">
@@ -614,12 +631,20 @@ export function ChatPanel({
               </p>
               <div className="flex flex-wrap items-center gap-2">
                 {escalatedTicketId ? (
-                  <a
-                    href={`/tickets/${escalatedTicketId}`}
-                    className="text-sm font-medium text-primary hover:text-primary"
-                  >
-                    View ticket
-                  </a>
+                  <>
+                    <Link
+                      href={`/tickets/${escalatedTicketId}`}
+                      className="text-sm font-medium text-primary hover:text-primary"
+                    >
+                      View ticket
+                    </Link>
+                    <Link
+                      href="/widget/intake"
+                      className="text-sm font-medium text-primary hover:text-primary"
+                    >
+                      AI Runs
+                    </Link>
+                  </>
                 ) : null}
                 <Button
                   type="button"

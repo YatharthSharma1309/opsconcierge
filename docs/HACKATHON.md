@@ -84,7 +84,7 @@ Pick **at least one** on the Devpost submission form:
 |-------------|-------------------|
 | **Gemini API** — at least one LLM call in the **deployed** app | Widget/chat path (`GEMINI_API_KEY`) |
 | **≥1 Google Cloud product** | Firebase Realtime Database (agent-run evidence) |
-| **Real business** — users + **revenue** in the 90-day window | Outreach + paid/pilot path — see `docs/BUSINESS_PLAN.md` + `evidence/customers/` |
+| **Real business** — users + **revenue** in the 90-day window | Honest **$0** revenue + demo workspace today; outreach template in `evidence/customers/` — do not invent users |
 | **New work in window** | Explain Relay AI → OpsConcierge build during May–Aug 2026; disclose pre-existing boilerplate |
 | Live demo URL + repo (public or share with `testing@devpost.com` / `judging@hacker.fund`) | Vercel + GitHub |
 | **Demo video &lt; 3 minutes** (YouTube/Vimeo/Youku, public) | `evidence/demo/script.md` |
@@ -127,7 +127,7 @@ Total pool: **$2,000,000**.
 | **Category** | Small Business Services |
 | **One-liner** | AI concierge that runs SMB support + hiring — Gemini answers, tickets, execution logs |
 | **Judge path** | Landing → widget chat → escalate → `/widget/intake` |
-| **Health** | Public: `GET /api/health` · XPRIZE route after redeploy: `GET /api/health/xprize` |
+| **Health** | `GET /api/health` and `GET /api/health/xprize` |
 
 ---
 
@@ -137,4 +137,5 @@ Total pool: **$2,000,000**.
 - [SUBMISSION_CHECKLIST.md](./SUBMISSION_CHECKLIST.md) — Devpost form + demo pre-flight  
 - [ROADMAP_12_DAYS.md](./ROADMAP_12_DAYS.md) — ~12 days to deadline  
 - [PRODUCT_VISION.md](./PRODUCT_VISION.md) · [BUSINESS_PLAN.md](./BUSINESS_PLAN.md)  
-- [../evidence/demo/script.md](../evidence/demo/script.md)
+- [DEVPOST_DESCRIPTION.md](./DEVPOST_DESCRIPTION.md) — paste-ready narrative  
+- [../evidence/MANIFEST.md](../evidence/MANIFEST.md) — screenshot / video / revenue index

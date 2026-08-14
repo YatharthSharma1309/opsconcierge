@@ -70,8 +70,8 @@ export default function LandingPage() {
               </p>
               <p className="mt-5 max-w-xl text-base leading-7 text-muted">
                 Deflect FAQs on your site, escalate messy cases with the full
-                chat, and shortlist hires from resumes — with a log of every AI
-                decision.
+                chat, and shortlist hires from resumes — with auditable support
+                runs and evidence-backed hiring decisions.
               </p>
               {demoMode ? (
                 <p className="mt-3 max-w-xl text-sm leading-6 text-muted">

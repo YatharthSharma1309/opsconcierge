@@ -84,7 +84,7 @@ DATABASE_URL="..." npm run db:migrate:deploy
 
 ```bash
 curl -X POST https://YOUR-APP.vercel.app/api/demo/seed \
-  -H "Authorization: Bearer YOUR_DEMO_SEED_SECRET"
+  -H "x-demo-seed-secret: YOUR_DEMO_SEED_SECRET"
 ```
 
 Then upload 2–3 FAQ documents via Knowledge Base. Seed also creates a sample recruitment job at `/recruitment`.
@@ -105,7 +105,7 @@ Then upload 2–3 FAQ documents via Knowledge Base. Seed also creates a sample r
 2. Set `APP_URL=https://support-ai-nine-mu.vercel.app`
 3. Confirm landing title is **OpsConcierge** (not Relay AI)
 4. `curl -s https://support-ai-nine-mu.vercel.app/api/health`
-5. `curl -s https://support-ai-nine-mu.vercel.app/api/health/xprize` (must stop 404 after redeploy)
+5. `curl -s https://support-ai-nine-mu.vercel.app/api/health/xprize` (expect `readyForXprizeDemo: true` after Firebase is set)
 
 Recommended walkthrough when `PUBLIC_DEMO_MODE` is enabled (no sign-in):
 
@@ -124,7 +124,7 @@ Recommended walkthrough when `PUBLIC_DEMO_MODE` is enabled (no sign-in):
 node scripts/push-vercel-env.mjs   # sync demo env from local .env
 npx vercel --prod --yes
 curl -X POST https://YOUR-APP.vercel.app/api/demo/seed \
-  -H "Authorization: Bearer YOUR_DEMO_SEED_SECRET"
+  -H "x-demo-seed-secret: YOUR_DEMO_SEED_SECRET"
 ```
 
 | Variable | Portfolio demo |

@@ -27,6 +27,7 @@ Start here for product + hackathon context; use Technical for setup and architec
 | [REAL_WORLD_USE.md](./REAL_WORLD_USE.md) | SMB personas and day-to-day use |
 | [BUSINESS_PLAN.md](./BUSINESS_PLAN.md) | Problem / solution / GTM |
 | [ROADMAP_12_DAYS.md](./ROADMAP_12_DAYS.md) | Day-by-day plan through mid-Aug 2026 |
+| [DEVPOST_DESCRIPTION.md](./DEVPOST_DESCRIPTION.md) | Paste-ready 500–1000 word narrative |
 | [SUBMISSION_CHECKLIST.md](./SUBMISSION_CHECKLIST.md) | Devpost + demo pre-flight |
 | [RULES_SUMMARY.md](./RULES_SUMMARY.md) | Judging / compliance map |
 
@@ -35,8 +36,10 @@ Start here for product + hackathon context; use Technical for setup and architec
 | Doc | Description |
 |-----|-------------|
 | [../evidence/README.md](../evidence/README.md) | How to collect submission evidence |
+| [../evidence/MANIFEST.md](../evidence/MANIFEST.md) | Capture index |
 | [../evidence/demo/script.md](../evidence/demo/script.md) | Timed judge demo script |
 | [../evidence/customers/outreach-list.md](../evidence/customers/outreach-list.md) | Design-partner outreach |
+| [../evidence/customers/revenue-draft.md](../evidence/customers/revenue-draft.md) | Honest $0 revenue draft |
 | [../evidence/customers/testimonials.md](../evidence/customers/testimonials.md) | Testimonial template |
 
 ## Live demos
@@ -46,7 +49,7 @@ Start here for product + hackathon context; use Technical for setup and architec
 | **https://support-ai-nine-mu.vercel.app** | **Public** — primary for judges |
 | https://relay-ai-app.vercel.app | Deployment-protected (not public) |
 
-Public host may still show legacy **Relay AI** branding until redeploy of this OpsConcierge codebase. `GET /api/health/xprize` is in-repo but **404 on the current public deploy** until redeploy.
+Public host is **OpsConcierge**. `GET /api/health/xprize` is live. `readyForXprizeDemo` requires `FIREBASE_DATABASE_URL` plus a Gemini key.
 
 ## Judge path (XPRIZE)
 
