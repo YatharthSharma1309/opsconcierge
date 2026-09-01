@@ -16,11 +16,30 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const siteUrl = "https://support-ai-nine-mu.vercel.app";
+const seoTitle = "OpsConcierge — AI Ops Desk (Support + Hiring)";
+const seoDescription =
+  "AI ops desk for small businesses: widget FAQ deflection, tickets with full chat, execution logs, and resume shortlisting with why / why-not evidence.";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: "OpsConcierge | AI Concierge for Business Operations",
-  description:
-    "OpsConcierge — the AI concierge that runs your business operations. Shared company memory, support + hiring agents, tickets, and execution logs.",
+  description: seoDescription,
   applicationName: "OpsConcierge",
+  robots: { index: true, follow: true },
+  openGraph: {
+    title: seoTitle,
+    description: seoDescription,
+    url: siteUrl,
+    siteName: "OpsConcierge",
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: seoTitle,
+    description: seoDescription,
+  },
 };
 
 export default function RootLayout({
