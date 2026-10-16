@@ -61,3 +61,6 @@ next-env.d.ts
 # local evidence recordings (large binaries)
 /evidence/demo/*.mp4
 /evidence/demo/recording*.mp4
+
+# local git worktrees
+.worktrees/
