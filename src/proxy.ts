@@ -11,7 +11,6 @@ const isPublicRoute = createRouteMatcher([
   "/api/widget(.*)",
   "/api/webhooks/clerk",
   "/api/health",
-  "/api/health/xprize",
 ]);
 
 function hasAuthBypassEnv() {
