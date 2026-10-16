@@ -6,6 +6,7 @@
 |---|---|
 | **Repo** | https://github.com/YatharthSharma1309/opsconcierge |
 | **Folder** | `OpsConcierge-App` |
+
 ## Two agent lanes
 
 | Lane | Flow |
@@ -103,6 +104,7 @@ Next.js 16 · React 19 · TypeScript · Prisma + Neon Postgres · Clerk (demo by
 | [docs/FOUNDATION.md](./docs/FOUNDATION.md) | What exists in the codebase |
 | [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) | System design |
 | [DEPLOY.md](./DEPLOY.md) | Vercel + Neon + Clerk production |
+
 ## License
 
 Private / portfolio — see repo owner for terms.

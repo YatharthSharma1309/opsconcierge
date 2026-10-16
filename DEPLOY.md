@@ -105,6 +105,7 @@ Then upload 2–3 FAQ documents via Knowledge Base. Seed also creates a sample r
 2. Set `APP_URL=https://support-ai-nine-mu.vercel.app`
 3. Confirm landing title is **OpsConcierge** (not Relay AI)
 4. `curl -s https://support-ai-nine-mu.vercel.app/api/health`
+
 Recommended walkthrough when `PUBLIC_DEMO_MODE` is enabled (no sign-in):
 
 1. **Landing** → **Open live demo**

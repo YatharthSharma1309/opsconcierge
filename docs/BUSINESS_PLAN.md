@@ -56,6 +56,7 @@ Avoid per-resolution “gotcha” pricing that buyers hate on Intercom/Zendesk A
 2. **Design partners** — 3–5 real SMBs you can name from public sites  
 3. **Wedge channel** — Website widget only (prove value before WhatsApp/IG)  
 4. **Proof** — Deflection %, escalations with context, hiring hours saved (real numbers only)  
+
 ## Competition (honest)
 
 | Alternative | Gap we fill |

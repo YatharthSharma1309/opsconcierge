@@ -35,6 +35,7 @@ GEMINI_CHAT_MODEL=gemini-3.5-flash
 | `src/lib/chat/service.ts` | `generateChatReply`, `streamChatReply`, sandbox chat — tries Gemini before OpenRouter |
 | `src/lib/chat/stream-handler.ts` | Widget/admin SSE streams; logs execution when channel ≠ `ADMIN` |
 | `src/lib/ai.ts` | `isAiConfigured()` includes Gemini |
+
 Recruitment (`src/lib/recruitment/`) uses **OpenRouter only**, not Gemini.
 
 ### Verify Gemini locally
