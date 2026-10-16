@@ -79,7 +79,7 @@ function buildSteps(demoMode: boolean): DemoStep[] {
       title: "Review the execution log",
       body: "See model, latency, and deflect vs escalate. Use failed answers to fix the FAQ so the bot improves next week.",
       action: "Open Widget intake and inspect the latest run after you escalate.",
-      tip: "Owners and judges use this trail to trust what the AI did.",
+      tip: "Owners use this trail to trust what the AI did.",
       href: demoMode ? "/widget/intake" : "/sign-up",
       cta: demoMode ? "Open execution logs" : "Get started free",
     },

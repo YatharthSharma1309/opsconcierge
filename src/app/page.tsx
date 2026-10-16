@@ -37,7 +37,7 @@ const includes = [
   "Support chat + tickets + analytics",
   "Hiring pipeline with AI match assist",
   "Embeddable widget preview",
-  "Auditable execution runs for owners and judges",
+  "Auditable execution runs for owners",
 ];
 
 const notIncludes = [
@@ -73,11 +73,6 @@ export default function LandingPage() {
                 chat, and shortlist hires from resumes — with auditable support
                 runs and evidence-backed hiring decisions.
               </p>
-              {demoMode ? (
-                <p className="mt-3 max-w-xl text-sm leading-6 text-muted">
-                  Built for Build with Gemini XPRIZE · Small Business Services
-                </p>
-              ) : null}
               <div className="mt-8 flex flex-wrap items-center gap-3">
                 <Link
                   href={primaryHref}

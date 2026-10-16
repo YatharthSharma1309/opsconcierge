@@ -283,15 +283,6 @@ export function SiteFooter({
             <Link href="/help" className="footer-link">
               Help
             </Link>
-            <a
-              href="https://xprize.devpost.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="footer-link"
-            >
-              Build with Gemini XPRIZE
-              <span className="sr-only">(opens in a new tab)</span>
-            </a>
           </div>
         </div>
       </div>

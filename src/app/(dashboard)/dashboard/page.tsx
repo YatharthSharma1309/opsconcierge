@@ -133,7 +133,7 @@ export default async function DashboardPage() {
       />
 
       <main id="main-content" className="flex-1 space-y-6 px-4 py-6 sm:p-6 lg:p-8">
-        {/* Star next step for judges / first visit */}
+        {/* First-visit next step */}
         <section className="rounded-2xl border border-primary/15 bg-primary-soft/60 px-5 py-5 sm:px-6">
           <p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">
             Next step
@@ -143,7 +143,7 @@ export default async function DashboardPage() {
           </h2>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
             Prove FAQ deflection, create a ticket with the transcript, then open
-            the execution run storyboard — the judge path in three clicks.
+            the execution run storyboard — the operator path in three clicks.
           </p>
           <div className="mt-4 flex flex-wrap gap-3">
             <Link href="/widget" className={buttonClassName()}>
