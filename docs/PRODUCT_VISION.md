@@ -76,16 +76,7 @@ See full detail in [`REAL_WORLD_USE.md`](./REAL_WORLD_USE.md):
 | Hiring time saved | ~4–6 hours/hire on screening + question prep |
 | Ops hygiene | Weekly log review → KB updates (prevents bot abandonment) |
 
-## XPRIZE narrative
-
-**Hackathon:** Build with Gemini XPRIZE — **$2,000,000** · [xprize.devpost.com](https://xprize.devpost.com)  
-**Category:** Small Business Services  
-**Deadline:** 18 Aug 2026 @ 1:30 AM GMT+5:30  
-
-**Judge story (60s):** SMB customer asks a billing/password question on the widget → Gemini answers from uploaded FAQ → escalates → ticket created → `/widget/intake` shows lane, model, latency, decision → Firebase RTDB as GCP evidence.
-
 ## Related docs
 
 - [`REAL_WORLD_USE.md`](./REAL_WORLD_USE.md) — structure, personas, operator checklist  
-- [`BUSINESS_PLAN.md`](./BUSINESS_PLAN.md) · [`HACKATHON.md`](./HACKATHON.md)  
-- [`../evidence/demo/script.md`](../evidence/demo/script.md)
+- [`BUSINESS_PLAN.md`](./BUSINESS_PLAN.md)

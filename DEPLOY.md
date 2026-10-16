@@ -11,7 +11,7 @@ Browser → Vercel (Next.js) → Neon PostgreSQL
          ↓
        Gemini and/or OpenRouter (chat + RAG)
          ↓
-       Firebase RTDB (optional XPRIZE evidence)
+       Firebase RTDB (optional agent-run evidence)
 ```
 
 ## Prerequisites
@@ -53,8 +53,8 @@ Set `APP_URL` to your primary production URL.
 | `CLERK_SECRET_KEY` | Yes* | |
 | `CLERK_WEBHOOK_SECRET` | Yes* | |
 | `OPENROUTER_API_KEY` | Recommended | Free models via `openrouter/free` |
-| `GEMINI_API_KEY` | For XPRIZE | Pair with `AI_PROVIDER_PREFERENCE=auto` |
-| `FIREBASE_DATABASE_URL` | For XPRIZE | RTDB evidence of agent runs |
+| `GEMINI_API_KEY` | Support LLM | Pair with `AI_PROVIDER_PREFERENCE=auto` |
+| `FIREBASE_DATABASE_URL` | Optional | RTDB evidence of agent runs |
 | `AI_PROVIDER_PREFERENCE` | No | `openrouter` (free path) · `auto` · `gemini` |
 | `APP_URL` | Yes | `https://YOUR-APP.vercel.app` |
 | `OPENROUTER_CHAT_MODEL` | No | Default `openrouter/free` |
@@ -93,20 +93,18 @@ Then upload 2–3 FAQ documents via Knowledge Base. Seed also creates a sample r
 
 1. Sign in (or open demo mode) → Settings → Widget → copy embed snippet
 2. Chat on the widget → escalate to a ticket
-3. Open **`/widget/intake`** to show the execution log (judge path)
+3. Open **`/widget/intake`** to show the execution log
 
 ## 7. Portfolio / public demo
 
 **Live demo (public):** https://support-ai-nine-mu.vercel.app
 
-### Redeploy checklist (OpsConcierge branding + xprize health)
+### Redeploy checklist
 
 1. Deploy this repo to the Vercel project that serves **support-ai-nine-mu**
 2. Set `APP_URL=https://support-ai-nine-mu.vercel.app`
 3. Confirm landing title is **OpsConcierge** (not Relay AI)
 4. `curl -s https://support-ai-nine-mu.vercel.app/api/health`
-5. `curl -s https://support-ai-nine-mu.vercel.app/api/health/xprize` (expect `readyForXprizeDemo: true` after Firebase is set)
-
 Recommended walkthrough when `PUBLIC_DEMO_MODE` is enabled (no sign-in):
 
 1. **Landing** → **Open live demo**
@@ -141,7 +139,6 @@ For a **private production** app, remove demo bypass vars and configure Clerk ke
 ## Smoke test
 
 - [ ] `GET /api/health` returns OK
-- [ ] `GET /api/health/xprize` shows expected Gemini / Firebase / OpenRouter flags
 - [ ] Sign up + create org (or demo dashboard opens)
 - [ ] Upload document → chat with citation
 - [ ] Widget escalate → ticket → `/widget/intake` log

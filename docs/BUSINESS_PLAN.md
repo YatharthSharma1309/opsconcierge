@@ -1,6 +1,6 @@
 # OpsConcierge — Lean Business Plan
 
-Grounded in real SMB support/hiring behavior. Portfolio / XPRIZE length.
+Grounded in real SMB support/hiring behavior. Portfolio length.
 
 ---
 
@@ -53,11 +53,9 @@ Avoid per-resolution “gotcha” pricing that buyers hate on Intercom/Zendesk A
 ## Go-to-market (90 days)
 
 1. **Persona-led demos** — PipelineKit (SaaS FAQ) and GlowTheory (returns FAQ) scripts  
-2. **Design partners** — 3–5 real SMBs from `evidence/customers/outreach-list.md`  
+2. **Design partners** — 3–5 real SMBs you can name from public sites  
 3. **Wedge channel** — Website widget only (prove value before WhatsApp/IG)  
 4. **Proof** — Deflection %, escalations with context, hiring hours saved (real numbers only)  
-5. **XPRIZE** — Small Business Services category; Gemini + Firebase evidence  
-
 ## Competition (honest)
 
 | Alternative | Gap we fill |

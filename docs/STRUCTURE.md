@@ -19,7 +19,7 @@ Hiring lane:   job → resume upload → match score → scorecard / compare
 
 Both lanes share org knowledge (`Document` / chunks) and the same workspace sidebar.
 
-## Judge click path
+## Demo click path
 
 1. `/` — OpsConcierge brand + **Open live demo**
 2. `/dashboard` — next-step banner → widget / execution runs
@@ -28,7 +28,7 @@ Both lanes share org knowledge (`Document` / chunks) and the same workspace side
 5. `/tickets/[id]` — operator brief
 6. Optional `/recruitment` → compare / scorecard
 
-Sidebar groups: **Workspace** · **Support** · **Hiring** · **Public**, plus a persistent **Judge path** promo.
+Sidebar groups: **Workspace** · **Support** · **Hiring** · **Public**.
 
 ## Route map
 
@@ -61,7 +61,7 @@ Sidebar groups: **Workspace** · **Support** · **Hiring** · **Public**, plus a
 | Knowledge | documents upload/list/delete; `POST /api/knowledge/draft-faq`, `publish-faq` |
 | Recruitment | jobs CRUD, assist, hire finalize/undo; candidates; upload; analyze |
 | Settings / demo | `/api/settings`, `/api/settings/widget`, `POST /api/demo/seed` |
-| Health | `GET /api/health`, `GET /api/health/xprize` (public) |
+| Health | `GET /api/health` (public) |
 | Webhooks | `POST /api/webhooks/clerk` |
 
 ## Visual system
@@ -80,7 +80,7 @@ Sidebar groups: **Workspace** · **Support** · **Hiring** · **Public**, plus a
 | `src/lib/chat/` | RAG stream, Gemini-first |
 | `src/lib/tickets/` | Create ticket + escalation triage |
 | `src/lib/recruitment/` | Resume parse, match, scorecard |
-| `src/lib/execution/storyboard.ts` | Judge-facing run steps |
+| `src/lib/execution/storyboard.ts` | Execution run steps |
 | `src/lib/ops-worker.ts` | Firebase RTDB evidence |
 | `src/lib/auth/` | Clerk + public demo bypass |
 
@@ -89,4 +89,3 @@ Sidebar groups: **Workspace** · **Support** · **Hiring** · **Public**, plus a
 - [FOUNDATION.md](./FOUNDATION.md) — stack + modules
 - [ARCHITECTURE.md](./ARCHITECTURE.md) — request paths
 - [PROJECTS.md](./PROJECTS.md) — Neon / Vercel isolation
-- [HACKATHON.md](./HACKATHON.md) — XPRIZE context
