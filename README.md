@@ -6,7 +6,6 @@
 |---|---|
 | **Repo** | https://github.com/YatharthSharma1309/opsconcierge |
 | **Folder** | `OpsConcierge-App` |
-| **Hackathon** | [Build with Gemini XPRIZE](https://xprize.devpost.com) — Small Business Services · deadline **18 Aug 2026 @ 1:30 AM GMT+5:30** |
 
 ## Two agent lanes
 
@@ -57,7 +56,7 @@ AI_PROVIDER_PREFERENCE=openrouter
 
 Details: [docs/FREE_LLM.md](./docs/FREE_LLM.md).
 
-### Gemini + Firebase (XPRIZE evidence)
+### Gemini + Firebase
 
 When free Gemini quota works:
 
@@ -69,18 +68,18 @@ AI_PROVIDER_PREFERENCE=auto
 ```
 
 Full steps: [docs/GCP_AND_GEMINI_SETUP.md](./docs/GCP_AND_GEMINI_SETUP.md).  
-Readiness: `GET /api/health/xprize`.
+Health: `GET /api/health`.
 
 ## Live demo
 
 | Host | Status (checked Aug 2026) |
 |------|---------------------------|
-| **https://support-ai-nine-mu.vercel.app** | **Public** — use this for judges |
+| **https://support-ai-nine-mu.vercel.app** | **Public** |
 | https://relay-ai-app.vercel.app | Deployment-protected (Vercel login) — not public |
 
-**Health:** `GET /api/health` and `GET /api/health/xprize` on the public host. `readyForXprizeDemo` is true when Gemini **and** Firebase RTDB are configured.
+**Health:** `GET /api/health` on the public host.
 
-**Judge path:** landing → widget chat → escalate / ticket operator brief → `/widget/intake` AI run → optional `/recruitment` shortlist.
+**Product path:** landing → widget chat → hand the thread to a person → `/widget/intake` run → optional `/recruitment` shortlist.
 
 ## Stack
 
@@ -101,13 +100,10 @@ Next.js 16 · React 19 · TypeScript · Prisma + Neon Postgres · Clerk (demo by
 | Doc | Why |
 |-----|-----|
 | [docs/README.md](./docs/README.md) | Full documentation index |
-| [docs/HACKATHON.md](./docs/HACKATHON.md) | XPRIZE brief, deadline, prizes |
-| [docs/DEVPOST_DESCRIPTION.md](./docs/DEVPOST_DESCRIPTION.md) | Paste-ready Devpost narrative |
 | [docs/REAL_WORLD_USE.md](./docs/REAL_WORLD_USE.md) | SMB personas & workflows |
 | [docs/FOUNDATION.md](./docs/FOUNDATION.md) | What exists in the codebase |
 | [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) | System design |
 | [DEPLOY.md](./DEPLOY.md) | Vercel + Neon + Clerk production |
-| [evidence/README.md](./evidence/README.md) | Submission evidence |
 
 ## License
 

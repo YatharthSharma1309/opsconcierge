@@ -36,6 +36,29 @@ export async function seedDemoKnowledgeBase() {
   return { document, created: true };
 }
 
+function refundCitation() {
+  return [
+    {
+      documentTitle: "Refund policy",
+      content:
+        "Annual plans can be refunded within 14 days of purchase if usage stays under the demo limits. After 14 days, refunds are prorated.",
+    },
+  ];
+}
+
+async function attachRefundCitation(conversationId: string) {
+  const replies = await db.message.findMany({
+    where: { conversationId, role: "ASSISTANT" },
+  });
+  for (const reply of replies) {
+    if (reply.sources) continue;
+    await db.message.update({
+      where: { id: reply.id },
+      data: { sources: refundCitation() },
+    });
+  }
+}
+
 async function seedDemoConversationsAndTickets(organizationId: string) {
   const marker = await db.conversation.findFirst({
     where: {
@@ -45,6 +68,7 @@ async function seedDemoConversationsAndTickets(organizationId: string) {
   });
 
   if (marker) {
+    await attachRefundCitation(marker.id);
     return { created: false };
   }
 
@@ -75,6 +99,7 @@ async function seedDemoConversationsAndTickets(organizationId: string) {
         content:
           "Annual plans can be refunded within 14 days of purchase if usage stays under the demo limits. After 14 days, refunds are prorated.",
         helpful: true,
+        sources: refundCitation(),
         createdAt: oneDayAgo,
       },
     ],
@@ -298,7 +323,7 @@ async function seedDemoRecruitment(organizationId: string) {
           "PostgreSQL",
           "REST APIs",
         ]),
-        preferredSkills: JSON.stringify(["Prisma", "OpenRouter", "RAG"]),
+        preferredSkills: JSON.stringify(["Prisma", "PostgreSQL", "RAG"]),
         experienceLevel: "Mid-level",
         minYearsExperience: 2,
         educationRequirements: JSON.stringify(["Bachelor's in CS or equivalent"]),
@@ -352,7 +377,7 @@ async function seedDemoRecruitment(organizationId: string) {
           ],
           matchedPreferredSkills: ["Prisma", "RAG"],
           missingRequiredSkills: [],
-          missingPreferredSkills: ["OpenRouter"],
+          missingPreferredSkills: ["PostgreSQL"],
           requiredSkillEvidence: [
             {
               skill: "TypeScript",
@@ -435,7 +460,7 @@ async function seedDemoRecruitment(organizationId: string) {
           matchedRequiredSkills: ["TypeScript", "React", "PostgreSQL", "REST APIs"],
           matchedPreferredSkills: [],
           missingRequiredSkills: ["Next.js"],
-          missingPreferredSkills: ["Prisma", "OpenRouter", "RAG"],
+          missingPreferredSkills: ["Prisma", "PostgreSQL", "RAG"],
           requiredSkillEvidence: [
             {
               skill: "TypeScript",
@@ -499,7 +524,7 @@ async function seedDemoRecruitment(organizationId: string) {
           matchedRequiredSkills: ["React", "TypeScript", "REST APIs"],
           matchedPreferredSkills: [],
           missingRequiredSkills: ["Next.js", "PostgreSQL"],
-          missingPreferredSkills: ["Prisma", "OpenRouter", "RAG"],
+          missingPreferredSkills: ["Prisma", "PostgreSQL", "RAG"],
           requiredSkillEvidence: [
             {
               skill: "React",
@@ -562,7 +587,7 @@ async function seedDemoRecruitment(organizationId: string) {
             "PostgreSQL",
             "REST APIs",
           ],
-          missingPreferredSkills: ["Prisma", "OpenRouter", "RAG"],
+          missingPreferredSkills: ["Prisma", "PostgreSQL", "RAG"],
           requiredSkillEvidence: [],
           preferredSkillEvidence: [],
           notes: [

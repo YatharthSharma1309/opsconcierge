@@ -16,21 +16,19 @@ const SUPPORT = {
   source: "Refund policy · §2",
   answer:
     "You have 30 days from delivery for unused items in original packaging. Start a return from Orders → Request return.",
-  action: "Escalate to human",
-  actionHint: "Creates a ticket with this transcript",
+  actionHint: "Creates a case with this thread",
 };
 
 const HIRING = {
-  question: "Screen this resume for Support Associate",
-  candidate: "Priya M. · 3 yrs retail + Zendesk",
+  candidate: "Maya Chen · Full-Stack Engineer",
   why: [
-    "Matches must-have: customer-facing experience",
-    "Tooling overlap: Zendesk mentioned",
+    "React, TypeScript, and REST APIs are quoted",
+    "AWS deployment is quoted",
   ],
-  whyNot: ["No bilingual requirement evidence"],
-  score: 78,
-  action: "Shortlist & prep questions",
-  actionHint: "You still decide hire / reject",
+  whyNot: ["Team leadership is not established"],
+  score: 91,
+  action: "Compare with Jordan, then shortlist",
+  actionHint: "You still decide",
 };
 
 /**
@@ -63,18 +61,16 @@ export function HeroOpsPreview() {
               onClick={() => setLane("support")}
               icon={<ClipboardList className="h-3.5 w-3.5" />}
               label="Support"
-              tone="navy"
             />
             <LaneChip
               active={!isSupport}
               onClick={() => setLane("hiring")}
               icon={<UserRoundSearch className="h-3.5 w-3.5" />}
               label="Hiring"
-              tone="teal"
             />
           </div>
           <p className="mt-2.5 text-center text-[11px] font-medium text-slate-400">
-            {isSupport ? "Widget → ticket" : "Resume → shortlist"}
+            {isSupport ? "Inbox → handoff" : "Score → compare"}
             <span className="mx-1.5 text-slate-300" aria-hidden>
               ·
             </span>
@@ -98,14 +94,9 @@ export function HeroOpsPreview() {
                 isSupport ? "bg-[var(--primary-hover)]" : "bg-accent",
               )}
             />
-            <span className="truncate">Grounded in company memory</span>
+            <span className="truncate">Cited from your knowledge base</span>
           </span>
-          <span
-            className={cn(
-              "shrink-0 font-semibold",
-              isSupport ? "text-primary" : "text-accent",
-            )}
-          >
+          <span className="shrink-0 font-semibold text-primary">
             {isSupport ? "Support" : "Hiring"}
           </span>
         </div>
@@ -119,13 +110,11 @@ function LaneChip({
   onClick,
   icon,
   label,
-  tone,
 }: {
   active: boolean;
   onClick: () => void;
   icon: ReactNode;
   label: string;
-  tone: "navy" | "teal";
 }) {
   return (
     <button
@@ -136,23 +125,11 @@ function LaneChip({
       className={cn(
         "inline-flex min-h-10 items-center justify-center gap-2 rounded-lg px-3 text-sm font-semibold transition-colors",
         active
-          ? tone === "navy"
-            ? "bg-white text-primary shadow-sm ring-1 ring-primary/15"
-            : "bg-white text-accent shadow-sm ring-1 ring-accent/25"
+          ? "bg-white text-primary shadow-sm ring-1 ring-primary/15"
           : "text-slate-500 hover:bg-foreground/[0.05] hover:text-foreground",
       )}
     >
-      <span
-        className={cn(
-          active
-            ? tone === "navy"
-              ? "text-primary"
-              : "text-accent"
-            : "text-slate-400",
-        )}
-      >
-        {icon}
-      </span>
+      <span className={active ? "text-primary" : "text-slate-400"}>{icon}</span>
       {label}
     </button>
   );
@@ -160,41 +137,42 @@ function LaneChip({
 
 function SupportPanel() {
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex items-center justify-between gap-2">
-        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary/80">
-          Website widget
-        </p>
-        <span className="rounded-md bg-primary-soft px-2 py-0.5 text-[10px] font-semibold text-primary">
-          Customer ask
+    <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
+      <div className="flex items-center justify-between gap-2 border-b border-slate-100 px-3.5 py-2.5">
+        <div className="min-w-0">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">
+            Inbox
+          </p>
+          <p className="truncate text-sm font-semibold text-slate-900">
+            Return window on online orders
+          </p>
+        </div>
+        <span className="shrink-0 rounded-md bg-accent-soft px-2 py-0.5 text-[10px] font-semibold text-accent">
+          Answered
         </span>
       </div>
 
-      <div className="ml-auto max-w-[92%] rounded-2xl rounded-br-md bg-primary px-3.5 py-2.5 text-sm leading-5 text-white">
-        {SUPPORT.question}
+      <div className="space-y-3 px-3.5 py-3">
+        <p className="text-sm leading-6 text-slate-800">{SUPPORT.question}</p>
+        <div className="space-y-2 border-l-2 border-primary/30 pl-3">
+          <p className="text-sm leading-6 text-slate-700">{SUPPORT.answer}</p>
+          <p className="inline-flex items-center gap-1.5 text-[11px] font-medium text-primary">
+            <FileText className="h-3 w-3" />
+            {SUPPORT.source}
+          </p>
+        </div>
       </div>
 
-      <div className="max-w-[95%] space-y-2 rounded-2xl rounded-bl-md border border-slate-100 bg-slate-50 px-3.5 py-3">
-        <p className="text-sm leading-6 text-slate-700">{SUPPORT.answer}</p>
-        <p className="inline-flex items-center gap-1.5 text-[11px] font-medium text-primary">
-          <FileText className="h-3 w-3" />
-          {SUPPORT.source}
-        </p>
-      </div>
-
-      <div className="flex items-center justify-between gap-3 rounded-xl border border-primary/15 bg-primary-soft/70 px-3 py-2.5">
+      <div className="flex items-center justify-between gap-3 border-t border-slate-100 bg-slate-50/80 px-3.5 py-2.5">
         <div className="min-w-0">
           <p className="flex items-center gap-1.5 text-sm font-medium text-primary">
             <Ticket className="h-3.5 w-3.5 shrink-0" />
-            {SUPPORT.action}
+            Hand to a person
           </p>
-          <p className="mt-0.5 truncate text-[11px] text-primary/80">
+          <p className="mt-0.5 truncate text-[11px] text-slate-500">
             {SUPPORT.actionHint}
           </p>
         </div>
-        <span className="shrink-0 rounded-lg bg-primary px-2.5 py-1 text-[11px] font-semibold text-white">
-          One click
-        </span>
       </div>
     </div>
   );
@@ -202,64 +180,44 @@ function SupportPanel() {
 
 function HiringPanel() {
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex items-center justify-between gap-2">
-        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-accent/80">
-          Hiring inbox
-        </p>
-        <span className="rounded-md bg-accent-soft px-2 py-0.5 text-[10px] font-semibold text-accent">
-          Resume screen
-        </span>
-      </div>
-
-      <div className="rounded-xl border border-accent/25 bg-accent-soft/40 px-3.5 py-3">
-        <p className="text-sm font-medium text-slate-900">{HIRING.question}</p>
-        <p className="mt-1 text-xs text-slate-500">{HIRING.candidate}</p>
-      </div>
-
-      <div className="space-y-2.5 rounded-xl border border-slate-200/80 bg-white px-3.5 py-3">
-        <div className="flex items-center justify-between gap-2">
-          <p className="text-sm font-semibold text-slate-900">Match score</p>
-          <span className="rounded-lg bg-accent-soft px-2 py-0.5 text-xs font-semibold tabular-nums text-accent">
-            {HIRING.score}
-          </span>
-        </div>
-        <ul className="space-y-1.5">
-          {HIRING.why.map((line) => (
-            <li
-              key={line}
-              className="flex gap-2 text-xs leading-5 text-emerald-700"
-            >
-              <span className="font-semibold" aria-hidden>
-                +
-              </span>
-              <span>{line}</span>
-            </li>
-          ))}
-          {HIRING.whyNot.map((line) => (
-            <li
-              key={line}
-              className="flex gap-2 text-xs leading-5 text-slate-500"
-            >
-              <span className="font-semibold" aria-hidden>
-                –
-              </span>
-              <span>{line}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <div className="flex items-center justify-between gap-3 rounded-xl border border-accent/25 bg-accent-soft/70 px-3 py-2.5">
+    <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
+      <div className="flex items-start justify-between gap-3 border-b border-slate-100 px-3.5 py-2.5">
         <div className="min-w-0">
-          <p className="text-sm font-medium text-accent">{HIRING.action}</p>
-          <p className="mt-0.5 truncate text-[11px] text-accent/80">
-            {HIRING.actionHint}
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">
+            Criteria alignment
+          </p>
+          <p className="truncate text-sm font-semibold text-slate-900">
+            {HIRING.candidate}
           </p>
         </div>
-        <span className="shrink-0 rounded-lg bg-accent px-2.5 py-1 text-[11px] font-semibold text-white">
-          You decide
-        </span>
+        <p className="text-2xl font-semibold tabular-nums tracking-tight text-foreground">
+          {HIRING.score}
+          <span className="text-sm font-medium text-slate-400">%</span>
+        </p>
+      </div>
+
+      <ul className="space-y-2 px-3.5 py-3">
+        {HIRING.why.map((line) => (
+          <li key={line} className="flex gap-2 text-xs leading-5 text-accent">
+            <span className="font-semibold" aria-hidden>
+              +
+            </span>
+            <span>{line}</span>
+          </li>
+        ))}
+        {HIRING.whyNot.map((line) => (
+          <li key={line} className="flex gap-2 text-xs leading-5 text-slate-500">
+            <span className="font-semibold" aria-hidden>
+              –
+            </span>
+            <span>{line}</span>
+          </li>
+        ))}
+      </ul>
+
+      <div className="border-t border-slate-100 bg-slate-50/80 px-3.5 py-2.5">
+        <p className="text-sm font-medium text-slate-900">{HIRING.action}</p>
+        <p className="mt-0.5 text-[11px] text-slate-500">{HIRING.actionHint}</p>
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { stringifyStringArray } from "@/lib/recruitment/json";
+import { parseStringArray, stringifyStringArray } from "@/lib/recruitment/json";
 import {
   getBestCandidate,
   getCandidateStats,
@@ -14,6 +14,7 @@ import type { JobCriteria, JobDetailDTO, JobDTO } from "@/lib/recruitment/types"
 
 type JobInput = JobCriteria & {
   title: string;
+  clientName?: string;
   description: string;
 };
 
@@ -32,6 +33,7 @@ export async function listJobs(organizationId: string): Promise<JobDTO[]> {
     include: {
       _count: { select: { candidates: true } },
       candidates: {
+        omit: { fileBytes: true },
         include: { analysis: true },
       },
     },
@@ -47,7 +49,7 @@ export async function listJobs(organizationId: string): Promise<JobDTO[]> {
         job,
         job._count.candidates,
         getCandidateStats(job.candidates),
-        getBestCandidate(job.candidates),
+        getBestCandidate(job.candidates, parseStringArray(job.requiredSkills)),
         pendingHire
       );
     })
@@ -64,6 +66,7 @@ export async function getJobDetail(
     where: { id: jobId, organizationId },
     include: {
       candidates: {
+        omit: { fileBytes: true },
         include: { analysis: true },
         orderBy: { createdAt: "desc" },
       },
@@ -89,6 +92,7 @@ export async function createJob(
     data: {
       organizationId,
       title: input.title,
+      clientName: input.clientName?.trim() ?? "",
       description: input.description,
       requiredSkills: stringifyStringArray(input.requiredSkills),
       preferredSkills: stringifyStringArray(input.preferredSkills),
@@ -116,6 +120,7 @@ export async function updateJob(
       where: { id: jobId },
       data: {
         title: input.title,
+        clientName: input.clientName?.trim() ?? "",
         description: input.description,
         requiredSkills: stringifyStringArray(input.requiredSkills),
         preferredSkills: stringifyStringArray(input.preferredSkills),

@@ -53,7 +53,7 @@ export async function POST(request: Request) {
     console.error(error);
     return new Response(
       JSON.stringify({
-        error: "Chat stream failed. Check database and OpenRouter settings.",
+        error: "Chat stream failed. Check the database and try again.",
         conversationId,
       }),
       { status: 500, headers: { "Content-Type": "application/json" } },

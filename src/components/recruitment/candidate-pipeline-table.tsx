@@ -5,23 +5,67 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Columns2 } from "lucide-react";
 import { CandidateStatusBadge } from "@/components/recruitment/candidate-status-badge";
+import { rowPrimaryAction } from "@/lib/recruitment/candidate-actions";
+import { RequirementChecklist } from "@/components/recruitment/requirement-checklist";
 import { ScoreBadge } from "@/components/recruitment/score-badge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { RelativeTime } from "@/components/ui/relative-time";
 import type { CandidateDTO } from "@/lib/recruitment/types";
 
 const MAX_COMPARE = 3;
 
+const STAGES = [
+  { status: "new", label: "New" },
+  { status: "shortlisted", label: "Shortlisted" },
+  { status: "interviewing", label: "Interview" },
+  { status: "hired", label: "Hired" },
+] as const;
+
+function StageStrip({ candidates }: { candidates: CandidateDTO[] }) {
+  const rejected = candidates.filter((candidate) => candidate.status === "rejected").length;
+
+  return (
+    <div className="space-y-2">
+      <ol className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        {STAGES.map((stage) => {
+          const count = candidates.filter((candidate) => candidate.status === stage.status).length;
+          return (
+            <li
+              key={stage.status}
+              className="rounded-xl border border-slate-200 bg-white px-3 py-2"
+            >
+              <p className="text-xs font-medium text-slate-500">{stage.label}</p>
+              <p className="mt-1 text-lg font-semibold tabular-nums text-slate-900">{count}</p>
+            </li>
+          );
+        })}
+      </ol>
+      {rejected > 0 ? (
+        <p className="text-xs text-slate-500">
+          {rejected} not moving forward
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
 type CandidatePipelineTableProps = {
   jobId: string;
   candidates: CandidateDTO[];
+  candidateHref?: (candidateId: string) => string;
+  compareHref?: (candidateIds: string[]) => string;
+  onStatusChange?: (candidateId: string, status: CandidateDTO["status"]) => void;
 };
 
 export function CandidatePipelineTable({
   jobId,
   candidates,
+  candidateHref = (candidateId) =>
+    `/recruitment/jobs/${jobId}/candidates/${candidateId}`,
+  compareHref = (candidateIds) =>
+    `/recruitment/jobs/${jobId}/compare?ids=${encodeURIComponent(candidateIds.join(","))}`,
+  onStatusChange,
 }: CandidatePipelineTableProps) {
   const router = useRouter();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -48,20 +92,21 @@ export function CandidatePipelineTable({
 
   function openCompare() {
     if (analyzedSelected.length < 2) return;
-    const ids = analyzedSelected.slice(0, MAX_COMPARE).join(",");
-    router.push(`/recruitment/jobs/${jobId}/compare?ids=${encodeURIComponent(ids)}`);
+    router.push(compareHref(analyzedSelected.slice(0, MAX_COMPARE)));
   }
 
   return (
     <div className="space-y-3">
+      <StageStrip candidates={candidates} />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm text-slate-500">
-          Select 2–3 analyzed candidates to compare side by side.
+          Ranked by criteria review. Select 2–3 analyzed candidates to compare
+          the same requirements.
         </p>
         <Button
           type="button"
           size="sm"
-          variant="secondary"
+          variant={analyzedSelected.length >= 2 ? "primary" : "secondary"}
           disabled={analyzedSelected.length < 2}
           onClick={openCompare}
         >
@@ -71,89 +116,113 @@ export function CandidatePipelineTable({
         </Button>
       </div>
 
-      <Card className="overflow-hidden p-0">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead className="border-b border-slate-200 bg-slate-50/80 text-xs font-medium uppercase tracking-wide text-slate-500">
-              <tr>
-                <th className="w-10 px-4 py-3">
-                  <span className="sr-only">Select</span>
-                </th>
-                <th className="px-4 py-3">Name</th>
-                <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">Match</th>
-                <th className="px-4 py-3">Parse</th>
-                <th className="px-4 py-3">Added</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {candidates.map((candidate) => {
-                const checked = selectedIds.includes(candidate.id);
-                const disabled =
-                  !candidate.hasAnalysis ||
-                  (!checked && selectedIds.length >= MAX_COMPARE);
+      <ol className="divide-y divide-slate-100 overflow-hidden rounded-2xl border border-slate-200 bg-white">
+        {candidates.map((candidate, index) => {
+          const checked = selectedIds.includes(candidate.id);
+          const disabled =
+            !candidate.hasAnalysis || (!checked && selectedIds.length >= MAX_COMPARE);
+          const missing = candidate.review?.missingRequiredSkills ?? [];
 
-                return (
-                  <tr key={candidate.id} className="hover:bg-slate-50/60">
-                    <td className="px-4 py-3">
-                      <input
-                        type="checkbox"
-                        className="h-4 w-4 rounded border-slate-300 text-blue-900 focus:ring-blue-800 disabled:opacity-40"
-                        checked={checked}
-                        disabled={disabled}
-                        aria-label={`Select ${candidate.displayName} for compare`}
-                        title={
-                          !candidate.hasAnalysis
-                            ? "Analyze this candidate before comparing"
-                            : undefined
-                        }
-                        onChange={() => toggleCandidate(candidate.id)}
-                      />
-                    </td>
-                    <td className="px-4 py-3">
+          return (
+            <li key={candidate.id} className="px-4 py-3">
+              <div className="flex items-start gap-3">
+                <input
+                  type="checkbox"
+                  className="mt-1 h-4 w-4 rounded border-slate-300 text-blue-900 focus:ring-blue-800 disabled:opacity-40"
+                  checked={checked}
+                  disabled={disabled}
+                  aria-label={`Select ${candidate.displayName} for compare`}
+                  title={
+                    !candidate.hasAnalysis
+                      ? "Analyze this candidate before comparing"
+                      : undefined
+                  }
+                  onChange={() => toggleCandidate(candidate.id)}
+                />
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="text-xs text-slate-400">{index + 1}</p>
                       <Link
-                        href={`/recruitment/jobs/${jobId}/candidates/${candidate.id}`}
+                        href={candidateHref(candidate.id)}
                         className="font-medium text-blue-900 hover:text-blue-800"
                       >
                         {candidate.displayName}
                       </Link>
-                      {candidate.fileName ? (
-                        <p className="text-xs text-slate-400">{candidate.fileName}</p>
+                      {candidate.review?.summary ? (
+                        <p className="mt-1 text-sm leading-6 text-slate-600">
+                          {candidate.review.summary}
+                        </p>
+                      ) : null}
+                      {missing.length > 0 ? (
+                        <p className="mt-1 text-sm text-slate-600">
+                          Needs review: {missing.join(", ")}
+                        </p>
+                      ) : candidate.review &&
+                        candidate.review.requiredCount > 0 &&
+                        candidate.review.requirements.every((row) => row.verdict === "shown") ? (
+                        <p className="mt-1 text-sm text-accent">
+                          Every required skill is quoted in the resume
+                        </p>
+                      ) : candidate.review && candidate.review.requiredCount > 0 ? (
+                        <p className="mt-1 text-sm text-slate-500">
+                          Open evidence for inferred or unverified items.
+                        </p>
                       ) : null}
                       {!candidate.hasAnalysis ? (
-                        <p className="text-xs text-amber-600">Needs analysis</p>
+                        <p className="mt-1 text-xs text-amber-600">Needs analysis</p>
                       ) : null}
-                    </td>
-                    <td className="px-4 py-3">
+                    </div>
+                    <div className="flex shrink-0 flex-col items-end gap-2">
+                      <ScoreBadge score={candidate.matchScore} labeled />
                       <CandidateStatusBadge status={candidate.status} />
-                    </td>
-                    <td className="px-4 py-3">
-                      <ScoreBadge score={candidate.matchScore} />
-                    </td>
-                    <td className="px-4 py-3">
-                      <Badge
-                        tone={
-                          candidate.parseStatus === "ok" ||
-                          candidate.parseStatus === "manual"
-                            ? "success"
-                            : candidate.parseStatus === "failed"
-                              ? "danger"
-                              : "warning"
-                        }
-                      >
-                        {candidate.parseStatus}
-                      </Badge>
-                    </td>
-                    <td className="px-4 py-3 text-slate-500">
-                      <RelativeTime date={candidate.createdAt} />
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </Card>
+                      {onStatusChange && rowPrimaryAction[candidate.status] ? (
+                        <Button
+                          type="button"
+                          size="sm"
+                          onClick={() =>
+                            onStatusChange(
+                              candidate.id,
+                              rowPrimaryAction[candidate.status]!.nextStatus,
+                            )
+                          }
+                        >
+                          {rowPrimaryAction[candidate.status]!.label}
+                        </Button>
+                      ) : null}
+                    </div>
+                  </div>
+                  <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-slate-400">
+                    <Badge
+                      tone={
+                        candidate.parseStatus === "ok" || candidate.parseStatus === "manual"
+                          ? "success"
+                          : candidate.parseStatus === "failed"
+                            ? "danger"
+                            : "warning"
+                      }
+                    >
+                      {candidate.parseStatus}
+                    </Badge>
+                    <RelativeTime date={candidate.createdAt} />
+                    {candidate.fileName ? <span>{candidate.fileName}</span> : null}
+                  </div>
+                  {candidate.review && candidate.review.requirements.length > 0 ? (
+                    <details className="mt-3">
+                      <summary className="cursor-pointer text-sm font-medium text-blue-900">
+                        Evidence
+                      </summary>
+                      <div className="mt-2">
+                        <RequirementChecklist rows={candidate.review.requirements} />
+                      </div>
+                    </details>
+                  ) : null}
+                </div>
+              </div>
+            </li>
+          );
+        })}
+      </ol>
     </div>
   );
 }

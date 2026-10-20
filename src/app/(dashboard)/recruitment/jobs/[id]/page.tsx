@@ -7,6 +7,7 @@ import { JobActivityLog } from "@/components/recruitment/job-activity-log";
 import { ManualCandidateForm } from "@/components/recruitment/manual-candidate-form";
 import { PendingHireBanner } from "@/components/recruitment/pending-hire-banner";
 import { ResumeUploader } from "@/components/recruitment/resume-uploader";
+import { ShortlistHandoff } from "@/components/recruitment/shortlist-handoff";
 import { Badge } from "@/components/ui/badge";
 import { buttonClassName } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
@@ -39,15 +40,18 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
     <>
       <Header
         title={job.title}
-        description="Manage candidates and review AI match scores."
+        description="Read the quotes beside the score, compare people, then decide who moves forward."
         action={
-          <Link
-            href={`/recruitment/jobs/${job.id}/edit`}
-            className={buttonClassName({ variant: "secondary", size: "sm" })}
-          >
-            <Pencil className="h-4 w-4" />
-            Edit job
-          </Link>
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            <ShortlistHandoff jobId={job.id} />
+            <Link
+              href={`/recruitment/jobs/${job.id}/edit`}
+              className={buttonClassName({ variant: "secondary", size: "sm" })}
+            >
+              <Pencil className="h-4 w-4" />
+              Edit job
+            </Link>
+          </div>
         }
       />
 
@@ -58,6 +62,13 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
 
         <Card>
           <CardTitle>Job criteria</CardTitle>
+          {job.clientName ? (
+            <p className="mt-2 text-sm text-foreground">
+              <span className="font-medium">Client:</span> {job.clientName}
+            </p>
+          ) : (
+            <p className="mt-2 text-sm text-muted">Add a client so the shortlist names who the role is for.</p>
+          )}
           <div className="mt-4 grid gap-4 text-sm sm:grid-cols-2">
             <div>
               <p className="font-medium text-slate-700">Required skills</p>
@@ -95,7 +106,24 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
             ) : null}
           </div>
           <p className="mt-4 text-sm leading-6 text-slate-600">{job.description}</p>
+          <p className="mt-3 text-xs leading-5 text-slate-500">
+            Every candidate on this job is reviewed against these requirements.
+          </p>
         </Card>
+
+        <section>
+          <h2 className="mb-4 text-lg font-semibold text-slate-900">Candidates</h2>
+
+          {activeCandidates.length === 0 ? (
+            <EmptyState
+              icon={Users}
+              title="No candidates yet"
+              description="Upload resumes or add candidate text. The original file is kept with each person."
+            />
+          ) : (
+            <CandidatePipelineTable jobId={job.id} candidates={activeCandidates} />
+          )}
+        </section>
 
         <div className="grid gap-6 lg:grid-cols-2">
           <Card>
@@ -138,20 +166,6 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
             ) : null}
           </Card>
         </div>
-
-        <section>
-          <h2 className="mb-4 text-lg font-semibold text-slate-900">Candidates</h2>
-
-          {activeCandidates.length === 0 ? (
-            <EmptyState
-              icon={Users}
-              title="No candidates yet"
-              description="Upload a resume or add candidate text to start building your pipeline."
-            />
-          ) : (
-            <CandidatePipelineTable jobId={job.id} candidates={activeCandidates} />
-          )}
-        </section>
 
         <JobActivityLog events={activityEvents} />
       </main>

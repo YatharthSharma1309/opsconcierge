@@ -42,6 +42,19 @@ function formatConfidence(value: unknown) {
   return null;
 }
 
+export function publicRunLabel(value: string) {
+  if (/openrouter|openai|gemini/i.test(value) && /[/-]/.test(value)) {
+    return "Assistant";
+  }
+  return value
+    .replace(/openrouter/gi, "assistant")
+    .replace(/openai/gi, "assistant")
+    .replace(/gemini/gi, "assistant")
+    .replace(/_/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function formatLatency(latencyMs: number | null) {
   if (latencyMs === null || latencyMs === undefined) return "N/A";
   return `${latencyMs} ms`;
@@ -134,7 +147,7 @@ function summaryForLog(
 
   if (stage === "retrieve") {
     const parts = [
-      decision.replace(/_/g, " "),
+      publicRunLabel(decision),
       chunks !== null ? `${chunks} chunk${chunks === 1 ? "" : "s"} matched` : null,
       confidence ? `confidence ${confidence}` : null,
       retrievalMode ? `via ${retrievalMode}` : null,
@@ -144,23 +157,23 @@ function summaryForLog(
 
   if (stage === "model") {
     const parts = [
-      decision.replace(/_/g, " "),
+      publicRunLabel(decision),
       confidence ? `confidence ${confidence}` : null,
-      outcome ? outcome.replace(/_/g, " ") : null,
+      outcome ? publicRunLabel(outcome) : null,
     ].filter(Boolean);
     return parts.join(" · ");
   }
 
   if (stage === "escalate") {
     const parts = [
-      decision.replace(/_/g, " "),
+      publicRunLabel(decision),
       priority ? `priority ${priority}` : null,
       category ? `category ${category}` : null,
     ].filter(Boolean);
     return parts.join(" · ");
   }
 
-  return decision.replace(/_/g, " ");
+  return publicRunLabel(decision);
 }
 
 export function buildExecutionStoryboard(
@@ -171,8 +184,8 @@ export function buildExecutionStoryboard(
     const stage = stageForLog(log.agent, log.decision);
     const confidence = formatConfidence(meta.confidence);
     const details: StoryboardStep["details"] = [
-      { label: "Decision", value: log.decision },
-      { label: "Model", value: log.model || "N/A" },
+      { label: "Decision", value: publicRunLabel(log.decision) },
+      { label: "Model", value: log.model ? publicRunLabel(log.model) : "N/A" },
       { label: "Latency", value: formatLatency(log.latencyMs) },
     ];
 
@@ -186,10 +199,7 @@ export function buildExecutionStoryboard(
       details.push({ label: "Retrieval", value: meta.retrievalMode });
     }
     if (typeof meta.outcome === "string") {
-      details.push({ label: "Outcome", value: meta.outcome });
-    }
-    if (typeof meta.provider === "string") {
-      details.push({ label: "Provider", value: meta.provider });
+      details.push({ label: "Outcome", value: publicRunLabel(meta.outcome) });
     }
     if (typeof meta.priority === "string") {
       details.push({ label: "Priority", value: meta.priority });
@@ -237,7 +247,7 @@ export function storyboardHeadline(steps: StoryboardStep[]) {
   }
   if (model) {
     const outcome = model.details.find((d) => d.label === "Outcome")?.value;
-    if (outcome === "low_knowledge" || outcome === "low_confidence") {
+    if (outcome === "low knowledge" || outcome === "low confidence") {
       return "Answered with low confidence";
     }
     return "Deflected with a grounded reply";

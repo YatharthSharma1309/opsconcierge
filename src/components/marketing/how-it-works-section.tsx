@@ -28,14 +28,14 @@ export const HOW_IT_WORKS_STEPS: HowItWorksStep[] = [
   },
   {
     step: "02",
-    title: "Deflect on your website widget",
-    body: "Customers ask on-site. Answers stay grounded in your policies — not generic ChatGPT.",
+    title: "Answer on your site, and cite the doc",
+    body: "Customers ask in the website chat. The reply names the policy it came from.",
     icon: Search,
   },
   {
     step: "03",
-    title: "Escalate with the full transcript",
-    body: "One click creates a ticket with chat history. Review the execution log; fix the FAQ.",
+    title: "Hand the thread to a person",
+    body: "One click gives a person the full conversation. Review the run, then fix the doc.",
     icon: Ticket,
   },
 ];
@@ -65,8 +65,8 @@ export function HowItWorksSection({
         <header className="max-w-2xl">
           <h2 className="text-2xl font-semibold text-slate-900">How it works</h2>
           <p className="mt-2 text-slate-600">
-            Upload once, deflect on-site, escalate with context. No 50-agent
-            helpdesk rollout.
+            Knowledge base, website chat, and a handoff with the full
+            conversation. No 50-agent rollout.
           </p>
         </header>
 
@@ -93,7 +93,7 @@ export function HowItWorksSection({
             <p className="mt-1 text-sm text-slate-600">
               {demoMode
                 ? "Widget → escalate → execution log — no sign-in required."
-                : "Upload one doc, embed the widget, measure deflection."}
+                : "Upload one doc, put chat on the site, and hand messy threads to a person."}
             </p>
           </div>
           <div className="mt-4 flex flex-wrap items-center gap-3 sm:mt-0 sm:shrink-0">
@@ -303,7 +303,7 @@ function WidgetMockup() {
 
           <div className="mt-2 flex items-center justify-between rounded-md bg-primary-soft/70 px-2 py-1.5">
             <span className="text-[10px] font-medium text-primary">
-              Deflected · no ticket
+              Answered from the policy
             </span>
             <span className="rounded bg-emerald-100 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-800">
               Resolved
@@ -331,10 +331,10 @@ function TicketMockup() {
       <div className="flex items-center justify-between border-b border-slate-100 px-3 py-2">
         <div className="flex items-center gap-2">
           <Ticket className="h-3.5 w-3.5 text-primary" />
-          <p className="text-xs font-semibold text-slate-900">Ticket #1042</p>
+          <p className="text-xs font-semibold text-slate-900">Damaged item, need a person</p>
         </div>
         <span className="rounded-lg bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-800 ring-1 ring-amber-100">
-          Open
+          With you
         </span>
       </div>
 

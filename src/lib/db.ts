@@ -2,8 +2,44 @@
 import { Pool } from "pg";
 import { PrismaClient } from "@/generated/prisma/client";
 
-/** Bump when Prisma schema fields change so HMR drops a stale singleton. */
-const PRISMA_CLIENT_GENERATION = "ticket-triage-v2";
+/** Bump when the cached Prisma client or pg pool must be rebuilt. */
+const PRISMA_CLIENT_GENERATION = "staffing-ssl-v1";
+
+const LEGACY_PG_SSL_MODES = new Set(["prefer", "require", "verify-ca"]);
+
+/**
+ * pg aliases prefer, require, and verify-ca to verify-full and warns.
+ * Rewrite only those query values. String ops avoid re-encoding passwords.
+ */
+export function normalizeDatabaseSslMode(connectionString: string): string {
+  const queryStart = connectionString.indexOf("?");
+  if (queryStart === -1) {
+    return connectionString;
+  }
+
+  const parts = connectionString.slice(queryStart + 1).split("&");
+  let changed = false;
+
+  for (let i = 0; i < parts.length; i++) {
+    const part = parts[i];
+    const eq = part.indexOf("=");
+    if (eq === -1) continue;
+
+    if (part.slice(0, eq).toLowerCase() !== "sslmode") continue;
+
+    const mode = part.slice(eq + 1).toLowerCase();
+    if (!LEGACY_PG_SSL_MODES.has(mode)) continue;
+
+    parts[i] = "sslmode=verify-full";
+    changed = true;
+  }
+
+  if (!changed) {
+    return connectionString;
+  }
+
+  return connectionString.slice(0, queryStart + 1) + parts.join("&");
+}
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
@@ -26,7 +62,7 @@ function resolveDatabaseUrl(): string {
     );
   }
 
-  return url;
+  return normalizeDatabaseSslMode(url);
 }
 
 function createPrismaClient() {
@@ -50,10 +86,10 @@ function createPrismaClient() {
 
 if (
   process.env.NODE_ENV !== "production" &&
-  globalForPrisma.prisma &&
   globalForPrisma.prismaGeneration !== PRISMA_CLIENT_GENERATION
 ) {
   globalForPrisma.prisma = undefined;
+  globalForPrisma.pool = undefined;
 }
 
 export const db = globalForPrisma.prisma ?? createPrismaClient();

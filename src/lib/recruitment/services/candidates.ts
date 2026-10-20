@@ -29,6 +29,7 @@ async function getCandidateForOrganization(
 ) {
   return db.candidate.findFirst({
     where: { id: candidateId, job: { organizationId } },
+    omit: { fileBytes: true },
     include: { job: true, analysis: true },
   });
 }
@@ -59,6 +60,7 @@ export async function createCandidateFromText(input: {
       parseStatus: input.parseStatus ?? "manual",
       filePath: null,
     },
+    omit: { fileBytes: true },
     include: { analysis: true },
   });
 
@@ -106,10 +108,12 @@ export async function createCandidateFromUpload(input: {
       displayName: displayNameFromFileName(input.fileName),
       fileName: input.fileName,
       mimeType: input.mimeType,
-      filePath: null,
+      filePath: "stored",
+      fileBytes: new Uint8Array(input.buffer),
       rawText,
       parseStatus,
     },
+    omit: { fileBytes: true },
     include: { analysis: true },
   });
 
@@ -213,6 +217,7 @@ export async function updateCandidate(input: {
             ? { interviewScorecard: scorecardPayload }
             : {}),
         },
+        omit: { fileBytes: true },
         include: { analysis: true },
       });
 
@@ -222,6 +227,7 @@ export async function updateCandidate(input: {
           id: { not: input.candidateId },
           status: { not: "archived" },
         },
+        omit: { fileBytes: true },
       });
 
       for (const other of others) {
@@ -280,6 +286,7 @@ export async function updateCandidate(input: {
           ? { interviewScorecard: scorecardPayload }
           : {}),
       },
+      omit: { fileBytes: true },
       include: { analysis: true },
     });
   });
@@ -324,6 +331,7 @@ export async function getCandidatesForCompare(
       job: { organizationId },
       status: { not: "archived" },
     },
+    omit: { fileBytes: true },
     include: { analysis: true },
   });
 
@@ -333,4 +341,27 @@ export async function getCandidatesForCompare(
     .map((id) => byId.get(id))
     .filter((candidate): candidate is NonNullable<typeof candidate> => Boolean(candidate))
     .map(toCandidateDetailDTO);
+}
+
+export async function getCandidateFile(organizationId: string, candidateId: string) {
+  const candidate = await db.candidate.findFirst({
+    where: {
+      id: candidateId,
+      job: { organizationId },
+      filePath: "stored",
+    },
+    select: {
+      fileBytes: true,
+      fileName: true,
+      mimeType: true,
+    },
+  });
+
+  if (!candidate?.fileBytes || !candidate.mimeType) return null;
+
+  return {
+    bytes: candidate.fileBytes,
+    fileName: candidate.fileName?.trim() || "resume",
+    mimeType: candidate.mimeType,
+  };
 }

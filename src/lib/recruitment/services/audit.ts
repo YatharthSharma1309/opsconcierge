@@ -11,6 +11,7 @@ export type AuditEventDTO = {
 
 const actionLabels: Record<string, string> = {
   "job.create": "Job created",
+  "job.share": "Shortlist link created",
   "job.update": "Job updated",
   "job.delete": "Job deleted",
   "candidate.create_manual": "Candidate added manually",

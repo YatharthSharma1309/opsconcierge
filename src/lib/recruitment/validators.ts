@@ -8,6 +8,7 @@ const criteriaArraySchema = z
 
 export const createJobSchema = z.object({
   title: z.string().trim().min(2).max(120),
+  clientName: z.string().trim().max(120).default(""),
   description: z.string().trim().min(20).max(8000),
   requiredSkills: z
     .array(z.string().trim().min(1).max(80))

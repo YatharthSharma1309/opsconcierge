@@ -11,7 +11,7 @@ import { resolveUploadMime } from "@/lib/recruitment/validators";
 export async function POST(request: Request) {
   return withRecruitmentOrg(async ({ organization, user }) => {
     if (
-      await checkRateLimit(`recruitment-upload:${organization.id}`, 20, 60 * 1000)
+      await checkRateLimit(`recruitment-upload:${organization.id}`, 60, 60 * 1000)
     ) {
       return NextResponse.json(
         { error: "Upload rate limit exceeded. Try again shortly." },

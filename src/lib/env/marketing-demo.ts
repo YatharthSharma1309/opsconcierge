@@ -1,3 +1,5 @@
+import { hiringWorkspaceHref } from "@/lib/env/public-demo";
+
 /** Client-safe: only treat as demo when auth bypass is actually enabled. */
 export function isMarketingDemoMode() {
   return process.env.NEXT_PUBLIC_AUTH_BYPASS === "true";
@@ -17,25 +19,25 @@ export const demoModuleLinks: readonly DemoModuleLink[] = [
   {
     href: "/dashboard",
     label: "Home",
-    hint: "Start here — tickets and ops overview",
+    hint: "Start here — inbox and the next step",
     icon: "dashboard",
   },
   {
     href: "/widget",
     label: "Support widget",
-    hint: "FAQ deflection on your site",
+    hint: "Website chat that cites your docs",
     icon: "widget",
   },
   {
-    href: "/recruitment",
+    href: hiringWorkspaceHref(),
     label: "Hiring lane",
-    hint: "Resume shortlist from PDFs",
+    hint: "Maya, Jordan, and Priya — quotes beside the score",
     icon: "hiring",
   },
   {
     href: "/analytics",
     label: "Analytics",
-    hint: "Deflection and hiring metrics",
+    hint: "What the inbox and the shortlist did",
     icon: "analytics",
   },
 ] as const;

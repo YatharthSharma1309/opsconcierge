@@ -18,7 +18,7 @@ export async function createChatCompletion(
   const client = getAiClient();
   if (!client) {
     throw new RecruitmentError(
-      "AI API key is missing. Set OPENROUTER_API_KEY or OPENAI_API_KEY.",
+      "The assistant is not configured.",
       500,
       "MISSING_API_KEY"
     );

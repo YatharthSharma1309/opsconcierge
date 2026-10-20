@@ -15,49 +15,62 @@ export function ResumeUploader({ jobId, className }: ResumeUploaderProps) {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
+  const [progress, setProgress] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState(false);
 
-  async function uploadFile(file: File) {
+  async function uploadFiles(fileList: FileList | File[]) {
+    const files = Array.from(fileList);
+    if (files.length === 0) return;
+
     setBusy(true);
     setError(null);
+    const failures: string[] = [];
 
-    const formData = new FormData();
-    formData.append("jobId", jobId);
-    formData.append("file", file);
+    for (let index = 0; index < files.length; index += 1) {
+      const file = files[index];
+      setProgress(`${index + 1} of ${files.length}`);
 
-    const response = await fetch("/api/recruitment/upload", {
-      method: "POST",
-      body: formData,
-    });
-    const data = await response.json();
+      const formData = new FormData();
+      formData.append("jobId", jobId);
+      formData.append("file", file);
 
-    if (!response.ok) {
-      setError(data.error ?? "Upload failed");
-      setBusy(false);
-      return;
+      try {
+        const response = await fetch("/api/recruitment/upload", {
+          method: "POST",
+          body: formData,
+        });
+        const data = (await response.json()) as { error?: string };
+        if (!response.ok) {
+          failures.push(`${file.name}: ${data.error ?? "Upload failed"}`);
+        }
+      } catch {
+        failures.push(`${file.name}: Upload failed`);
+      }
     }
 
-    router.refresh();
+    setProgress(null);
     setBusy(false);
     if (inputRef.current) {
       inputRef.current.value = "";
     }
+    if (failures.length > 0) {
+      setError(failures.join(" "));
+    }
+    router.refresh();
   }
 
   function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0];
-    if (file) {
-      void uploadFile(file);
+    if (event.target.files?.length) {
+      void uploadFiles(event.target.files);
     }
   }
 
   function handleDrop(event: React.DragEvent<HTMLDivElement>) {
     event.preventDefault();
     setDragOver(false);
-    const file = event.dataTransfer.files?.[0];
-    if (file) {
-      void uploadFile(file);
+    if (event.dataTransfer.files?.length) {
+      void uploadFiles(event.dataTransfer.files);
     }
   }
 
@@ -78,8 +91,11 @@ export function ResumeUploader({ jobId, className }: ResumeUploaderProps) {
         )}
       >
         <Upload className="mb-3 h-8 w-8 text-accent" />
-        <p className="text-sm font-medium text-slate-900">Upload resume</p>
-        <p className="mt-1 text-xs text-slate-500">PDF or DOCX, up to 5MB</p>
+        <p className="text-sm font-medium text-slate-900">Upload resumes</p>
+        <p className="mt-1 text-xs text-slate-500">
+          PDF or DOCX, up to 5MB each. Add several at once. The original file is kept.
+        </p>
+        {progress ? <p className="mt-2 text-sm text-foreground">Uploading {progress}</p> : null}
 
         <input
           ref={inputRef}
@@ -89,6 +105,7 @@ export function ResumeUploader({ jobId, className }: ResumeUploaderProps) {
           className="sr-only"
           id={`resume-upload-${jobId}`}
           disabled={busy}
+          multiple
         />
 
         <label
@@ -99,7 +116,7 @@ export function ResumeUploader({ jobId, className }: ResumeUploaderProps) {
             className: cn("mt-4 cursor-pointer", busy && "pointer-events-none opacity-60"),
           })}
         >
-          {busy ? "Uploading..." : "Choose file"}
+          {busy ? `Uploading ${progress ?? ""}`.trim() : "Choose files"}
         </label>
       </div>
 

@@ -19,7 +19,7 @@ const geistMono = Geist_Mono({
 const siteUrl = "https://support-ai-nine-mu.vercel.app";
 const seoTitle = "OpsConcierge — AI Ops Desk (Support + Hiring)";
 const seoDescription =
-  "AI ops desk for small businesses: widget FAQ deflection, tickets with full chat, execution logs, and resume shortlisting with why / why-not evidence.";
+  "Shared inbox, knowledge base, and website chat for teams of 5–50, plus a hiring shortlist whose score shows the quotes.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

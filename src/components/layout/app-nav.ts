@@ -13,6 +13,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import type { MemberRole } from "@/generated/prisma/client";
+import { hiringWorkspaceHref } from "@/lib/env/public-demo";
 
 export type AppNavItem = {
   href: string;
@@ -28,9 +29,9 @@ export const appPrimaryNav: AppNavItem[] = [
   { href: "/dashboard", label: "Home", description: "Start here", icon: Home },
   { href: "/widget", label: "Widget", icon: MessageSquare },
   { href: "/tickets", label: "Tickets", icon: Headphones },
-  { href: "/recruitment", label: "Hiring", icon: Briefcase },
+  { href: hiringWorkspaceHref(), label: "Hiring", icon: Briefcase },
   { href: "/knowledge", label: "Knowledge", icon: BookOpen },
-  { href: "/analytics", label: "Analytics", icon: BarChart3 },
+  { href: "/analytics", label: "Boards", description: "Inbox and hiring", icon: BarChart3 },
 ];
 
 /** Secondary links — app footer on desktop + full mobile drawer */

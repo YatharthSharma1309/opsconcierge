@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import { Button, buttonClassName } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { AnalyzeButton } from "@/components/recruitment/analyze-button";
 import { CandidateStatusBadge } from "@/components/recruitment/candidate-status-badge";
@@ -13,11 +14,13 @@ import type { CandidateDetailDTO, CandidateStatus } from "@/lib/recruitment/type
 type CandidateDetailPanelProps = {
   candidate: CandidateDetailDTO;
   otherCandidateCount: number;
+  compareHref?: string | null;
 };
 
 export function CandidateDetailPanel({
   candidate,
   otherCandidateCount,
+  compareHref = null,
 }: CandidateDetailPanelProps) {
   const router = useRouter();
   const [notes, setNotes] = useState(candidate.notes ?? "");
@@ -98,8 +101,13 @@ export function CandidateDetailPanel({
         />
       </div>
 
-      {pipelineActions.length > 0 ? (
+      {compareHref || pipelineActions.length > 0 ? (
         <div className="flex flex-wrap gap-2">
+          {compareHref ? (
+            <Link href={compareHref} className={buttonClassName({ variant: "secondary", size: "sm" })}>
+              Compare
+            </Link>
+          ) : null}
           {pipelineActions.map((action) => (
             <Button
               key={action.nextStatus}

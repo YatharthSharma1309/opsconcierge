@@ -12,6 +12,7 @@ import { OpsLanesSection } from "@/components/marketing/ops-lanes";
 import { ProductDemoWalkthrough } from "@/components/marketing/product-demo-walkthrough";
 import { buttonClassName } from "@/components/ui/button";
 import { isMarketingDemoMode } from "@/lib/env/marketing-demo";
+import { hiringWorkspaceHref } from "@/lib/env/public-demo";
 
 const personas = [
   {
@@ -20,7 +21,7 @@ const personas = [
   },
   {
     name: "Early SaaS teams",
-    use: "Password, billing, and how-to deflection — escalate SSO bugs with context.",
+    use: "Password, billing, and how-to answers — hand SSO bugs to a person with the thread.",
   },
   {
     name: "Clinics & local services",
@@ -33,11 +34,11 @@ const personas = [
 ];
 
 const includes = [
-  "Multi-tenant workspace with shared knowledge",
-  "Support chat + tickets + analytics",
-  "Hiring pipeline with AI match assist",
-  "Embeddable widget preview",
-  "Auditable execution runs for owners and judges",
+  "Shared inbox for website chat, written like mail",
+  "Knowledge base the answer has to cite",
+  "Website chat that can hand the case to a person",
+  "Hiring shortlist with a score, the quotes, and a compare",
+  "Auditable runs for owners",
 ];
 
 const notIncludes = [
@@ -59,25 +60,16 @@ export default function LandingPage() {
       <main id="main-content" className="flex-1">
         {/* Hero — brand + one headline + support + CTAs + product preview */}
         <section className="hero-gradient border-b border-border/80">
-          <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 pb-14 pt-10 sm:px-6 sm:pb-18 sm:pt-14 lg:grid-cols-2 lg:gap-14 lg:pb-20 lg:pt-14">
+          <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 pb-14 pt-10 sm:px-6 sm:pb-16 sm:pt-14 lg:grid-cols-2 lg:gap-14 lg:pb-20 lg:pt-14">
             <div>
-              <h1 className="max-w-xl text-5xl font-bold tracking-[-0.03em] text-foreground md:text-6xl md:leading-[1.05]">
-                OpsConcierge
+              <h1 className="max-w-xl text-4xl font-semibold tracking-[-0.03em] text-foreground md:text-5xl md:leading-[1.08]">
+                A shared inbox, and a shortlist that shows its work
               </h1>
-              <p className="mt-4 max-w-xl text-xl font-medium leading-8 tracking-tight text-foreground/90 md:text-2xl md:leading-9">
-                The ops desk for small businesses that still live in email and
-                DMs
+              <p className="mt-5 max-w-xl text-base leading-7 text-muted md:text-lg md:leading-8">
+                Answer from your knowledge base in website chat. When the
+                question is messy, hand the whole thread to a person. When a
+                resume arrives, see which requirements it quotes.
               </p>
-              <p className="mt-5 max-w-xl text-base leading-7 text-muted">
-                Deflect FAQs on your site, escalate messy cases with the full
-                chat, and shortlist hires from resumes — with auditable support
-                runs and evidence-backed hiring decisions.
-              </p>
-              {demoMode ? (
-                <p className="mt-3 max-w-xl text-sm leading-6 text-muted">
-                  Built for Build with Gemini XPRIZE · Small Business Services
-                </p>
-              ) : null}
               <div className="mt-8 flex flex-wrap items-center gap-3">
                 <Link
                   href={primaryHref}
@@ -213,9 +205,9 @@ export default function LandingPage() {
               </div>
             </div>
             <p className="mt-8 max-w-2xl text-sm leading-6 text-slate-500">
-              Realistic first-90-day target on a clean FAQ: about 40–60%
-              deflection of routine questions, with humans handling the rest —
-              and a weekly log review so the knowledge base improves.
+              A deflection percentage is a vendor metric. What you get is an
+              answer that names the document, and a person when the document
+              is not enough.
             </p>
           </div>
         </section>
@@ -229,9 +221,9 @@ export default function LandingPage() {
               Simple pricing for small businesses
             </h2>
             <p className="mt-2 max-w-2xl text-slate-600">
-              Start free while you prove deflection on your FAQ. Upgrade when
-              tickets and hiring shortlists are part of the weekly ops rhythm.
-              No per-resolution surprise fees.
+              Start free while the inbox and the shortlist become part of the
+              week. Upgrade when both lanes are in the rhythm. No charge per
+              resolved chat.
             </p>
             <div className="mt-10 grid gap-8 md:grid-cols-3">
               {[
@@ -316,7 +308,7 @@ export default function LandingPage() {
             <p className="mt-2 max-w-xl text-slate-600">
               {demoMode
                 ? "Command center → widget chat → escalate → execution log → optional hiring shortlist. No sign-in required in demo mode."
-                : "Upload one policy doc, embed the widget, and measure how many repeats never become tickets."}
+                : "Upload one policy, put the chat on your site, and hand messy threads to a person with the full conversation."}
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <Link href={primaryHref} className={buttonClassName({ size: "lg" })}>
@@ -324,7 +316,7 @@ export default function LandingPage() {
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
-                href={demoMode ? "/recruitment" : "/help"}
+                href={demoMode ? hiringWorkspaceHref() : "/help"}
                 className={buttonClassName({
                   variant: "secondary",
                   size: "lg",

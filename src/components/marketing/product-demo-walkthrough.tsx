@@ -12,6 +12,7 @@ import {
   Upload,
 } from "lucide-react";
 import { buttonClassName } from "@/components/ui/button";
+import { hiringWorkspaceHref } from "@/lib/env/public-demo";
 import { cn } from "@/lib/utils";
 
 type DemoStepId =
@@ -55,7 +56,7 @@ function buildSteps(demoMode: boolean): DemoStep[] {
       id: "widget",
       step: "02",
       title: "Ask on the support widget",
-      body: "Open the site bubble and ask a real FAQ. The reply should cite your uploaded policy — that is deflection working.",
+      body: "Open the site bubble and ask a real FAQ. The reply should name the document it came from.",
       action: 'Try: "What is the refund policy?" or "How do I reset my password?"',
       tip: "If sources appear under the answer, the knowledge base is connected.",
       href: demoMode ? "/widget" : "/sign-up",
@@ -79,7 +80,7 @@ function buildSteps(demoMode: boolean): DemoStep[] {
       title: "Review the execution log",
       body: "See model, latency, and deflect vs escalate. Use failed answers to fix the FAQ so the bot improves next week.",
       action: "Open Widget intake and inspect the latest run after you escalate.",
-      tip: "Owners and judges use this trail to trust what the AI did.",
+      tip: "Owners use this trail to trust what the assistant did.",
       href: demoMode ? "/widget/intake" : "/sign-up",
       cta: demoMode ? "Open execution logs" : "Get started free",
     },
@@ -89,10 +90,10 @@ function buildSteps(demoMode: boolean): DemoStep[] {
       title: "Shortlist a hire (optional)",
       body: "Same ops desk ranks resume PDFs against must-haves with why / why-not evidence. You still decide hire or reject.",
       action: demoMode
-        ? "Open Hiring lane and open a scored demo candidate."
+        ? "Open the sample hiring job and review a fictional candidate."
         : "Create a job, upload resumes, and run AI match assist.",
       tip: "You still post jobs on Indeed — OpsConcierge is the screening inbox.",
-      href: demoMode ? "/recruitment" : "/sign-up",
+      href: demoMode ? hiringWorkspaceHref() : "/sign-up",
       cta: demoMode ? "Open hiring lane" : "Get started free",
     },
   ];
@@ -280,7 +281,7 @@ function StepPreview({ stepId }: { stepId: DemoStepId }) {
             </div>
             <div className="mt-3 flex items-center justify-between rounded-lg bg-emerald-50 px-2.5 py-1.5">
               <span className="text-[10px] font-medium text-emerald-900">
-                Deflected · no ticket
+                Answered from the doc
               </span>
               <MessageSquare className="h-3.5 w-3.5 text-emerald-700" />
             </div>
@@ -293,10 +294,10 @@ function StepPreview({ stepId }: { stepId: DemoStepId }) {
           <div className="flex items-center justify-between border-b border-slate-100 px-3 py-2">
             <div className="flex items-center gap-2">
               <Ticket className="h-3.5 w-3.5 text-primary" />
-              <p className="text-xs font-semibold text-slate-900">Ticket #1042</p>
+              <p className="text-xs font-semibold text-slate-900">Card failed on renew</p>
             </div>
             <span className="rounded-lg bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-800 ring-1 ring-amber-100">
-              Open
+              With you
             </span>
           </div>
           <div className="space-y-1.5 px-3 py-2.5">
@@ -343,26 +344,26 @@ function StepPreview({ stepId }: { stepId: DemoStepId }) {
         <div className="overflow-hidden rounded-xl border border-slate-200/90 bg-white shadow-sm">
           <div className="flex items-center justify-between border-b border-slate-100 px-3 py-2">
             <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">
-              Candidate match
+              Criteria alignment
             </p>
-            <Briefcase className="h-3.5 w-3.5 text-teal-700" />
+            <Briefcase className="h-3.5 w-3.5 text-primary" />
           </div>
           <div className="px-3 py-3">
             <div className="flex items-center justify-between">
-              <p className="text-sm font-semibold text-slate-900">Alex Rivera</p>
-              <span className="rounded-md bg-teal-50 px-2 py-0.5 text-xs font-semibold text-teal-800">
-                88
+              <p className="text-sm font-semibold text-slate-900">Maya Chen</p>
+              <span className="rounded-md bg-accent-soft px-2 py-0.5 text-xs font-semibold text-accent">
+                91%
               </span>
             </div>
             <p className="mt-2 text-xs leading-5 text-slate-600">
-              Matches TypeScript, Next.js, PostgreSQL — evidence quotes from the
-              resume.
+              Quotes React, TypeScript, REST APIs, and AWS. Team leadership is
+              not established.
             </p>
             <div className="mt-3 flex flex-wrap gap-1.5">
-              {["TypeScript", "Next.js", "RAG"].map((skill) => (
+              {["React", "TypeScript", "AWS"].map((skill) => (
                 <span
                   key={skill}
-                  className="rounded-md bg-teal-50 px-2 py-0.5 text-[10px] font-semibold text-teal-800"
+                  className="rounded-md bg-accent-soft px-2 py-0.5 text-[10px] font-semibold text-accent"
                 >
                   {skill}
                 </span>

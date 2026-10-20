@@ -114,7 +114,7 @@ export async function POST(request: Request) {
     console.error(error);
     return NextResponse.json(
       {
-        error: "Chat request failed. Check database and OpenRouter settings.",
+        error: "Chat request failed. Check the database and try again.",
         conversationId,
       },
       { status: 500 },

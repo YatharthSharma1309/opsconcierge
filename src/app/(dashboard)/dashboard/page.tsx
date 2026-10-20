@@ -17,17 +17,10 @@ import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 import { buttonClassName } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { requireOrgMembershipOrRedirect } from "@/lib/auth";
+import { hiringWorkspaceHref } from "@/lib/env/public-demo";
 import { getWorkspaceHealth } from "@/lib/demo";
 import { db } from "@/lib/db";
-import {
-  getAiProviderPreference,
-  getChatModel,
-  isAiConfigured,
-  isEmbeddingEnabled,
-  isOpenRouterConfigured,
-  shouldAttemptGemini,
-} from "@/lib/ai";
-import { getGeminiChatModel, isGeminiConfigured } from "@/lib/gemini";
+import { isAiConfigured, isEmbeddingEnabled } from "@/lib/ai";
 import { RelativeTime } from "@/components/ui/relative-time";
 import { cn } from "@/lib/utils";
 
@@ -50,48 +43,27 @@ export default async function DashboardPage() {
   const data = await getDashboardData(organization.id);
   const aiConfigured = isAiConfigured();
   const embeddingEnabled = isEmbeddingEnabled();
-  const geminiReady = isGeminiConfigured();
-  const openRouterReady = isOpenRouterConfigured();
-  const preference = getAiProviderPreference();
-  const activeModel = shouldAttemptGemini()
-    ? getGeminiChatModel()
-    : openRouterReady
-      ? getChatModel()
-      : "keyword fallback";
-  const providerLabel = !aiConfigured
-    ? "Keyword only"
-    : shouldAttemptGemini()
-      ? preference === "auto" && openRouterReady
-        ? "Gemini → OpenRouter"
-        : "Gemini"
-      : "OpenRouter";
   const engineMode = !data.readyDocuments
     ? "Setup"
     : aiConfigured
-      ? shouldAttemptGemini()
-        ? "Gemini"
-        : "OpenRouter"
+      ? "Ready"
       : "Keyword";
   const engineHint = !data.readyDocuments
     ? "Upload knowledge docs first"
     : aiConfigured
-      ? `Active: ${activeModel}`
-      : "Works without API key";
+      ? "Answers come from your knowledge base"
+      : "Answers come from your documents";
   const quickActions = [
     { href: "/knowledge", label: "Upload documents", variant: "primary" as const },
     { href: "/chat", label: "Test chatbot", variant: "secondary" as const },
     { href: "/widget", label: "Open widget", variant: "secondary" as const },
-    { href: "/analytics", label: "View analytics", variant: "secondary" as const },
+    { href: "/analytics", label: "Inbox board", variant: "secondary" as const },
+    { href: "/analytics/hiring", label: "Hiring board", variant: "secondary" as const },
   ];
   const aiEngineRows = [
     {
-      label: "Provider path",
-      value: providerLabel,
-      done: aiConfigured,
-    },
-    {
-      label: "Active model",
-      value: activeModel,
+      label: "Assistant",
+      value: aiConfigured ? "Ready" : "Keyword answers",
       done: aiConfigured,
     },
     {
@@ -133,17 +105,17 @@ export default async function DashboardPage() {
       />
 
       <main id="main-content" className="flex-1 space-y-6 px-4 py-6 sm:p-6 lg:p-8">
-        {/* Star next step for judges / first visit */}
+        {/* First-visit next step */}
         <section className="rounded-2xl border border-primary/15 bg-primary-soft/60 px-5 py-5 sm:px-6">
           <p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">
             Next step
           </p>
           <h2 className="mt-2 text-xl font-semibold tracking-tight text-slate-900">
-            Ask the support widget, then escalate once
+            Ask on the site, then hand one thread to a person
           </h2>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-            Prove FAQ deflection, create a ticket with the transcript, then open
-            the execution run storyboard — the judge path in three clicks.
+            Ask a question in the widget. If the docs cover it, the answer
+            names them. If not, hand the thread to a person and open the run.
           </p>
           <div className="mt-4 flex flex-wrap gap-3">
             <Link href="/widget" className={buttonClassName()}>
@@ -158,7 +130,7 @@ export default async function DashboardPage() {
               Execution runs
             </Link>
             <Link
-              href="/recruitment"
+              href={hiringWorkspaceHref()}
               className={buttonClassName({ variant: "ghost" })}
             >
               Hiring lane
@@ -171,8 +143,6 @@ export default async function DashboardPage() {
           conversations={data.conversations}
           aiConfigured={aiConfigured}
           embeddingEnabled={embeddingEnabled}
-          geminiReady={geminiReady}
-          providerLabel={providerLabel}
         />
 
         {/* Compact queue summary — includes AI Engine mode from the original 4-up */}
@@ -287,8 +257,7 @@ export default async function DashboardPage() {
               <div>
                 <CardTitle>AI engine</CardTitle>
                 <CardDescription>
-                  Jump into core workflows, then check provider and retrieval
-                  readiness.
+                  Jump into the inbox, the knowledge base, and the widget.
                 </CardDescription>
               </div>
               <Badge tone={aiConfigured ? "success" : "warning"}>
@@ -339,15 +308,6 @@ export default async function DashboardPage() {
               })}
             </ul>
 
-            <div className="mt-2 flex flex-wrap gap-2 px-0.5 text-[11px] text-muted">
-              <span>
-                Gemini: {geminiReady ? "configured" : "missing key"}
-              </span>
-              <span aria-hidden>·</span>
-              <span>
-                OpenRouter: {openRouterReady ? "configured" : "missing key"}
-              </span>
-            </div>
           </Card>
         </section>
       </main>

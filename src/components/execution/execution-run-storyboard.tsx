@@ -11,6 +11,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import {
   buildExecutionStoryboard,
+  publicRunLabel,
   storyboardHeadline,
   type StoryboardLogInput,
   type StoryboardStep,
@@ -77,6 +78,7 @@ export function ExecutionRunStoryboard({
   const primaryModel =
     [...steps].reverse().find((step) => step.model && step.model !== "N/A")
       ?.model ?? "N/A";
+  const primaryModelLabel = publicRunLabel(primaryModel);
 
   const conversationHref =
     conversationId && conversationChannel && conversationChannel !== "ADMIN"
@@ -113,7 +115,7 @@ export function ExecutionRunStoryboard({
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Badge tone="info">{primaryModel}</Badge>
+          <Badge tone="info">{primaryModelLabel}</Badge>
           <Badge tone="default">{totalLatency} ms total</Badge>
           <Badge tone="default">{steps.length} steps</Badge>
         </div>
@@ -176,16 +178,16 @@ export function ExecutionRunStoryboard({
                     </p>
                     <p className="mt-0.5 text-sm text-slate-600">{step.summary}</p>
                   </div>
-                  <Badge tone={toneToBadge[step.tone]}>{step.agent}</Badge>
+                  <Badge tone={toneToBadge[step.tone]}>{publicRunLabel(step.agent)}</Badge>
                 </div>
 
                 <div className="mt-3 flex flex-wrap gap-2">
-                  <Badge tone="info">{step.model || "N/A"}</Badge>
+                  <Badge tone="info">{step.model ? publicRunLabel(step.model) : "N/A"}</Badge>
                   <Badge tone="default">
                     {step.latencyMs != null ? `${step.latencyMs} ms` : "latency N/A"}
                   </Badge>
                   {step.decision ? (
-                    <Badge tone="default">{step.decision}</Badge>
+                    <Badge tone="default">{publicRunLabel(step.decision)}</Badge>
                   ) : null}
                 </div>
 

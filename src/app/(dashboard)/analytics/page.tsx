@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { Header } from "@/components/layout/header";
 import { AnalyticsDashboard } from "@/components/analytics/analytics-dashboard";
+import { BoardSwitch } from "@/components/analytics/board-switch";
 import { requireOrgMembershipOrRedirect } from "@/lib/auth";
 import { customerChannelFilter, customerConversationWhere } from "@/lib/conversations/filters";
 import { db } from "@/lib/db";
@@ -237,10 +238,11 @@ export default async function AnalyticsPage() {
   return (
     <>
       <Header
-        title="Analytics"
-        description="Track chatbot performance, ticket trends, and support health."
+        title="Inbox board"
+        description="Threads, tickets, and how often a person had to take the case."
       />
-      <main id="main-content" className="flex-1 px-4 py-6 sm:p-6 lg:p-8">
+      <main id="main-content" className="flex-1 space-y-4 px-4 py-6 sm:p-6 lg:p-8">
+        <BoardSwitch current="inbox" />
         <Suspense fallback={<p className="text-sm text-slate-500">Loading analytics…</p>}>
           <AnalyticsDashboard
             {...analytics}

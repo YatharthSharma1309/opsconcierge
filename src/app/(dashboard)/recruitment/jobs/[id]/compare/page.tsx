@@ -87,7 +87,8 @@ export default async function CandidateComparePage({
                   Comparing {analyzed.length} candidates
                 </p>
                 <p className="mt-1 text-sm text-slate-500">
-                  Score, matched/missing skills, and rationale — without opening tabs.
+                  The same required skills, in the same order, on every card.
+                  The number is a criteria review, not a chance someone will succeed.
                 </p>
               </div>
               <p className="text-xs text-slate-400">
@@ -95,7 +96,11 @@ export default async function CandidateComparePage({
               </p>
             </Card>
 
-            <CandidateCompareGrid jobId={jobId} candidates={analyzed} />
+            <CandidateCompareGrid
+              jobId={jobId}
+              requiredSkills={job.requiredSkills}
+              candidates={analyzed}
+            />
           </>
         )}
       </main>

@@ -9,6 +9,7 @@ import {
   Ticket,
 } from "lucide-react";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
+import { hiringWorkspaceHref } from "@/lib/env/public-demo";
 
 const steps = [
   {
@@ -39,7 +40,7 @@ const steps = [
     step: "04",
     title: "Screen a hire",
     description: "Open Hiring lane, review scored candidates, and decide shortlist or reject.",
-    href: "/recruitment",
+    href: hiringWorkspaceHref(),
     icon: Briefcase,
     color: "text-accent bg-accent-soft",
   },

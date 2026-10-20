@@ -3,9 +3,15 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { Header } from "@/components/layout/header";
 import { CandidateDetailPanel } from "@/components/recruitment/candidate-detail-panel";
+import { CandidateCriteriaReview } from "@/components/recruitment/candidate-criteria-review";
+import { InterviewQuestionList } from "@/components/recruitment/interview-question-list";
 import { InterviewScorecardPanel } from "@/components/recruitment/interview-scorecard-panel";
-import { ScoreBadge } from "@/components/recruitment/score-badge";
+import { RequirementChecklist } from "@/components/recruitment/requirement-checklist";
+import { CRITERIA_REVIEW_MEANING } from "@/components/recruitment/score-badge";
 import { Badge } from "@/components/ui/badge";
+import { buildRequirementRows } from "@/lib/recruitment/requirement-rows";
+import { buildReviewNarrative } from "@/lib/recruitment/review-narrative";
+import { buttonClassName } from "@/components/ui/button";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 import { requireOrgMembershipOrRedirect } from "@/lib/auth";
 import { getCandidateDetail } from "@/lib/recruitment/services/candidates";
@@ -33,12 +39,38 @@ export default async function CandidateDetailPage({ params }: CandidateDetailPag
   ).length;
 
   const analysis = candidate.analysis;
+  const requirementRows = analysis
+    ? buildRequirementRows({
+        requiredSkills: job.requiredSkills,
+        breakdown: analysis.scoreBreakdown,
+      })
+    : [];
+  const narrative = analysis
+    ? buildReviewNarrative({
+        requirements: requirementRows,
+        preferredEvidence: analysis.scoreBreakdown.preferredSkillEvidence,
+      })
+    : null;
+  const compareIds = [
+    candidate.id,
+    ...job.candidates
+      .filter((item) => item.id !== candidate.id && item.hasAnalysis)
+      .map((item) => item.id),
+  ].slice(0, 3);
+  const compareHref =
+    compareIds.length >= 2
+      ? `/recruitment/jobs/${jobId}/compare?ids=${encodeURIComponent(compareIds.join(","))}`
+      : null;
 
   return (
     <>
       <Header
         title={candidate.displayName}
-        description={`Candidate for ${job.title}`}
+        description={
+          job.clientName
+            ? `${job.clientName} · ${job.title}. The quotes sit beside the score. You still decide who moves forward.`
+            : `${job.title}. The quotes sit beside the score. You still decide who moves forward.`
+        }
         action={
           <Link
             href={`/recruitment/jobs/${jobId}`}
@@ -54,157 +86,87 @@ export default async function CandidateDetailPage({ params }: CandidateDetailPag
         <div className="grid gap-6 lg:grid-cols-3">
           <div className="space-y-6 lg:col-span-2">
             <Card>
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div>
-                  <CardTitle>AI analysis</CardTitle>
-                  <CardDescription>
-                    {analysis
-                      ? `Analyzed ${new Date(analysis.analyzedAt).toLocaleString()}`
-                      : "Run analysis to score this candidate against job criteria."}
-                  </CardDescription>
-                </div>
-                <ScoreBadge score={analysis?.matchScore ?? candidate.matchScore} />
-              </div>
-
-              {analysis ? (
-                <div className="mt-6 space-y-5 text-sm">
-                  <div>
-                    <p className="font-medium text-slate-700">Summary</p>
-                    <p className="mt-1 leading-6 text-slate-600">{analysis.summary}</p>
-                  </div>
-
-                  <div>
-                    <p className="font-medium text-slate-700">Match rationale</p>
-                    <p className="mt-1 leading-6 text-slate-600">{analysis.matchRationale}</p>
-                  </div>
-
-                  {analysis.scoreBreakdown.requiredSkillEvidence &&
-                  analysis.scoreBreakdown.requiredSkillEvidence.length > 0 ? (
-                    <div>
-                      <p className="font-medium text-slate-700">Required skill evidence</p>
-                      <ul className="mt-2 space-y-2">
-                        {analysis.scoreBreakdown.requiredSkillEvidence.map((match) => (
-                          <li
-                            key={`required-${match.skill}`}
-                            className="rounded-xl border border-slate-100 bg-slate-50/70 px-3 py-2"
-                          >
-                            <p className="text-sm font-medium text-slate-800">{match.skill}</p>
-                            <p className="mt-1 text-sm leading-6 text-slate-600">
-                              &ldquo;{match.evidence}&rdquo;
-                            </p>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ) : null}
-
-                  {analysis.scoreBreakdown.preferredSkillEvidence &&
-                  analysis.scoreBreakdown.preferredSkillEvidence.length > 0 ? (
-                    <div>
-                      <p className="font-medium text-slate-700">Preferred skill evidence</p>
-                      <ul className="mt-2 space-y-2">
-                        {analysis.scoreBreakdown.preferredSkillEvidence.map((match) => (
-                          <li
-                            key={`preferred-${match.skill}`}
-                            className="rounded-xl border border-cyan-100 bg-cyan-50/40 px-3 py-2"
-                          >
-                            <p className="text-sm font-medium text-slate-800">{match.skill}</p>
-                            <p className="mt-1 text-sm leading-6 text-slate-600">
-                              &ldquo;{match.evidence}&rdquo;
-                            </p>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ) : null}
-
-                  {analysis.scoreBreakdown.notes.length > 0 ? (
-                    <div>
-                      <p className="font-medium text-slate-700">Additional notes</p>
-                      <ul className="mt-2 list-disc space-y-1 pl-5 text-slate-600">
-                        {analysis.scoreBreakdown.notes.map((note) => (
-                          <li key={note}>{note}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  ) : null}
-
-                  {analysis.extractedSkills.length > 0 ? (
-                    <div>
-                      <p className="font-medium text-slate-700">Extracted skills</p>
-                      <div className="mt-2 flex flex-wrap gap-1.5">
-                        {analysis.extractedSkills.map((skill) => (
-                          <Badge key={skill} tone="info">
-                            {skill}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  ) : null}
-
-                  {analysis.missingSkills.length > 0 ? (
-                    <div>
-                      <p className="font-medium text-slate-700">Missing skills</p>
-                      <div className="mt-2 flex flex-wrap gap-1.5">
-                        {analysis.missingSkills.map((skill) => (
-                          <Badge key={skill} tone="warning">
-                            {skill}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  ) : null}
-
-                  {analysis.scoreBreakdown ? (
-                    <div>
-                      <p className="font-medium text-slate-700">Score breakdown</p>
-                      <dl className="mt-2 grid grid-cols-2 gap-2 text-slate-600 sm:grid-cols-3">
-                        <div>
-                          <dt>Required skills</dt>
-                          <dd className="font-semibold text-slate-900">
-                            {analysis.scoreBreakdown.requiredSkills}/50
-                          </dd>
-                        </div>
-                        <div>
-                          <dt>Preferred skills</dt>
-                          <dd className="font-semibold text-slate-900">
-                            {analysis.scoreBreakdown.preferredSkills}/15
-                          </dd>
-                        </div>
-                        <div>
-                          <dt>Role alignment</dt>
-                          <dd className="font-semibold text-slate-900">
-                            {analysis.scoreBreakdown.roleAlignment}/10
-                          </dd>
-                        </div>
-                        <div>
-                          <dt>Experience</dt>
-                          <dd className="font-semibold text-slate-900">
-                            {analysis.scoreBreakdown.experience}/10
-                          </dd>
-                        </div>
-                        <div>
-                          <dt>Education & certs</dt>
-                          <dd className="font-semibold text-slate-900">
-                            {analysis.scoreBreakdown.educationCertifications}/10
-                          </dd>
-                        </div>
-                        <div>
-                          <dt>Penalties</dt>
-                          <dd className="font-semibold text-rose-600">
-                            -{analysis.scoreBreakdown.penalties}
-                          </dd>
-                        </div>
-                      </dl>
-                    </div>
-                  ) : null}
-                </div>
+              {narrative ? (
+                <CandidateCriteriaReview
+                  score={analysis?.matchScore ?? candidate.matchScore}
+                  disclaimer={CRITERIA_REVIEW_MEANING}
+                  supporting={narrative.supporting}
+                  furtherReview={narrative.furtherReview}
+                />
               ) : (
-                <p className="mt-4 text-sm text-slate-500">
-                  No analysis yet. Use the actions panel to run AI scoring.
+                <p className="text-sm text-slate-500">
+                  Run analysis to review this candidate against the job criteria.
                 </p>
               )}
+
+              {analysis ? (
+                <details className="mt-6 text-sm">
+                  <summary className="cursor-pointer font-medium text-slate-700">
+                    Requirement detail
+                  </summary>
+                  <div className="mt-4 space-y-5">
+                    {analysis.summary ? (
+                      <p className="leading-6 text-slate-600">{analysis.summary}</p>
+                    ) : null}
+                    {requirementRows.length > 0 ? (
+                      <RequirementChecklist rows={requirementRows} />
+                    ) : null}
+                    {analysis.extractedSkills.length > 0 ? (
+                      <div>
+                        <p className="font-medium text-slate-700">Extracted skills</p>
+                        <div className="mt-2 flex flex-wrap gap-1.5">
+                          {analysis.extractedSkills.map((skill) => (
+                            <Badge key={skill} tone="info">
+                              {skill}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    ) : null}
+                    <dl className="grid grid-cols-2 gap-2 text-slate-600 sm:grid-cols-3">
+                      <div>
+                        <dt>Required skills</dt>
+                        <dd className="font-semibold text-slate-900">
+                          {analysis.scoreBreakdown.requiredSkills}/50
+                        </dd>
+                      </div>
+                      <div>
+                        <dt>Preferred skills</dt>
+                        <dd className="font-semibold text-slate-900">
+                          {analysis.scoreBreakdown.preferredSkills}/15
+                        </dd>
+                      </div>
+                      <div>
+                        <dt>Role alignment</dt>
+                        <dd className="font-semibold text-slate-900">
+                          {analysis.scoreBreakdown.roleAlignment}/10
+                        </dd>
+                      </div>
+                      <div>
+                        <dt>Experience</dt>
+                        <dd className="font-semibold text-slate-900">
+                          {analysis.scoreBreakdown.experience}/10
+                        </dd>
+                      </div>
+                      <div>
+                        <dt>Education & certs</dt>
+                        <dd className="font-semibold text-slate-900">
+                          {analysis.scoreBreakdown.educationCertifications}/10
+                        </dd>
+                      </div>
+                      <div>
+                        <dt>Penalties</dt>
+                        <dd className="font-semibold text-rose-600">
+                          -{analysis.scoreBreakdown.penalties}
+                        </dd>
+                      </div>
+                    </dl>
+                  </div>
+                </details>
+              ) : null}
             </Card>
+
+            <InterviewQuestionList questions={analysis?.interviewQuestions ?? []} />
 
             <InterviewScorecardPanel
               candidateId={candidate.id}
@@ -222,6 +184,18 @@ export default async function CandidateDetailPage({ params }: CandidateDetailPag
                   ? `Source: ${candidate.fileName} (${candidate.parseStatus})`
                   : `Manually entered (${candidate.parseStatus})`}
               </CardDescription>
+              {candidate.hasOriginalFile ? (
+                <a
+                  href={`/api/recruitment/candidates/${candidate.id}/file`}
+                  className={buttonClassName({
+                    variant: "secondary",
+                    size: "sm",
+                    className: "mt-3",
+                  })}
+                >
+                  Download original file
+                </a>
+              ) : null}
               <pre className="mt-4 max-h-96 overflow-auto whitespace-pre-wrap rounded-xl border border-slate-100 bg-slate-50/60 p-4 text-xs leading-6 text-slate-700">
                 {candidate.rawText}
               </pre>
@@ -229,11 +203,13 @@ export default async function CandidateDetailPage({ params }: CandidateDetailPag
           </div>
 
           <Card>
-            <CardTitle>Actions</CardTitle>
+            <CardTitle>Next action</CardTitle>
+            <p className="mt-1 text-sm leading-6 text-slate-600">Compare, shortlist, or reject.</p>
             <div className="mt-4">
               <CandidateDetailPanel
                 candidate={candidate}
                 otherCandidateCount={otherCandidateCount}
+                compareHref={compareHref}
               />
             </div>
           </Card>

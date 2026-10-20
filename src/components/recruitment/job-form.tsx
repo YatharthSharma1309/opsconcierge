@@ -30,6 +30,7 @@ export function JobForm({ job }: JobFormProps) {
   const isEditing = Boolean(job);
 
   const [title, setTitle] = useState(job?.title ?? "");
+  const [clientName, setClientName] = useState(job?.clientName ?? "");
   const [description, setDescription] = useState(job?.description ?? "");
   const [requiredSkills, setRequiredSkills] = useState(
     formatList(job?.requiredSkills ?? []),
@@ -105,6 +106,7 @@ export function JobForm({ job }: JobFormProps) {
 
     const payload = {
       title,
+      clientName,
       description,
       requiredSkills: parseList(requiredSkills),
       preferredSkills: parseList(preferredSkills),
@@ -162,6 +164,19 @@ export function JobForm({ job }: JobFormProps) {
             <Sparkles className="h-4 w-4" />
             {assistBusy ? "Generating..." : "AI assist"}
           </Button>
+        </div>
+
+        <div>
+          <label htmlFor="job-client" className="mb-2 block text-sm font-medium text-slate-700">
+            Client
+          </label>
+          <Input
+            id="job-client"
+            value={clientName}
+            onChange={(event) => setClientName(event.target.value)}
+            placeholder="The company this role is for"
+            maxLength={120}
+          />
         </div>
 
         <div>

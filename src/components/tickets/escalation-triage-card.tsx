@@ -5,6 +5,7 @@ import {
   parseEscalationTriage,
   type EscalationTriage,
 } from "@/lib/tickets/escalation-triage";
+import { publicRunLabel } from "@/lib/execution/storyboard";
 import { priorityTone } from "@/lib/tickets/constants";
 
 type EscalationTriageCardProps = {
@@ -44,7 +45,7 @@ export function EscalationTriageCard({ triage }: EscalationTriageCardProps) {
           Reason code:{" "}
           <span className="font-mono text-foreground">{parsed.reasonCode}</span>
           {parsed.source === "ai" && parsed.model
-            ? ` · triaged by ${parsed.model}`
+            ? ` · triaged by ${publicRunLabel(parsed.model)}`
             : " · heuristic triage"}
         </p>
 

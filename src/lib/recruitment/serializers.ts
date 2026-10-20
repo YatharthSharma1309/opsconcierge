@@ -2,6 +2,10 @@ import type { Candidate, CandidateAnalysis, Job } from "@/generated/prisma/clien
 import { parseJsonObject, parseStringArray } from "@/lib/recruitment/json";
 import { isArchivedStatus } from "@/lib/recruitment/hire-safety";
 import { parseInterviewScorecard } from "@/lib/recruitment/interview-scorecard";
+import {
+  buildRequirementRows,
+  countAddressedRequirements,
+} from "@/lib/recruitment/requirement-rows";
 import type {
   AnalysisDTO,
   ActiveCandidateStatus,
@@ -16,7 +20,9 @@ import type {
   ScoreBreakdown,
 } from "@/lib/recruitment/types";
 
-type CandidateWithAnalysis = Candidate & { analysis: CandidateAnalysis | null };
+type CandidateWithAnalysis = Omit<Candidate, "fileBytes"> & {
+  analysis: CandidateAnalysis | null;
+};
 
 const emptyScoreBreakdown: ScoreBreakdown = {
   requiredSkills: 0,
@@ -72,7 +78,8 @@ export function getCandidateStats(candidates: CandidateWithAnalysis[]): Candidat
 }
 
 export function getBestCandidate(
-  candidates: CandidateWithAnalysis[]
+  candidates: CandidateWithAnalysis[],
+  requiredSkills: string[] = [],
 ): CandidateDTO | null {
   const activeCandidates = candidates.filter(
     (candidate) => !isArchivedStatus(candidate.status)
@@ -88,7 +95,7 @@ export function getBestCandidate(
     null
   );
 
-  return bestCandidate ? toCandidateDTO(bestCandidate) : null;
+  return bestCandidate ? toCandidateDTO(bestCandidate, requiredSkills) : null;
 }
 
 export function toJobDTO(
@@ -109,6 +116,7 @@ export function toJobDTO(
     educationRequirements: parseStringArray(job.educationRequirements),
     certifications: parseStringArray(job.certifications),
     roleType: job.roleType || null,
+    clientName: job.clientName,
     createdAt: job.createdAt.toISOString(),
     updatedAt: job.updatedAt.toISOString(),
     candidateCount,
@@ -118,12 +126,27 @@ export function toJobDTO(
   };
 }
 
-export function toCandidateDTO(candidate: CandidateWithAnalysis): CandidateDTO {
+export function toCandidateDTO(
+  candidate: CandidateWithAnalysis,
+  requiredSkills: string[] = [],
+): CandidateDTO {
+  const analysis = candidate.analysis ? toAnalysisDTO(candidate.analysis) : null;
+  const requirements = analysis
+    ? buildRequirementRows({
+        requiredSkills,
+        breakdown: analysis.scoreBreakdown,
+      })
+    : [];
+  const missingRequiredSkills = requirements
+    .filter((row) => row.verdict === "not_shown")
+    .map((row) => row.skill);
+
   return {
     id: candidate.id,
     jobId: candidate.jobId,
     displayName: candidate.displayName,
     fileName: candidate.fileName,
+    hasOriginalFile: candidate.filePath === "stored",
     mimeType: candidate.mimeType,
     parseStatus: candidate.parseStatus as ParseStatus,
     status: candidate.status as CandidateStatus,
@@ -131,6 +154,16 @@ export function toCandidateDTO(candidate: CandidateWithAnalysis): CandidateDTO {
     createdAt: candidate.createdAt.toISOString(),
     hasAnalysis: Boolean(candidate.analysis),
     matchScore: candidate.analysis?.matchScore ?? null,
+    review: analysis
+      ? {
+          summary: analysis.summary,
+          matchRationale: analysis.matchRationale,
+          matchedRequiredCount: countAddressedRequirements(requirements),
+          requiredCount: requirements.length,
+          missingRequiredSkills,
+          requirements,
+        }
+      : null,
   };
 }
 
@@ -164,10 +197,14 @@ export function toAnalysisDTO(analysis: CandidateAnalysis): AnalysisDTO {
 }
 
 export function toCandidateDetailDTO(
-  candidate: CandidateWithAnalysis
+  candidate: CandidateWithAnalysis & { job?: { requiredSkills: string } },
 ): CandidateDetailDTO {
+  const requiredSkills = candidate.job
+    ? parseStringArray(candidate.job.requiredSkills)
+    : [];
+
   return {
-    ...toCandidateDTO(candidate),
+    ...toCandidateDTO(candidate, requiredSkills),
     rawText: candidate.rawText,
     analysis: candidate.analysis ? toAnalysisDTO(candidate.analysis) : null,
     interviewScorecard: candidate.interviewScorecard
@@ -180,15 +217,17 @@ export function toJobDetailDTO(
   job: Job,
   candidates: CandidateWithAnalysis[]
 ): JobDetailDTO {
+  const requiredSkills = parseStringArray(job.requiredSkills);
+
   return {
     ...toJobDTO(
       job,
       candidates.length,
       getCandidateStats(candidates),
-      getBestCandidate(candidates)
+      getBestCandidate(candidates, requiredSkills),
     ),
     candidates: candidates
-      .map(toCandidateDTO)
+      .map((candidate) => toCandidateDTO(candidate, requiredSkills))
       .sort((a, b) => (b.matchScore ?? -1) - (a.matchScore ?? -1)),
   };
 }

@@ -5,3 +5,8 @@ export function isPublicDemoMode() {
     process.env.NEXT_PUBLIC_PUBLIC_DEMO_MODE === "true"
   );
 }
+
+/** Public demo visitors review fictional candidates. Authenticated workspaces keep /recruitment. */
+export function hiringWorkspaceHref() {
+  return isPublicDemoMode() ? "/hiring" : "/recruitment";
+}

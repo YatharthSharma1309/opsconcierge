@@ -185,12 +185,11 @@ export function SiteFooter({
               Ready when you are
             </p>
             <h2 className="mt-3 text-2xl font-semibold tracking-tight text-white sm:text-3xl">
-              Put your FAQ to work — and keep a trail of auditable support runs
+              One desk for the inbox and the hire
             </h2>
             <p className="mt-3 text-sm leading-6 text-slate-400">
-              Deflect routine questions on your site, escalate with the full
-              transcript, and shortlist hires from resume PDFs in the same ops
-              desk.
+              Answer from your docs in website chat, hand the thread to a
+              person, and shortlist resumes with the quotes beside the score.
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
@@ -245,9 +244,9 @@ export function SiteFooter({
           <div>
             <BrandLogo showTagline tone="dark" />
             <p className="mt-5 max-w-sm text-sm leading-7 text-slate-400">
-              Ops desk for 5–50 person teams that still live in email and DMs —
-              website FAQ deflection, clean human handoff, and a founder hiring
-              inbox with evidence-backed shortlists.
+              For teams of 5–50 that still own the inbox: a shared mailbox,
+              a knowledge base, website chat that can hand off, and a hiring
+              score that shows its work.
             </p>
 
             <a
@@ -283,15 +282,6 @@ export function SiteFooter({
             <Link href="/help" className="footer-link">
               Help
             </Link>
-            <a
-              href="https://xprize.devpost.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="footer-link"
-            >
-              Build with Gemini XPRIZE
-              <span className="sr-only">(opens in a new tab)</span>
-            </a>
           </div>
         </div>
       </div>

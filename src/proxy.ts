@@ -11,7 +11,8 @@ const isPublicRoute = createRouteMatcher([
   "/api/widget(.*)",
   "/api/webhooks/clerk",
   "/api/health",
-  "/api/health/xprize",
+  "/demo(.*)",
+  "/share(.*)",
 ]);
 
 function hasAuthBypassEnv() {
@@ -50,6 +51,19 @@ const clerkProtectedProxy = clerkMiddleware(async (auth, request) => {
 });
 
 export async function proxy(request: NextRequest, event: NextFetchEvent) {
+  const path = request.nextUrl.pathname;
+  if (isPublicDemoMode() && (path === "/demo/hiring" || path.startsWith("/demo/hiring/"))) {
+    const nextPath = `${path.replace("/demo/hiring", "/hiring")}${request.nextUrl.search}`;
+    return NextResponse.redirect(new URL(nextPath, request.url));
+  }
+
+  if (
+    isPublicDemoMode() &&
+    (path === "/recruitment" || path.startsWith("/recruitment/"))
+  ) {
+    return NextResponse.redirect(new URL("/hiring", request.url));
+  }
+
   if (isAuthBypass()) {
     return authBypassProxy(request);
   }

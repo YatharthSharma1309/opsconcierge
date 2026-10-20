@@ -24,7 +24,7 @@ async function getJobForOrganization(jobId: string, organizationId: string) {
 
 async function deleteResumeFile(filePath: string | null | undefined): Promise<void> {
   void filePath;
-  // no-op: resumes are processed in-memory only
+  // The original file lives on the candidate row and is removed with that row.
 }
 
 async function permanentlyRemoveArchivedCandidates(
@@ -66,6 +66,7 @@ export async function archiveOtherCandidatesOnHire(
       id: { not: hiredCandidateId },
       status: { not: ARCHIVED_STATUS },
     },
+    omit: { fileBytes: true },
   });
 
   if (others.length === 0) return 0;

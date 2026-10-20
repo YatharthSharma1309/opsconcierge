@@ -5,6 +5,25 @@ import { Card } from "@/components/ui/card";
 import { buttonClassName } from "@/components/ui/button";
 import { RelativeTime } from "@/components/ui/relative-time";
 
+function citedTitles(sources: unknown) {
+  if (!Array.isArray(sources)) return [];
+  return sources.flatMap((source) => {
+    if (!source || typeof source !== "object" || !("documentTitle" in source)) return [];
+    const title = source.documentTitle;
+    return typeof title === "string" && title.trim() ? [title.trim()] : [];
+  });
+}
+
+function CitedSources({ sources }: { sources: unknown }) {
+  const titles = citedTitles(sources);
+  if (titles.length === 0) return null;
+  return (
+    <p className="mt-2 text-xs font-medium text-primary">
+      Cited from {titles.join(", ")}
+    </p>
+  );
+}
+
 type ReviewMessage = {
   id: string;
   role: string;
@@ -94,6 +113,7 @@ export function ConversationReview({ conversation }: ConversationReviewProps) {
                     }`}
                   >
                     <p className="whitespace-pre-wrap">{message.content}</p>
+                    <CitedSources sources={message.sources} />
                     {message.helpful !== null ? (
                       <p className="mt-2 text-xs text-slate-500">
                         Feedback: {message.helpful ? "Helpful" : "Not helpful"}

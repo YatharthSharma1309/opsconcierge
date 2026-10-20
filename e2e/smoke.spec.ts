@@ -26,21 +26,6 @@ test.describe("public surfaces", () => {
     expect(response?.status()).toBe(404);
   });
 
-  test("xprize health endpoint returns a public JSON shape", async ({ request }) => {
-    const response = await request.get("/api/health/xprize");
-    expect(response.status()).toBe(200);
-    const body = (await response.json()) as {
-      product?: string;
-      gemini?: { configured?: boolean };
-      googleCloudEvidence?: { configured?: boolean; provider?: string | null };
-      readyForXprizeDemo?: boolean;
-    };
-    expect(body.product).toBe("OpsConcierge");
-    expect(typeof body.gemini?.configured).toBe("boolean");
-    expect(typeof body.googleCloudEvidence?.configured).toBe("boolean");
-    expect(typeof body.readyForXprizeDemo).toBe("boolean");
-  });
-
   test("widget embed requires key", async ({ page }) => {
     const response = await page.goto("/widget/embed");
     expect(response?.status()).toBe(404);

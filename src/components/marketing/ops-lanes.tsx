@@ -6,6 +6,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { buttonClassName } from "@/components/ui/button";
+import { hiringWorkspaceHref } from "@/lib/env/public-demo";
 import { cn } from "@/lib/utils";
 
 export type OpsLaneId = "support" | "hiring";
@@ -30,15 +31,15 @@ export const OPS_LANES: OpsLaneConfig[] = [
     id: "support",
     tone: "navy",
     label: "Support lane",
-    title: "Support concierge",
-    pathSteps: ["Widget", "Answer", "Escalate", "Ticket", "Log"],
+    title: "Shared inbox",
+    pathSteps: ["Inbox", "Docs", "Chat", "Handoff"],
     summary:
-      "Built for routine FAQs — billing, returns, hours, passwords — not phone emergencies.",
+      "A light inbox for the questions that used to live in email and DMs.",
     bullets: [
-      "Website widget for the questions that clog email",
-      "Answers only from your uploaded company memory",
-      "Escalate → ticket with transcript (no AI loop)",
-      "Execution log: model, latency, deflect vs escalate",
+      "Shared threads, written like mail",
+      "Answers only from your knowledge base, with the source named",
+      "Website chat for the repeats",
+      "The assistant hands the case to a person with the full thread",
     ],
     icon: ClipboardList,
     demoHref: "/widget",
@@ -46,20 +47,20 @@ export const OPS_LANES: OpsLaneConfig[] = [
   },
   {
     id: "hiring",
-    tone: "teal",
+    tone: "navy",
     label: "Hiring lane",
-    title: "Hiring concierge",
-    pathSteps: ["Must-haves", "Resumes", "Shortlist", "Interview"],
+    title: "Hiring shortlist",
+    pathSteps: ["Criteria", "Resumes", "Score", "Compare"],
     summary:
-      "You still post jobs outside the app. AI advises with evidence; you decide hire or reject.",
+      "A short set of stages and a score that shows matched skills and gaps. You still decide.",
     bullets: [
-      "Post jobs on Indeed / LinkedIn / referrals (outside the app)",
-      "Upload resume PDFs from email or WhatsApp",
-      "Ranked shortlist with why / why-not evidence",
-      "Interview questions — you confirm hire or reject",
+      "New, shortlisted, interview, hired — not a full recruiting suite",
+      "The score quotes what the resume shows and what it does not establish",
+      "Compare two or three people on the same requirements",
+      "Nothing is rejected before a person reads it",
     ],
     icon: UserRoundSearch,
-    demoHref: "/recruitment",
+    demoHref: hiringWorkspaceHref(),
     demoCta: "Hiring lane",
   },
 ];
@@ -78,7 +79,7 @@ const toneStyles: Record<
   }
 > = {
   navy: {
-    panel: "border-primary/15/80",
+    panel: "border-primary/15",
     wash: "from-primary-soft/90 via-surface to-surface",
     label: "text-primary",
     iconWrap: "bg-primary text-white shadow-sm shadow-slate-900/25",

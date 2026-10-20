@@ -33,7 +33,7 @@ export const FOUNDER_PAINS: FounderPain[] = [
     eyebrow: "Support · every channel",
     title: "Same answers, every week",
     body: "Returns, passwords, hours, billing — still typed by hand in email and Instagram DMs.",
-    chips: ["Email", "Instagram DMs", "No deflection"],
+    chips: ["Email", "Instagram DMs", "Same reply"],
     metric: { label: "Repeat replies", value: "12×", suffix: "this week" },
     tone: "navy",
     icon: RotateCcw,

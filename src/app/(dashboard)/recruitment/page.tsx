@@ -14,8 +14,8 @@ export default async function RecruitmentPage() {
   return (
     <>
       <Header
-        title="Recruitment"
-        description="Create job postings, upload resumes, and score candidates with AI."
+        title="Hiring"
+        description="Open a role for a client, read the quotes beside the score, and decide who moves forward."
         action={
           <Link href="/recruitment/jobs/new" className={buttonClassName({ size: "sm" })}>
             New job

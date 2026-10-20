@@ -3,16 +3,16 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  /* Slate–navy–teal system (aligned with OC brand mark) */
-  --background: #f4f7fb;
-  --foreground: #0f172a;
-  --primary: #1e3a8a;
-  --primary-soft: #e8eef8;
-  --primary-hover: #1e40af;
-  --primary-active: #172554;
-  --accent: #0f766e;
-  --accent-soft: #f0fdfa;
-  --accent-hover: #0d9488;
+  /* Light surface, navy type, cobalt actions, green for answered */
+  --background: #f5f6f8;
+  --foreground: #10233f;
+  --primary: #1d4fbf;
+  --primary-soft: #e7eefb;
+  --primary-hover: #1a44a8;
+  --primary-active: #16388a;
+  --accent: #0e9f6e;
+  --accent-soft: #e7f6ef;
+  --accent-hover: #0c8a5f;
   --surface: #ffffff;
   --surface-raised: #ffffff;
   --border: #e2e8f0;
@@ -497,40 +497,18 @@ body {
 .footer-link:focus-visible {
   outline: none;
   border-radius: 0.25rem;
-  box-shadow: 0 0 0 2px #0f172a, 0 0 0 4px rgba(15, 118, 110, 0.45);
+  box-shadow: 0 0 0 2px #0f172a, 0 0 0 4px rgba(29, 79, 191, 0.45);
 }
 
-/* Atmosphere: slate + teal, no purple */
+/* Light product surface with a cobalt wash */
 .hero-gradient {
   background:
-    radial-gradient(ellipse 80% 55% at 12% 8%, rgba(30, 58, 138, 0.1), transparent 55%),
-    radial-gradient(ellipse 70% 50% at 88% 12%, rgba(15, 118, 110, 0.09), transparent 50%),
-    linear-gradient(180deg, #ffffff 0%, #f4f7fb 100%);
-  background-image:
-    radial-gradient(ellipse 80% 55% at 12% 8%, rgba(30, 58, 138, 0.1), transparent 55%),
-    radial-gradient(ellipse 70% 50% at 88% 12%, rgba(15, 118, 110, 0.09), transparent 50%),
-    linear-gradient(180deg, #ffffff 0%, #f4f7fb 100%),
-    linear-gradient(rgba(148, 163, 184, 0.07) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(148, 163, 184, 0.07) 1px, transparent 1px);
-  background-size:
-    auto,
-    auto,
-    auto,
-    48px 48px,
-    48px 48px;
+    radial-gradient(ellipse 70% 50% at 0% 0%, rgba(29, 79, 191, 0.07), transparent 58%),
+    linear-gradient(180deg, #ffffff 0%, #f5f6f8 100%);
 }
 
 .dark .hero-gradient {
-  background-image:
-    radial-gradient(ellipse 80% 55% at 12% 8%, rgba(59, 130, 246, 0.18), transparent 55%),
-    radial-gradient(ellipse 70% 50% at 88% 12%, rgba(45, 212, 191, 0.12), transparent 50%),
-    linear-gradient(180deg, #0a0f1a 0%, #0f172a 100%),
-    linear-gradient(rgba(148, 163, 184, 0.07) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(148, 163, 184, 0.07) 1px, transparent 1px);
-  background-size:
-    auto,
-    auto,
-    auto,
-    48px 48px,
-    48px 48px;
+  background:
+    radial-gradient(ellipse 70% 50% at 0% 0%, rgba(59, 130, 246, 0.16), transparent 58%),
+    linear-gradient(180deg, #0a0f1a 0%, #0f172a 100%);
 }

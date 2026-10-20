@@ -14,6 +14,7 @@ export async function analyzeCandidate(
 ): Promise<AnalysisDTO> {
   const candidate = await db.candidate.findFirst({
     where: { id: candidateId, job: { organizationId } },
+    omit: { fileBytes: true },
     include: { job: true, analysis: true },
   });
 

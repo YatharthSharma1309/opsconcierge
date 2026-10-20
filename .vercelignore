@@ -1,4 +1,0 @@
-.env
-.env.*
-!.env.example
-.neon-init-payload.json

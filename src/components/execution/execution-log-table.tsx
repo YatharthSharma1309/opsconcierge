@@ -1,3 +1,4 @@
+import { publicRunLabel } from "@/lib/execution/storyboard";
 import { formatDate } from "@/lib/utils";
 
 type ExecutionLogEntryRow = {
@@ -19,8 +20,7 @@ export function ExecutionLogTable({
   return (
     <div className="space-y-3">
       <div className="text-sm text-slate-500">
-        Gemini evidence is provable from the{" "}
-        <span className="font-medium">Model</span> column (screenshot-friendly).
+        Each run records the decision, the source, and how long it took.
       </div>
 
       {logs.length === 0 ? (
@@ -51,12 +51,12 @@ export function ExecutionLogTable({
                   <td className="px-4 py-4 font-mono text-xs text-slate-600">
                     {log.workspaceId}
                   </td>
-                  <td className="px-4 py-4 text-slate-700">{log.agent}</td>
+                  <td className="px-4 py-4 text-slate-700">{publicRunLabel(log.agent)}</td>
                   <td className="px-4 py-4 text-slate-700">{log.trigger}</td>
                   <td className="px-4 py-4 font-mono text-xs text-blue-900">
-                    {log.model}
+                    {publicRunLabel(log.model)}
                   </td>
-                  <td className="px-4 py-4 text-slate-700">{log.decision}</td>
+                  <td className="px-4 py-4 text-slate-700">{publicRunLabel(log.decision)}</td>
                   <td className="px-4 py-4 text-slate-700">
                     {log.latencyMs === null || log.latencyMs === undefined
                       ? "N/A"

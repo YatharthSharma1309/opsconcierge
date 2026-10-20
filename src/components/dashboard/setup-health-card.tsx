@@ -24,8 +24,6 @@ type SetupHealthCardProps = {
   conversations: number;
   aiConfigured: boolean;
   embeddingEnabled: boolean;
-  geminiReady?: boolean;
-  providerLabel?: string;
 };
 
 export function SetupHealthCard({
@@ -33,8 +31,6 @@ export function SetupHealthCard({
   conversations,
   aiConfigured,
   embeddingEnabled,
-  geminiReady = false,
-  providerLabel,
 }: SetupHealthCardProps) {
   const router = useRouter();
   const [isSeeding, setIsSeeding] = useState(false);
@@ -47,19 +43,13 @@ export function SetupHealthCard({
       hint: "Upload PDFs, DOCX, or text files",
     },
     {
-      label: aiConfigured
-        ? geminiReady
-          ? "Gemini AI connected"
-          : "OpenRouter AI connected"
-        : "Keyword search ready",
+      label: aiConfigured ? "Assistant connected" : "Keyword search ready",
       done: true,
       hint: aiConfigured
-        ? geminiReady
-          ? providerLabel
-            ? `Primary path: ${providerLabel}`
-            : "Streaming answers via Gemini, with OpenRouter fallback"
-          : "Streaming answers via OpenRouter"
-        : "Add GEMINI_API_KEY or OPENROUTER_API_KEY for LLM replies",
+        ? embeddingEnabled
+          ? "Answers use your knowledge base"
+          : "Answers use keyword search over your documents"
+        : "Answers stay on your uploaded documents",
     },
     {
       label: "Chat tested",

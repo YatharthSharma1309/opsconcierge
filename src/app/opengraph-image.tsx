@@ -76,8 +76,8 @@ export default function OpenGraphImage() {
             maxWidth: 900,
           }}
         >
-          Widget FAQ deflection, tickets with full chat, execution logs, and
-          resume shortlisting with evidence.
+          Shared inbox, website chat that cites your docs, and a hiring
+          score that shows its work.
         </p>
         <div style={{ marginTop: 40, display: "flex", gap: 12 }}>
           <span

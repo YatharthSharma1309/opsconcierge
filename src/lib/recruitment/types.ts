@@ -65,6 +65,7 @@ export type JobDTO = {
   educationRequirements: string[];
   certifications: string[];
   roleType: string | null;
+  clientName: string;
   createdAt: string;
   updatedAt: string;
   candidateCount?: number;
@@ -78,6 +79,7 @@ export type CandidateDTO = {
   jobId: string;
   displayName: string;
   fileName: string | null;
+  hasOriginalFile: boolean;
   mimeType: string | null;
   parseStatus: ParseStatus;
   status: CandidateStatus;
@@ -85,6 +87,7 @@ export type CandidateDTO = {
   createdAt: string;
   hasAnalysis: boolean;
   matchScore: number | null;
+  review: CandidateReview | null;
 };
 
 export type InterviewRecommendation = "strong_yes" | "yes" | "maybe" | "no";
@@ -177,6 +180,23 @@ export type EvidenceMatch = {
   evidence: string;
   confidence: number;
   matchType: "exact" | "semantic" | "inferred";
+};
+
+export type RequirementVerdict = "shown" | "inferred" | "unverified" | "not_shown";
+
+export type RequirementRow = {
+  skill: string;
+  verdict: RequirementVerdict;
+  evidence: string | null;
+};
+
+export type CandidateReview = {
+  summary: string;
+  matchRationale: string;
+  matchedRequiredCount: number;
+  requiredCount: number;
+  missingRequiredSkills: string[];
+  requirements: RequirementRow[];
 };
 
 export type JobAssistResult = {

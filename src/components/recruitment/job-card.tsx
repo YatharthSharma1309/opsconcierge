@@ -25,11 +25,13 @@ export function JobCard({ job }: JobCardProps) {
               </div>
               <CardTitle className="truncate">{job.title}</CardTitle>
             </div>
+            {job.clientName ? (
+              <p className="mt-2 text-sm font-medium text-foreground">{job.clientName}</p>
+            ) : null}
             <CardDescription className="mt-2 line-clamp-2">
               {job.description}
             </CardDescription>
           </div>
-          <ScoreBadge score={job.bestCandidate?.matchScore ?? null} />
         </div>
 
         <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-slate-500">
@@ -49,10 +51,30 @@ export function JobCard({ job }: JobCardProps) {
         </div>
 
         {job.bestCandidate ? (
-          <div className="mt-4 flex items-center justify-between rounded-xl border border-teal-100 bg-accent-soft/70 px-3 py-2 text-sm">
-            <span className="text-teal-800/80">Top match:</span>
-            <span className="font-medium text-slate-900">{job.bestCandidate.displayName}</span>
-            <CandidateStatusBadge status={job.bestCandidate.status} />
+          <div className="mt-4 rounded-xl border border-teal-100 bg-accent-soft/70 px-3 py-2.5">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-xs font-medium text-accent">Top match</p>
+                <p className="font-medium text-slate-900">
+                  {job.bestCandidate.displayName}
+                </p>
+                {job.bestCandidate.review?.summary ? (
+                  <p className="mt-1 line-clamp-2 text-sm leading-6 text-slate-600">
+                    {job.bestCandidate.review.summary}
+                  </p>
+                ) : null}
+                {job.bestCandidate.review && job.bestCandidate.review.requiredCount > 0 ? (
+                  <p className="mt-1 text-xs text-slate-500">
+                    {job.bestCandidate.review.matchedRequiredCount} of{" "}
+                    {job.bestCandidate.review.requiredCount} required skills
+                  </p>
+                ) : null}
+              </div>
+              <div className="flex shrink-0 flex-col items-end gap-2">
+                <ScoreBadge score={job.bestCandidate.matchScore} labeled />
+                <CandidateStatusBadge status={job.bestCandidate.status} />
+              </div>
+            </div>
           </div>
         ) : null}
 
