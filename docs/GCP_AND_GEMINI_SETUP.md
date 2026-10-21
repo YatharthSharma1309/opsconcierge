@@ -1,6 +1,6 @@
 # Gemini + Firebase setup (free path)
 
-Step-by-step setup for the **XPRIZE judge path**: Gemini as the primary support LLM and Firebase Realtime Database as Google Cloud evidence. No `gcloud` CLI or extra npm packages required.
+Step-by-step setup for Gemini as the primary support LLM and Firebase Realtime Database as agent-run evidence. No `gcloud` CLI or extra npm packages required.
 
 ## What you get
 
@@ -35,7 +35,6 @@ GEMINI_CHAT_MODEL=gemini-3.5-flash
 | `src/lib/chat/service.ts` | `generateChatReply`, `streamChatReply`, sandbox chat — tries Gemini before OpenRouter |
 | `src/lib/chat/stream-handler.ts` | Widget/admin SSE streams; logs execution when channel ≠ `ADMIN` |
 | `src/lib/ai.ts` | `isAiConfigured()` includes Gemini |
-| `src/app/api/health/xprize/route.ts` | Readiness check |
 
 Recruitment (`src/lib/recruitment/`) uses **OpenRouter only**, not Gemini.
 
@@ -43,12 +42,10 @@ Recruitment (`src/lib/recruitment/`) uses **OpenRouter only**, not Gemini.
 
 ```bash
 npm run dev
-curl http://localhost:3000/api/health/xprize
+curl http://localhost:3000/api/health
 ```
 
-Expect `"gemini": { "configured": true, "model": "gemini-3.5-flash" }`.
-
-Then open `/chat` or the widget preview at `/widget` and ask a question grounded in uploaded docs.
+Expect `"status": "ok"` and `"database": "connected"`. Then open `/chat` or `/widget` and ask a question grounded in uploaded docs.
 
 ## 2. Firebase Realtime Database
 
@@ -61,9 +58,7 @@ Firestore is **not** used for evidence — RTDB allows simple REST writes withou
 3. In the left menu: **Build → Realtime Database**
 4. Click **Create Database**
 5. Choose a region (e.g. `us-central1`)
-6. For demo/judge use: start in **test mode** (open read/write rules). For production, restrict rules.
-
-**XPRIZE demo project (Aug 2026):** `opsconcierge-xprize`, US (`us-central1`), URL `https://opsconcierge-xprize-default-rtdb.firebaseio.com`. Test-mode rules are enabled through mid-September 2026 (after the contest deadline). Writes go to `opsconcierge_agent_runs`.
+6. For a local demo: start in **test mode** (open read/write rules). For production, restrict rules.
 
 Copy the database URL shown at the top, e.g.:
 
@@ -99,15 +94,7 @@ From `src/lib/chat/service.ts` → `logLlmCall` → `notifyOpsWorker`:
 2. Send a widget message (with knowledge base docs uploaded)
 3. Check Firebase console → Realtime Database → `opsconcierge_agent_runs` for new child nodes
 
-Or:
-
-```bash
-curl http://localhost:3000/api/health/xprize
-```
-
-Expect `"googleCloudEvidence": { "configured": true, "provider": "firebase_rtdb" }` and `"readyForXprizeDemo": true`.
-
-## 3. Full `.env` block (XPRIZE minimum)
+## 3. Full `.env` block
 
 Add alongside your existing `DATABASE_URL` and optional Clerk keys:
 
@@ -144,11 +131,9 @@ Smoke test:
 
 ```bash
 curl -s https://support-ai-nine-mu.vercel.app/api/health
-# After redeploying OpsConcierge:
-curl -s https://support-ai-nine-mu.vercel.app/api/health/xprize
 ```
 
-## 5. Judge walkthrough
+## 5. Product walkthrough
 
 1. **Landing** → open live demo
 2. **Widget** (`/widget`) → send a support question
@@ -171,11 +156,10 @@ If `FIREBASE_DATABASE_URL` is set, RTDB is preferred; Cloud Run is used only whe
 
 | Issue | Fix |
 |-------|-----|
-| `gemini.configured: false` | Set `GEMINI_API_KEY`; no typos or placeholder value |
+| Gemini never answers | Set `GEMINI_API_KEY` and `AI_PROVIDER_PREFERENCE=auto` |
 | Gemini 403/429 | Check API key, quota, and model name in `GEMINI_CHAT_MODEL` |
-| `googleCloudEvidence.configured: false` | Set `FIREBASE_DATABASE_URL` |
-| RTDB writes fail (403) | Relax Realtime Database rules for demo, or add auth |
-| Chat works but no RTDB rows | Evidence only fires on `gemini_success`; confirm Gemini is used (not OpenRouter-only) |
+| No RTDB rows after a Gemini answer | Set `FIREBASE_DATABASE_URL`. Evidence only fires on `gemini_success` |
+| RTDB writes fail (403) | Relax Realtime Database rules for a demo, or add auth |
 | Empty widget answers | Upload docs to Knowledge Base; check `/api/health` for DB |
 
 ## Related docs

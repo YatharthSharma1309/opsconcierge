@@ -76,16 +76,13 @@ See full detail in [`REAL_WORLD_USE.md`](./REAL_WORLD_USE.md):
 | Hiring time saved | ~4–6 hours/hire on screening + question prep |
 | Ops hygiene | Weekly log review → KB updates (prevents bot abandonment) |
 
-## XPRIZE narrative
+## Published price
 
-**Hackathon:** Build with Gemini XPRIZE — **$2,000,000** · [xprize.devpost.com](https://xprize.devpost.com)  
-**Category:** Small Business Services  
-**Deadline:** 18 Aug 2026 @ 1:30 AM GMT+5:30  
+Free is $0: 40 assistant answers a month, 5 resume screens, 1 role. Pro is $39 a month: 250 answers, 40 screens, 5 roles, analytics, and execution exports. The public demo skips these caps. There is no fee per resolved chat, and asking for a person is not billed.
 
-**Judge story (60s):** SMB customer asks a billing/password question on the widget → Gemini answers from uploaded FAQ → escalates → ticket created → `/widget/intake` shows lane, model, latency, decision → Firebase RTDB as GCP evidence.
+A grounded reply is labeled “Answered from your docs” and cites a source. A reply that is not in the docs says so, cites nothing, and the inbox marks the thread “Waiting on you.” A resume line that denies a required skill is marked Contradicts.
 
 ## Related docs
 
-- [`REAL_WORLD_USE.md`](./REAL_WORLD_USE.md) — structure, personas, operator checklist  
-- [`BUSINESS_PLAN.md`](./BUSINESS_PLAN.md) · [`HACKATHON.md`](./HACKATHON.md)  
-- [`../evidence/demo/script.md`](../evidence/demo/script.md)
+- [`REAL_WORLD_USE.md`](./REAL_WORLD_USE.md) — structure, personas, operator checklist
+- [`BUSINESS_PLAN.md`](./BUSINESS_PLAN.md)

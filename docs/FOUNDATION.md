@@ -28,7 +28,7 @@ OpsConcierge is a multi-tenant Next.js app with two agent lanes: **support conci
 | Tickets | `/tickets`, `/tickets/new`, `/tickets/[id]` | Escalation, operator brief (`triage`), comments, AI suggest-reply |
 | Analytics | `/analytics` | Deflection rate, knowledge gaps → draft FAQ |
 | Widget | `/widget` | Embed preview + iframe snippet |
-| Widget intake demo | `/widget/intake`, `/widget/intake/[runId]` | Execution log + storyboard for judges |
+| Widget intake demo | `/widget/intake`, `/widget/intake/[runId]` | Execution log + storyboard |
 | Public help center | `/help`, `/help/[slug]` | Public KB + embedded widget |
 | Widget embed (public) | `/widget/embed?key=...` | Customer-facing chat bubble |
 
@@ -53,7 +53,6 @@ Recruitment AI uses **OpenRouter only** (`src/lib/recruitment/openrouter.ts`), n
 | `POST /api/recruitment/analyze` | Candidate AI analysis |
 | `POST /api/demo/seed` | Demo workspace seed (requires `DEMO_SEED_SECRET` in prod) |
 | `GET /api/health` | DB connectivity check |
-| `GET /api/health/xprize` | Gemini + Firebase RTDB readiness check |
 | `POST /api/webhooks/clerk` | Clerk org/user sync |
 
 ## Database (Prisma)
@@ -81,7 +80,7 @@ npm run db:seed         # demo org + sample data
 npm install
 cp .env.example .env
 # Required: DATABASE_URL
-# For XPRIZE demo: GEMINI_API_KEY + FIREBASE_DATABASE_URL
+# Support LLM: GEMINI_API_KEY and/or OPENROUTER_API_KEY
 # Optional: Clerk keys, or AUTH_BYPASS=true for local demo
 npm run db:migrate
 npm run db:seed
@@ -97,8 +96,8 @@ See `.env.example` for the full list. Minimum for local support chat:
 | Variable | Required | Notes |
 |----------|----------|-------|
 | `DATABASE_URL` | Yes | Local Postgres or Neon |
-| `GEMINI_API_KEY` | XPRIZE path | Primary LLM for support chat |
-| `FIREBASE_DATABASE_URL` | XPRIZE path | GCP evidence writes |
+| `GEMINI_API_KEY` | Support LLM | Primary LLM for support chat |
+| `FIREBASE_DATABASE_URL` | Optional | Firebase RTDB evidence writes |
 | `OPENROUTER_API_KEY` | Fallback | Used when Gemini fails or for recruitment |
 | Clerk keys | Prod auth | Or `AUTH_BYPASS=true` for local demo |
 

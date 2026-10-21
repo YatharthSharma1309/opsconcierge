@@ -72,14 +72,16 @@ Health: `GET /api/health`.
 
 ## Live demo
 
-| Host | Status (checked Aug 2026) |
-|------|---------------------------|
-| **https://support-ai-nine-mu.vercel.app** | **Public** |
+| Host | Status (checked 21 Oct 2026) |
+|------|------------------------------|
+| **https://support-ai-nine-mu.vercel.app** | **Public** — Vercel project `relay-ai`, production Ready |
 | https://relay-ai-app.vercel.app | Deployment-protected (Vercel login) — not public |
 
-**Health:** `GET /api/health` on the public host.
+**Health:** `GET /api/health` on the public host checks Postgres.
 
-**Product path:** landing → widget chat → hand the thread to a person → `/widget/intake` run → optional `/recruitment` shortlist.
+**Product path:** landing → widget chat → hand the thread to a person → `/widget/intake` execution log → optional `/recruitment` shortlist.
+
+**Price on the landing page:** Free $0 (40 assistant answers / month, 5 resume screens, 1 role). Pro $39/mo (250 answers, 40 screens, 5 roles). The public demo skips these caps.
 
 ## Stack
 

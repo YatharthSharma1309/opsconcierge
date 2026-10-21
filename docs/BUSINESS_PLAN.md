@@ -1,6 +1,6 @@
 # OpsConcierge — Lean Business Plan
 
-Grounded in real SMB support/hiring behavior. Portfolio / XPRIZE length.
+Grounded in real SMB support/hiring behavior. Portfolio length.
 
 ---
 
@@ -44,19 +44,57 @@ See [`REAL_WORLD_USE.md`](./REAL_WORLD_USE.md) for personas and day-to-day use.
 
 | Tier | Price | Fit |
 |------|-------|-----|
-| Free | $0 | 1 workspace, widget, watermarked logs — design partners |
-| Pro | $29–49/mo | Higher volume, analytics, hiring lane unlocked |
+| Free | $0 | 40 assistant answers / month, 5 resume screens, 1 role — design partners |
+| Pro | $39/mo | 250 assistant answers, 40 resume screens, 5 roles, analytics, execution exports |
 | Enterprise | Custom | Later (SSO, private deploy) — not the wedge |
 
 Avoid per-resolution “gotcha” pricing that buyers hate on Intercom/Zendesk AI.
 
+## Cost check (21 Oct 2026)
+
+No `GEMINI_API_KEY` was available in this workspace, so this table is Gemini 3.5 Flash’s published rate card ($1.50 / 1M input, $9 / 1M output, thinking included), not ten billed invoices. Live widget answers and resume screens now store input tokens, output tokens, and dollars on the execution log and the hiring audit once a key is set.
+
+| Run | Basis | Cost |
+|-----|--------|------|
+| Widget answer, heavy | 3,000 in + 8,000 out | $0.0765 |
+| Widget answer, short | 1,500 in + 800 out | $0.0095 |
+| Escalation | short answer + short triage | $0.0189 |
+| Resume screen, heavy | 8,000 in + 4,000 out | $0.048 |
+| One role, 20 heavy screens | 20 × screen | $0.96 |
+| Pro month at the caps, all heavy | 250 answers + 40 screens | about $21 |
+
+$21 clears $39. The caps stay. The price stays $39. A month of 300 uncapped heavy replies was the old sketch; the published cap is 250 so the heavy case stays inside the price.
+
+## Phase 4 decision (21 Oct 2026)
+
+| Question | Decision |
+|----------|----------|
+| Support path, no invented policy | Checked on the live demo 21 Oct 2026. A refund question was labeled “Answered from your docs” and cited the FAQ. An Austin street-address question said the docs do not cover it, cited nothing, and the inbox marked the thread “Waiting on you.” |
+| Resume lines and decisions that persist | Keep hiring in the same app. |
+| Did three of five founders want both lanes? | Not decided. Design-partner talks are 0. Do not drop a lane from a guess. |
+| Does Pro cover model cost? | Yes, at $39 with 250 answers and 40 screens. Publish that price. |
+| What did founders call unfinished? | Nothing yet. This build is on the public demo as of 21 Oct 2026. Next is the five conversations below. No new channel. |
+
+Dated reason for no payment: no founder conversation has been held, so there is no payment to record.
+
+Ask these seven questions, and write the answers in this file. Do not change the roadmap from a feature request that does not come with a payment.
+
+1. How many hours a week go to the same questions?
+2. Where do those questions arrive?
+3. What happens when the chatbot is wrong?
+4. How many resumes did the last hire produce, and what did they use?
+5. What do they pay now?
+6. After watching both lanes, which one would they open next week?
+7. Would they pay $39 a month, or a one-time fee for a single role? Which, and why?
+
+If they hire once a year and have no support volume, HireScreen fits them better. If they run a recruiting agency, Manatal fits them better.
+
 ## Go-to-market (90 days)
 
 1. **Persona-led demos** — PipelineKit (SaaS FAQ) and GlowTheory (returns FAQ) scripts  
-2. **Design partners** — 3–5 real SMBs from `evidence/customers/outreach-list.md`  
+2. **Design partners** — 3–5 real SMBs you can name from public sites  
 3. **Wedge channel** — Website widget only (prove value before WhatsApp/IG)  
 4. **Proof** — Deflection %, escalations with context, hiring hours saved (real numbers only)  
-5. **XPRIZE** — Small Business Services category; Gemini + Firebase evidence  
 
 ## Competition (honest)
 
@@ -72,7 +110,7 @@ Avoid per-resolution “gotcha” pricing that buyers hate on Intercom/Zendesk A
 
 | Metric | Current | 90d target |
 |--------|---------|------------|
-| Live demo | ✅ public host | Keep uptime through judging |
+| Live demo | ✅ public host, production Ready 21 Oct 2026 | Keep the public demo up |
 | Design-partner talks | 0 | 5 |
 | Widget sessions / week | Demo-only (not claimed as customers) | 50+ real |
 | FAQ deflection (pilot) | n/a | 40–60% routine |

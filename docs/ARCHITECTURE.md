@@ -56,7 +56,7 @@ flowchart TB
 
 Admin chat does **not** create `ExecutionRun` rows (channel = `ADMIN`).
 
-### Widget chat (judge path)
+### Widget chat
 
 1. Customer site loads iframe → `/widget/embed?key=...`
 2. Widget → `POST /api/widget/chat/stream` with widget key + visitor token
@@ -135,15 +135,15 @@ Optional fallback: **Cloud Run ops-worker**
 
 - Config: `OPS_WORKER_URL`
 - Code: `cloud-run/ops-worker/server.js` — `POST /v1/agent-runs`, logs to stdout (Cloud Logging) and optional GCS
-- Not required for XPRIZE if Firebase RTDB is configured
+- Not required when Firebase RTDB is configured
 
-Check readiness: `GET /api/health/xprize`
+Database check: `GET /api/health`. Gemini and Firebase are confirmed by a widget reply and an RTDB row, not by that health route.
 
 ## Deployment topology
 
 | Component | Host | Notes |
 |-----------|------|-------|
-| Next.js app | Vercel | Build: `npm run db:migrate:deploy && npm run build` |
+| Next.js app | Vercel project `relay-ai` | Build migrates only when `DATABASE_URL` is set, then `db:generate` and `next build` |
 | PostgreSQL | Neon | Pooled `DATABASE_URL` with `sslmode=require` |
 | Auth | Clerk | Orgs enabled; webhook to `/api/webhooks/clerk` |
 | LLM | Google AI Studio + OpenRouter | Env vars in Vercel project settings |
