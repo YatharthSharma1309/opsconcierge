@@ -2,11 +2,11 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import type { MemberRole, Organization, User } from "@/generated/prisma/client";
+import { isAuthBypassEnabled } from "./bypass";
 import {
   ensureUniqueOrgSlug,
   generateWidgetPublicKey,
   getDemoOrganizationContext,
-  isAuthBypassEnabled,
   slugifyOrgName,
 } from "@/lib/auth/demo";
 

@@ -169,7 +169,11 @@ export function CandidatePipelineTable({
                           Open evidence for inferred or unverified items.
                         </p>
                       ) : null}
-                      {!candidate.hasAnalysis ? (
+                      {candidate.parseStatus === "failed" ? (
+                        <p className="mt-1 text-xs text-rose-700">
+                          Could not read this resume. Open it to paste the text, or upload the file again.
+                        </p>
+                      ) : !candidate.hasAnalysis ? (
                         <p className="mt-1 text-xs text-amber-600">Needs analysis</p>
                       ) : null}
                     </div>

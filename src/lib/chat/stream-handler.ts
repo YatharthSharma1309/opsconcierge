@@ -9,6 +9,8 @@
 
 import { getChatModel, isAiConfigured, shouldAttemptGemini } from "@/lib/ai";
 import { getGeminiChatModel } from "@/lib/gemini";
+import { runCostUsd } from "@/lib/billing/cost";
+import { supportRunOutcome } from "@/lib/chat/answer-outcome";
 import { db } from "@/lib/db";
 
 function encodeSse(event: string, data: unknown) {
@@ -118,7 +120,14 @@ export async function createChatStreamResponse({
 
     const llmRequestStartedAt = Date.now();
 
-    const { stream, reply: fallback, provider: llmProvider, model: llmModel, latencyMs: llmLatencyMs } =
+    const {
+      stream,
+      reply: fallback,
+      provider: llmProvider,
+      model: llmModel,
+      latencyMs: llmLatencyMs,
+      usage: llmUsage,
+    } =
       await streamChatReply(
       organizationId,
       message,
@@ -182,6 +191,11 @@ export async function createChatStreamResponse({
                     ? "support-concierge"
                     : "llm";
 
+              const outcome = supportRunOutcome({
+                chunksMatched: prepared.chunksMatched,
+                confidence: prepared.confidence,
+                reply: fullReply,
+              });
               const decision =
                 llmProvider === "gemini"
                   ? "gemini_success"
@@ -206,12 +220,12 @@ export async function createChatStreamResponse({
                     retrievalMode: prepared.retrievalMode,
                     chunksMatched: prepared.chunksMatched,
                     confidence: prepared.confidence,
-                    outcome:
-                      prepared.chunksMatched === 0
-                        ? "low_knowledge"
-                        : prepared.confidence === "low"
-                          ? "low_confidence"
-                          : "deflected",
+                    outcome,
+                    inputTokens: llmUsage?.inputTokens ?? null,
+                    outputTokens: llmUsage?.outputTokens ?? null,
+                    costUsd: llmUsage ? runCostUsd(llmUsage) : null,
+                    citedSource:
+                      prepared.sources.length > 0 && outcome === "deflected",
                   },
                 },
               });

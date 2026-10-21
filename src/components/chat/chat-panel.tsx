@@ -24,6 +24,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { useChat, type ChatMessage, type ConversationItem } from "@/components/chat/use-chat";
 import { RelativeTime } from "@/components/ui/relative-time";
+import { widgetAnswerState } from "@/lib/chat/answer-outcome";
 
 type ChatPanelProps = {
   hasDocuments: boolean;
@@ -135,13 +136,11 @@ function SourceCitation({
 function MessageBubble({
   message,
   onFeedback,
-  showEscalateHint,
   feedbackPendingId,
   compact = false,
 }: {
   message: ChatMessage;
   onFeedback?: (messageId: string, helpful: boolean) => void;
-  showEscalateHint?: boolean;
   feedbackPendingId?: string | null;
   compact?: boolean;
 }) {
@@ -151,6 +150,14 @@ function MessageBubble({
     message.content.trim().length > 0 &&
     message.persisted !== false &&
     onFeedback;
+  const answerState =
+    message.role === "assistant" && message.id !== "welcome"
+      ? widgetAnswerState({
+          reply: message.content,
+          sourceCount: message.sources?.length ?? 0,
+          retrievalMode: message.retrievalMode,
+        })
+      : null;
 
   return (
     <div
@@ -177,7 +184,19 @@ function MessageBubble({
       >
         <p className="whitespace-pre-wrap break-words">{message.content}</p>
 
-        {message.retrievalMode ? (
+        {answerState ? (
+          <p
+            className={`mt-3 text-xs font-medium ${
+              answerState === "from_docs" ? "text-emerald-800" : "text-amber-800"
+            }`}
+          >
+            {answerState === "from_docs"
+              ? "Answered from your docs"
+              : "Not in your docs. A person can take this."}
+          </p>
+        ) : null}
+
+        {!compact && message.retrievalMode ? (
           <div className="mt-3 flex flex-wrap gap-2">
             <Badge tone="info">{message.retrievalMode} retrieval</Badge>
             {message.chunksMatched ? (
@@ -199,13 +218,7 @@ function MessageBubble({
           </div>
         ) : null}
 
-        {message.confidence === "low" && showEscalateHint ? (
-          <p className="mt-3 text-xs text-amber-700">
-            Grounding looks weak — consider escalating to a human agent.
-          </p>
-        ) : null}
-
-        {message.sources && message.sources.length > 0 ? (
+        {answerState === "from_docs" && message.sources && message.sources.length > 0 ? (
           <div className="mt-3 space-y-2 border-t border-slate-100 pt-3">
             <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
               Grounded sources
@@ -500,7 +513,9 @@ export function ChatPanel({
                   </h2>
                 </div>
                 <p className="mt-1 text-sm text-slate-500">
-                  Streaming RAG with source citations
+                  {compact
+                    ? "Answers from your docs. If it cannot, ask for a person."
+                    : "Test answers from your docs. A weak answer can be marked wrong."}
                 </p>
               </div>
             </div>
@@ -521,7 +536,6 @@ export function ChatPanel({
               <MessageBubble
                 message={message}
                 onFeedback={submitFeedback}
-                showEscalateHint
                 feedbackPendingId={feedbackPendingId}
                 compact={compact}
               />

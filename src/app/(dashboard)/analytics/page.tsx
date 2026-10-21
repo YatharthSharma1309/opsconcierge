@@ -3,6 +3,7 @@ import { Header } from "@/components/layout/header";
 import { AnalyticsDashboard } from "@/components/analytics/analytics-dashboard";
 import { BoardSwitch } from "@/components/analytics/board-switch";
 import { requireOrgMembershipOrRedirect } from "@/lib/auth";
+import { isUnansweredEscalation, questionBeforeReply } from "@/lib/chat/answer-outcome";
 import { customerChannelFilter, customerConversationWhere } from "@/lib/conversations/filters";
 import { db } from "@/lib/db";
 
@@ -165,7 +166,7 @@ async function getAnalytics(organizationId: string) {
       organizationId,
       title: { startsWith: "Escalation:" },
     },
-    select: { title: true },
+    select: { title: true, description: true },
     orderBy: { createdAt: "desc" },
     take: 50,
   });
@@ -173,12 +174,60 @@ async function getAnalytics(organizationId: string) {
   const gapCounts = new Map<string, number>();
 
   for (const ticket of escalationTickets) {
+    if (!isUnansweredEscalation(ticket.description)) continue;
     const topic = ticket.title.replace(/^Escalation:\s*/i, "").slice(0, 80);
     gapCounts.set(topic, (gapCounts.get(topic) ?? 0) + 1);
   }
 
-  const knowledgeGaps = Array.from(gapCounts.entries())
-    .map(([topic, count]) => ({ topic, count }))
+  const markedWrong = await db.message.findMany({
+    where: {
+      role: "ASSISTANT",
+      helpful: false,
+      conversation: {
+        organizationId,
+        ...customerChannelFilter,
+      },
+    },
+    select: { conversationId: true, createdAt: true },
+    orderBy: { createdAt: "desc" },
+    take: 40,
+  });
+
+  const wrongConversationIds = [
+    ...new Set(markedWrong.map((message) => message.conversationId)),
+  ];
+  const userTurns = wrongConversationIds.length
+    ? await db.message.findMany({
+        where: {
+          role: "USER",
+          conversationId: { in: wrongConversationIds },
+        },
+        select: { conversationId: true, content: true, createdAt: true },
+      })
+    : [];
+
+  const wrongCounts = new Map<string, number>();
+  for (const message of markedWrong) {
+    const topic = questionBeforeReply(
+      userTurns.filter((turn) => turn.conversationId === message.conversationId),
+      message.createdAt,
+    );
+    if (!topic) continue;
+    wrongCounts.set(topic, (wrongCounts.get(topic) ?? 0) + 1);
+  }
+
+  const knowledgeGaps = [
+    ...Array.from(gapCounts.entries()).map(([topic, count]) => ({
+      topic,
+      count,
+      kind: "unanswered" as const,
+    })),
+    ...Array.from(wrongCounts.entries()).map(([topic, count]) => ({
+      topic,
+      count,
+      kind: "marked_wrong" as const,
+    })),
+  ]
     .sort((a, b) => b.count - a.count)
     .slice(0, 10);
 

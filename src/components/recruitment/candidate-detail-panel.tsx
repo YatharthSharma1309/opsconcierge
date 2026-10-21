@@ -126,10 +126,14 @@ export function CandidateDetailPanel({
       {needsResumeText ? (
         <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-4">
           <label htmlFor="candidate-resume-text" className="mb-2 block text-sm font-medium text-amber-950">
-            Paste resume text
+            {candidate.parseStatus === "failed"
+              ? "This resume could not be read"
+              : "Paste resume text"}
           </label>
           <p className="mb-3 text-xs leading-5 text-amber-900/80">
-            Parsing failed or text is too short. Paste the resume content here, then run analysis.
+            {candidate.parseStatus === "failed"
+              ? "The file did not yield enough text. Paste the resume here and save it, then run analysis. You can also upload the file again from the job page."
+              : "Resume text is too short. Paste the resume content here, then run analysis."}
           </p>
           <Textarea
             id="candidate-resume-text"

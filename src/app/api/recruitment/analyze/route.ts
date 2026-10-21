@@ -1,6 +1,9 @@
 export const runtime = "nodejs";
 
 import { NextResponse } from "next/server";
+import { runCostUsd } from "@/lib/billing/cost";
+import { resumeScreenCapMessage } from "@/lib/billing/plans";
+import { resumeScreensCapped } from "@/lib/billing/usage";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { withRecruitmentOrg } from "@/lib/recruitment/api-handler";
 import { recordRecruitmentAuditEvent } from "@/lib/recruitment/services/audit";
@@ -29,9 +32,17 @@ export async function POST(request: Request) {
       );
     }
 
+    if (await resumeScreensCapped(organization.id)) {
+      return NextResponse.json(
+        { error: resumeScreenCapMessage() },
+        { status: 402 },
+      );
+    }
+
     const candidateId = parsed.data.candidateId;
     const candidate = await getCandidateDetail(organization.id, candidateId);
-    const analysis = await analyzeCandidate(organization.id, candidateId);
+    const screened = await analyzeCandidate(organization.id, candidateId);
+    const { analysis } = screened;
 
     await recordRecruitmentAuditEvent({
       organizationId: organization.id,
@@ -43,6 +54,10 @@ export async function POST(request: Request) {
         jobId: candidate?.jobId ?? null,
         analysisId: analysis.id,
         matchScore: analysis.matchScore,
+        evidencePresent: screened.evidencePresent,
+        inputTokens: screened.usage?.inputTokens ?? null,
+        outputTokens: screened.usage?.outputTokens ?? null,
+        costUsd: screened.usage ? runCostUsd(screened.usage) : null,
       },
     });
 

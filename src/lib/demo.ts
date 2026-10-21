@@ -27,7 +27,22 @@ export async function seedDemoKnowledgeBase() {
   const existing = duplicates[0] ?? null;
 
   if (existing) {
-    return { document: existing, created: false };
+    const chunks = await db.documentChunk.findMany({
+      where: { documentId: existing.id },
+      select: { content: true },
+    });
+    const stored = chunks.map((chunk) => chunk.content).join("\n");
+    const marker = "fair-use API limits";
+    const matchesCurrentFile = content.includes(marker)
+      ? stored.includes(marker)
+      : stored.includes(content.slice(0, 80));
+
+    if (matchesCurrentFile) {
+      return { document: existing, created: false };
+    }
+
+    await db.documentChunk.deleteMany({ where: { documentId: existing.id } });
+    await db.document.delete({ where: { id: existing.id } });
   }
 
   const file = new File([content], "support-faq.txt", { type: "text/plain" });

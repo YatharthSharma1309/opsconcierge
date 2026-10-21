@@ -64,7 +64,7 @@ export function DocumentUpload({ onUploaded }: DocumentUploadProps) {
             <p className="font-medium">Upload support documents</p>
           </div>
           <p className="mt-1 text-sm text-slate-500">
-            PDF, DOCX, TXT, or Markdown. Files are chunked and embedded for RAG.
+            PDF, DOCX, TXT, or Markdown. The widget answers only from these files.
           </p>
         </div>
 

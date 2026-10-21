@@ -8,7 +8,7 @@ export async function generateJobCriteria(input: {
   description?: string;
 }): Promise<JobAssistResult> {
   const { system, user } = buildJobAssistPrompt(input);
-  const raw = await createChatCompletion({
+  const { content: raw } = await createChatCompletion({
     messages: [
       { role: "system", content: system },
       { role: "user", content: user },

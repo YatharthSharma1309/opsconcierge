@@ -71,6 +71,7 @@ function decisionTone(decision: string): StoryboardTone {
   if (
     decision.includes("fallback") ||
     decision.includes("low_") ||
+    decision.includes("needs_human") ||
     decision === "triage_ready"
   ) {
     return "warning";
@@ -181,6 +182,7 @@ export function buildExecutionStoryboard(
 ): StoryboardStep[] {
   return logs.map((log) => {
     const meta = asRecord(log.metadata);
+    const outcome = typeof meta.outcome === "string" ? meta.outcome : "";
     const stage = stageForLog(log.agent, log.decision);
     const confidence = formatConfidence(meta.confidence);
     const details: StoryboardStep["details"] = [
@@ -201,6 +203,15 @@ export function buildExecutionStoryboard(
     if (typeof meta.outcome === "string") {
       details.push({ label: "Outcome", value: publicRunLabel(meta.outcome) });
     }
+    if (typeof meta.costUsd === "number") {
+      details.push({ label: "Model cost", value: `$${meta.costUsd.toFixed(4)}` });
+    }
+    if (typeof meta.citedSource === "boolean") {
+      details.push({
+        label: "Cited a source",
+        value: meta.citedSource ? "Yes" : "No",
+      });
+    }
     if (typeof meta.priority === "string") {
       details.push({ label: "Priority", value: meta.priority });
     }
@@ -217,7 +228,11 @@ export function buildExecutionStoryboard(
     return {
       id: log.id,
       stage,
-      title: titleForStage(stage, log.decision),
+      title:
+        stage === "model" &&
+        (outcome === "needs_human" || outcome === "low_knowledge" || outcome === "low_confidence")
+          ? "Model reply — needs a person"
+          : titleForStage(stage, log.decision),
       summary: summaryForLog(stage, log.decision, meta),
       agent: log.agent,
       decision: log.decision,
@@ -227,7 +242,7 @@ export function buildExecutionStoryboard(
         typeof log.createdAt === "string"
           ? log.createdAt
           : log.createdAt.toISOString(),
-      tone: decisionTone(log.decision),
+      tone: decisionTone(outcome || log.decision),
       details,
     };
   });

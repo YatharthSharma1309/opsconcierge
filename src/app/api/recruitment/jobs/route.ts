@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { roleCapMessage } from "@/lib/billing/plans";
+import { rolesCapped } from "@/lib/billing/usage";
 import { withRecruitmentOrg } from "@/lib/recruitment/api-handler";
 import { recordRecruitmentAuditEvent } from "@/lib/recruitment/services/audit";
 import { createJob, listJobs } from "@/lib/recruitment/services/jobs";
@@ -21,6 +23,10 @@ export async function POST(request: Request) {
         { error: "Invalid job payload.", details: parsed.error.flatten() },
         { status: 400 },
       );
+    }
+
+    if (await rolesCapped(organization.id)) {
+      return NextResponse.json({ error: roleCapMessage() }, { status: 402 });
     }
 
     const job = await createJob(organization.id, parsed.data);

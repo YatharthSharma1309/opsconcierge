@@ -1,4 +1,5 @@
 import { getChatModel } from "@/lib/ai";
+import type { ModelUsage } from "@/lib/billing/cost";
 import { db } from "@/lib/db";
 import { RecruitmentError } from "@/lib/recruitment/errors";
 import { parseStringArray, stringifyJson, stringifyStringArray } from "@/lib/recruitment/json";
@@ -11,7 +12,11 @@ import type { AnalysisDTO, JobCriteria } from "@/lib/recruitment/types";
 export async function analyzeCandidate(
   organizationId: string,
   candidateId: string
-): Promise<AnalysisDTO> {
+): Promise<{
+  analysis: AnalysisDTO;
+  usage: ModelUsage | null;
+  evidencePresent: boolean;
+}> {
   const candidate = await db.candidate.findFirst({
     where: { id: candidateId, job: { organizationId } },
     omit: { fileBytes: true },
@@ -47,7 +52,7 @@ export async function analyzeCandidate(
     resumeText: candidate.rawText,
   });
 
-  const raw = await createChatCompletion({
+  const completion = await createChatCompletion({
     messages: [
       { role: "system", content: system },
       { role: "user", content: user },
@@ -57,7 +62,7 @@ export async function analyzeCandidate(
 
   let result;
   try {
-    result = parseAnalyzeResult(raw);
+    result = parseAnalyzeResult(completion.content);
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "Invalid model output.";
@@ -88,6 +93,7 @@ export async function analyzeCandidate(
       ),
       interviewQuestions: stringifyStringArray(result.interviewQuestions),
       modelId: getChatModel(),
+      analyzedAt: new Date(),
     },
     update: {
       summary: result.summary,
@@ -104,5 +110,13 @@ export async function analyzeCandidate(
     },
   });
 
-  return toAnalysisDTO(analysis);
+  const evidencePresent = result.evidence.matchedRequiredSkills.some(
+    (item) => item.evidence.trim().length > 0,
+  );
+
+  return {
+    analysis: toAnalysisDTO(analysis),
+    usage: completion.usage,
+    evidencePresent,
+  };
 }

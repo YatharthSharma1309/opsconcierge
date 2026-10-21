@@ -7,6 +7,7 @@ import { BrandLogo } from "@/components/layout/brand-logo";
 import { MobileMenuButton } from "@/components/layout/mobile-nav";
 import { ClientPortal } from "@/components/ui/client-portal";
 import { buttonClassName } from "@/components/ui/button";
+import { isClerkConfigured } from "@/lib/env/clerk";
 import { isMarketingDemoMode } from "@/lib/env/marketing-demo";
 import { cn } from "@/lib/utils";
 
@@ -171,7 +172,71 @@ function MarketingNavLinks(props: MarketingNavLinksProps) {
     return <MarketingNavLinksBypass {...props} />;
   }
 
+  if (!isClerkConfigured()) {
+    return <MarketingNavLinksPublic {...props} />;
+  }
+
   return <MarketingNavLinksWithClerk {...props} />;
+}
+
+function MarketingNavLinksPublic({
+  onNavigate,
+  className,
+  layout = "row",
+}: MarketingNavLinksProps) {
+  const isColumn = layout === "column";
+
+  return (
+    <div
+      className={cn(
+        isColumn ? "flex flex-col gap-1" : "flex flex-wrap items-center gap-2 sm:gap-3",
+        className,
+      )}
+    >
+      <Link
+        href="/help"
+        onClick={onNavigate}
+        className={marketingNavLinkClass({ column: isColumn })}
+      >
+        Help center
+      </Link>
+      <Link
+        href="/#how-it-works"
+        onClick={onNavigate}
+        className={marketingNavLinkClass({ column: isColumn })}
+      >
+        How it works
+      </Link>
+      <Link
+        href="/#try-demo"
+        onClick={onNavigate}
+        className={marketingNavLinkClass({ column: isColumn })}
+      >
+        Try the demo
+      </Link>
+      <Link
+        href="/#who"
+        onClick={onNavigate}
+        className={marketingNavLinkClass({ column: isColumn })}
+      >
+        Who it&apos;s for
+      </Link>
+      <Link
+        href="/sign-in"
+        onClick={onNavigate}
+        className={marketingNavLinkClass({ column: isColumn })}
+      >
+        Sign in
+      </Link>
+      <Link
+        href="/sign-up"
+        onClick={onNavigate}
+        className={marketingNavLinkClass({ variant: "primary", column: isColumn })}
+      >
+        Get started free
+      </Link>
+    </div>
+  );
 }
 
 export function MarketingAuthLinks({
@@ -190,6 +255,27 @@ export function MarketingAuthLinks({
           className={buttonClassName({ size: "sm" })}
         >
           Open live demo
+        </Link>
+      </div>
+    );
+  }
+
+  if (!isClerkConfigured()) {
+    return (
+      <div className={cn("flex flex-wrap items-center gap-2", className)}>
+        <Link
+          href="/sign-in"
+          onClick={onNavigate}
+          className={buttonClassName({ variant: "ghost", size: "sm" })}
+        >
+          Sign in
+        </Link>
+        <Link
+          href="/sign-up"
+          onClick={onNavigate}
+          className={buttonClassName({ size: "sm" })}
+        >
+          Get started free
         </Link>
       </div>
     );

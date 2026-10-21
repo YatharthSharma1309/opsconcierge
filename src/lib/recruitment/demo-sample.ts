@@ -287,7 +287,12 @@ export const DEMO_SHARE_EXPORT_PATH = "/share/sample/export";
 
 function demoEvidence(candidate: CandidateDetailDTO) {
   return (candidate.review?.requirements ?? [])
-    .filter((row) => row.verdict !== "not_shown" && row.evidence)
+    .filter(
+      (row) =>
+        row.verdict !== "not_shown" &&
+        row.verdict !== "contradictory" &&
+        row.evidence,
+    )
     .map((row) => ({ skill: row.skill, quote: row.evidence as string }));
 }
 

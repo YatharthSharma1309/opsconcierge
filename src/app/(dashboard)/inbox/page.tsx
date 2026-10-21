@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Header } from "@/components/layout/header";
 import { Badge } from "@/components/ui/badge";
 import { requireOrgMembershipOrRedirect } from "@/lib/auth";
+import { inboxThreadLabel } from "@/lib/chat/answer-outcome";
 import { customerConversationWhere } from "@/lib/conversations/filters";
 import { db } from "@/lib/db";
 import { RelativeTime } from "@/components/ui/relative-time";
@@ -16,11 +17,13 @@ export default async function InboxPage() {
     include: {
       messages: {
         orderBy: { createdAt: "desc" },
-        take: 1,
+        take: 6,
+        select: { role: true, content: true },
       },
       tickets: {
         select: { id: true, status: true },
-        take: 1,
+        orderBy: { createdAt: "desc" },
+        take: 5,
       },
     },
     orderBy: { updatedAt: "desc" },
@@ -44,19 +47,21 @@ export default async function InboxPage() {
           <ul className="divide-y divide-slate-200 overflow-hidden rounded-xl border border-slate-200 bg-white">
             {conversations.map((conversation) => {
               const lastMessage = conversation.messages[0];
-              const linkedTicket = conversation.tickets[0];
-              const waitingOnYou =
-                !linkedTicket && lastMessage?.role === "USER";
-              const label = linkedTicket
-                ? "With you"
-                : waitingOnYou
-                  ? "Waiting"
-                  : "Answered";
-              const tone = linkedTicket
-                ? "warning"
-                : waitingOnYou
-                  ? "info"
-                  : "success";
+              const lastAssistant = conversation.messages.find(
+                (message) => message.role === "ASSISTANT",
+              );
+              const openTicket = conversation.tickets.find(
+                (ticket) => ticket.status === "OPEN" || ticket.status === "IN_PROGRESS",
+              );
+              const linkedTicket = openTicket ?? conversation.tickets[0];
+              const hasOpenTicket = Boolean(openTicket);
+              const thread = inboxThreadLabel({
+                lastRole: lastMessage?.role ?? null,
+                lastAssistantReply: lastAssistant?.content ?? null,
+                hasOpenTicket,
+              });
+              const label = thread === "waiting" ? "Waiting on you" : "Answered";
+              const tone = thread === "waiting" ? "warning" : "success";
               const preview = lastMessage
                 ? lastMessage.content
                 : "No messages yet";

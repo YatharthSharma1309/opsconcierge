@@ -6,6 +6,7 @@ const verdictLabel: Record<RequirementVerdict, string> = {
   inferred: "Inferred",
   unverified: "Unverified",
   not_shown: "Not shown",
+  contradictory: "Contradicts",
 };
 
 const verdictTone: Record<RequirementVerdict, string> = {
@@ -13,6 +14,7 @@ const verdictTone: Record<RequirementVerdict, string> = {
   inferred: "text-amber-700",
   unverified: "text-slate-500",
   not_shown: "text-rose-700",
+  contradictory: "text-rose-700",
 };
 
 type RequirementChecklistProps = {
@@ -40,7 +42,9 @@ export function RequirementChecklist({ rows }: RequirementChecklistProps) {
                 <p className="mt-1 text-sm text-slate-500">
                   {row.verdict === "not_shown"
                     ? "The resume does not establish this requirement."
-                    : "Matched without a quote from the resume."}
+                    : row.verdict === "contradictory"
+                      ? "The resume states the opposite of this requirement."
+                      : "Matched without a quote from the resume."}
                 </p>
               )}
             </div>
@@ -58,8 +62,8 @@ export function RequirementChecklist({ rows }: RequirementChecklistProps) {
       <p className="mt-2 text-xs leading-5 text-slate-500">
         Shown means the resume quotes that requirement. Inferred is an indirect
         reading. Unverified was counted without a quote. Not shown means the
-        resume does not establish it. That is not proof the person lacks the
-        skill.
+        resume does not establish it. Contradicts means the resume states the
+        opposite. Neither is proof the person lacks the skill.
       </p>
     </div>
   );

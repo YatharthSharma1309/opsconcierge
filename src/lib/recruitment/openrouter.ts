@@ -1,4 +1,5 @@
 import { getAiClient, getChatModel } from "@/lib/ai";
+import { usageFromProviderCounts, type ModelUsage } from "@/lib/billing/cost";
 import { RecruitmentError } from "@/lib/recruitment/errors";
 
 type ChatMessage = {
@@ -14,7 +15,7 @@ type ChatCompletionOptions = {
 
 export async function createChatCompletion(
   options: ChatCompletionOptions
-): Promise<string> {
+): Promise<{ content: string; usage: ModelUsage | null }> {
   const client = getAiClient();
   if (!client) {
     throw new RecruitmentError(
@@ -37,5 +38,11 @@ export async function createChatCompletion(
     throw new RecruitmentError("Model returned an empty response.", 502, "EMPTY_MODEL");
   }
 
-  return content.trim();
+  return {
+    content: content.trim(),
+    usage: usageFromProviderCounts(
+      response.usage?.prompt_tokens,
+      response.usage?.completion_tokens,
+    ),
+  };
 }

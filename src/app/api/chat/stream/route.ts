@@ -1,5 +1,9 @@
 import { authErrorResponse, requireOrgMembership } from "@/lib/auth";
 import { parseJsonBody } from "@/lib/api/json";
+import { createMonthlyCapStreamResponse } from "@/lib/billing/cap-reply";
+import { assistantCapReply } from "@/lib/billing/plans";
+import { assistantAnswersCapped } from "@/lib/billing/usage";
+import { ChatServiceError } from "@/lib/chat/service";
 import { createChatStreamResponse } from "@/lib/chat/stream-handler";
 import { validateChatMessage } from "@/lib/chat/constants";
 import { checkRateLimit } from "@/lib/rate-limit";
@@ -39,6 +43,22 @@ export async function POST(request: Request) {
       });
     }
 
+    if (await assistantAnswersCapped(organization.id)) {
+      if (sandbox) {
+        return new Response(
+          JSON.stringify({ error: assistantCapReply("ADMIN") }),
+          { status: 402, headers: { "Content-Type": "application/json" } },
+        );
+      }
+
+      return await createMonthlyCapStreamResponse({
+        organizationId: organization.id,
+        message,
+        conversationId,
+        channel: "ADMIN",
+      });
+    }
+
     return await createChatStreamResponse({
       organizationId: organization.id,
       message,
@@ -49,6 +69,16 @@ export async function POST(request: Request) {
   } catch (error) {
     const authResponse = authErrorResponse(error);
     if (authResponse) return authResponse;
+
+    if (
+      error instanceof ChatServiceError &&
+      error.code === "CONVERSATION_NOT_FOUND"
+    ) {
+      return new Response(
+        JSON.stringify({ error: error.message, conversationId }),
+        { status: 404, headers: { "Content-Type": "application/json" } },
+      );
+    }
 
     console.error(error);
     return new Response(

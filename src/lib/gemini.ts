@@ -1,5 +1,7 @@
 ﻿// Minimal Gemini client using fetch (avoids adding new npm dependencies).
 
+import { usageFromGeminiMetadata, type ModelUsage } from "@/lib/billing/cost";
+
 export type GeminiChatCompletionArgs = {
   model?: string;
   systemPrompt?: string;
@@ -45,6 +47,7 @@ export async function geminiChatCompletion({
   text: string;
   model: string;
   latencyMs: number;
+  usage: ModelUsage | null;
 }> {
   const apiKey = getGeminiApiKey();
   if (!apiKey) {
@@ -107,6 +110,11 @@ export async function geminiChatCompletion({
         parts?: GeminiPart[];
       };
     }>;
+    usageMetadata?: {
+      promptTokenCount?: number;
+      candidatesTokenCount?: number;
+      thoughtsTokenCount?: number;
+    };
   };
 
   const data = (await res.json().catch(() => null)) as GeminiResponse | null;
@@ -120,5 +128,10 @@ export async function geminiChatCompletion({
     throw new Error("Gemini returned an empty completion");
   }
 
-  return { text, model, latencyMs };
+  return {
+    text,
+    model,
+    latencyMs,
+    usage: usageFromGeminiMetadata(data?.usageMetadata),
+  };
 }

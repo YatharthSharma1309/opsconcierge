@@ -90,7 +90,7 @@ export async function draftFaqFromGap(
     };
   }
 
-  const raw = await createChatCompletion({
+  const { content: raw } = await createChatCompletion({
     temperature: 0.3,
     messages: [
       {

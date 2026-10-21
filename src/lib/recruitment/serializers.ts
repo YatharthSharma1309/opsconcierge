@@ -138,7 +138,7 @@ export function toCandidateDTO(
       })
     : [];
   const missingRequiredSkills = requirements
-    .filter((row) => row.verdict === "not_shown")
+    .filter((row) => row.verdict === "not_shown" || row.verdict === "contradictory")
     .map((row) => row.skill);
 
   return {

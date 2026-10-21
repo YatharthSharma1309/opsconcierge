@@ -11,6 +11,7 @@ import { HowItWorksSection } from "@/components/marketing/how-it-works-section";
 import { OpsLanesSection } from "@/components/marketing/ops-lanes";
 import { ProductDemoWalkthrough } from "@/components/marketing/product-demo-walkthrough";
 import { buttonClassName } from "@/components/ui/button";
+import { PLANS } from "@/lib/billing/plans";
 import { isMarketingDemoMode } from "@/lib/env/marketing-demo";
 import { hiringWorkspaceHref } from "@/lib/env/public-demo";
 
@@ -221,27 +222,25 @@ export default function LandingPage() {
               Simple pricing for small businesses
             </h2>
             <p className="mt-2 max-w-2xl text-slate-600">
-              Start free while the inbox and the shortlist become part of the
-              week. Upgrade when both lanes are in the rhythm. No charge per
-              resolved chat.
+              One flat month. No fee per resolved chat, and no fee when the
+              visitor asks for a person. Past the monthly cap, the widget still
+              offers a person.
             </p>
             <div className="mt-10 grid gap-8 md:grid-cols-3">
               {[
                 {
                   name: "Free",
                   price: "$0",
-                  detail:
-                    "1 workspace · widget · knowledge upload · watermarked logs",
+                  detail: `1 workspace · ${PLANS.free.assistantAnswersPerMonth} assistant answers / month · ${PLANS.free.resumeScreensPerMonth} resume screens · ${PLANS.free.roles} role`,
                   cta: demoMode ? "Open live demo" : "Get started free",
                   href: primaryHref,
                   variant: "primary" as const,
                 },
                 {
                   name: "Pro",
-                  price: "$29–$49/mo",
-                  detail:
-                    "Higher volume · analytics · hiring lane · execution exports — planned",
-                  cta: demoMode ? "Try the demo path" : "Start free — Pro later",
+                  price: `$${PLANS.pro.priceUsd}/mo`,
+                  detail: `${PLANS.pro.assistantAnswersPerMonth} assistant answers · ${PLANS.pro.resumeScreensPerMonth} resume screens · ${PLANS.pro.roles} roles · analytics · execution exports`,
+                  cta: demoMode ? "Try the demo path" : "Start on Free",
                   href: demoMode ? "/#try-demo" : primaryHref,
                   variant: "secondary" as const,
                 },
@@ -295,6 +294,9 @@ export default function LandingPage() {
                 </div>
               ))}
             </div>
+            <p className="mt-8 max-w-2xl text-sm text-slate-500">
+              {`A new workspace starts on Free. Pro is $${PLANS.pro.priceUsd} a month when billing is on. The public demo skips these caps.`}
+            </p>
           </div>
         </section>
 

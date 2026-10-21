@@ -321,14 +321,11 @@ export function DocumentList({ canManage = false }: { canManage?: boolean }) {
 
                     </p>
 
-                    {document.errorMessage ? (
-
-                      <p className="mt-1 text-xs text-rose-600">
-
-                        {document.errorMessage}
-
+                    {document.status === "FAILED" ? (
+                      <p className="mt-1 text-xs text-rose-700">
+                        This file could not be read. Upload it again, or paste the text into a .txt file.
+                        {document.errorMessage ? ` ${document.errorMessage}` : ""}
                       </p>
-
                     ) : null}
 
                   </div>
@@ -340,7 +337,11 @@ export function DocumentList({ canManage = false }: { canManage?: boolean }) {
                 <div className="flex items-center gap-3">
 
                   <Badge tone={statusTone[document.status]}>
-                    {document.status.toLowerCase()}
+                    {document.status === "FAILED"
+                      ? "Could not read"
+                      : document.status === "PROCESSING"
+                        ? "Reading"
+                        : "Ready"}
                   </Badge>
                   {canManage ? (
                     <Button

@@ -99,17 +99,26 @@ export default async function CandidateDetailPage({ params }: CandidateDetailPag
                 </p>
               )}
 
+              {requirementRows.length > 0 ? (
+                <div className="mt-6">
+                  <h3 className="text-sm font-semibold text-slate-900">
+                    Requirement evidence
+                  </h3>
+                  <p className="mt-1 mb-3 text-sm leading-6 text-slate-600">
+                    Each requirement sits next to the resume line that supports it.
+                  </p>
+                  <RequirementChecklist rows={requirementRows} />
+                </div>
+              ) : null}
+
               {analysis ? (
                 <details className="mt-6 text-sm">
                   <summary className="cursor-pointer font-medium text-slate-700">
-                    Requirement detail
+                    Score points and extracted skills
                   </summary>
                   <div className="mt-4 space-y-5">
                     {analysis.summary ? (
                       <p className="leading-6 text-slate-600">{analysis.summary}</p>
-                    ) : null}
-                    {requirementRows.length > 0 ? (
-                      <RequirementChecklist rows={requirementRows} />
                     ) : null}
                     {analysis.extractedSkills.length > 0 ? (
                       <div>

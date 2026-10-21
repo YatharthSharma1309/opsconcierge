@@ -179,10 +179,15 @@ export type EvidenceMatch = {
   skill: string;
   evidence: string;
   confidence: number;
-  matchType: "exact" | "semantic" | "inferred";
+  matchType: "exact" | "semantic" | "inferred" | "contradictory";
 };
 
-export type RequirementVerdict = "shown" | "inferred" | "unverified" | "not_shown";
+export type RequirementVerdict =
+  | "shown"
+  | "inferred"
+  | "unverified"
+  | "not_shown"
+  | "contradictory";
 
 export type RequirementRow = {
   skill: string;

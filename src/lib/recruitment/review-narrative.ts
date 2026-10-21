@@ -1,3 +1,4 @@
+import { quoteContradictsSkill } from "@/lib/recruitment/requirement-rows";
 import type { EvidenceMatch, RequirementRow } from "@/lib/recruitment/types";
 
 export type ReviewNarrative = {
@@ -55,6 +56,17 @@ export function buildReviewNarrative(input: {
       continue;
     }
 
+    if (row.verdict === "contradictory") {
+      const quote = row.evidence?.trim();
+      pushUnique(
+        furtherReview,
+        quote
+          ? `The resume contradicts ${row.skill}: “${quote}”`
+          : `The resume contradicts ${row.skill}.`,
+      );
+      continue;
+    }
+
     if (row.verdict === "unverified") {
       pushUnique(furtherReview, uncertainLine(row.skill, row.evidence, "unverified"));
       continue;
@@ -64,6 +76,17 @@ export function buildReviewNarrative(input: {
   }
 
   for (const match of input.preferredEvidence ?? []) {
+    if (
+      match.matchType === "contradictory" ||
+      quoteContradictsSkill(match.skill, match.evidence)
+    ) {
+      pushUnique(
+        furtherReview,
+        `The resume contradicts ${match.skill}: “${match.evidence.trim()}”`,
+      );
+      continue;
+    }
+
     if (match.matchType === "inferred") {
       pushUnique(
         furtherReview,

@@ -9,6 +9,8 @@ import {
   rollbackFailedTurn,
   saveAssistantMessage,
 } from "@/lib/chat/service";
+import { assistantCapReply } from "@/lib/billing/plans";
+import { assistantAnswersCapped } from "@/lib/billing/usage";
 import { validateChatMessage } from "@/lib/chat/constants";
 import { checkRateLimit } from "@/lib/rate-limit";
 
@@ -39,6 +41,13 @@ export async function POST(request: Request) {
     const messageError = validateChatMessage(message);
     if (messageError) {
       return NextResponse.json({ error: messageError }, { status: 400 });
+    }
+
+    if (await assistantAnswersCapped(organization.id)) {
+      return NextResponse.json(
+        { error: assistantCapReply("ADMIN") },
+        { status: 402 },
+      );
     }
 
     if (sandbox) {

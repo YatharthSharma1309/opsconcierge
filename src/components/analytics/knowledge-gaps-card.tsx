@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 type KnowledgeGap = {
   topic: string;
   count: number;
+  kind?: "unanswered" | "marked_wrong";
 };
 
 type KnowledgeGapsCardProps = {
@@ -119,14 +120,14 @@ export function KnowledgeGapsCard({
     <Card id="knowledge-gaps">
       <CardTitle>Knowledge gaps</CardTitle>
       <CardDescription>
-        Topics escalated from chat — draft an FAQ with AI, then add it to your
-        knowledge base to improve deflection.
+        Questions the assistant could not answer, and answers someone marked
+        wrong. Draft a FAQ and add it to the knowledge base.
       </CardDescription>
 
       <div className="mt-5 space-y-3">
         {knowledgeGaps.length === 0 ? (
           <p className="text-sm text-slate-500">
-            No escalations yet. When users escalate from chat, topics appear here.
+            No unanswered or marked-wrong questions yet. Gaps show up when a reply says the docs do not cover the ask, or when someone marks an answer wrong.
           </p>
         ) : (
           knowledgeGaps.map((gap, index) => (
@@ -137,7 +138,8 @@ export function KnowledgeGapsCard({
               <div className="min-w-0">
                 <p className="text-sm font-medium text-slate-800">{gap.topic}</p>
                 <p className="mt-0.5 text-xs text-amber-700">
-                  Escalated{gap.count > 1 ? ` · ${gap.count}x` : ""}
+                  {gap.kind === "marked_wrong" ? "Marked wrong" : "Unanswered"}
+                  {gap.count > 1 ? ` · ${gap.count}x` : ""}
                 </p>
               </div>
               <Button

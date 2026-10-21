@@ -55,11 +55,74 @@ export function rankChunksBySimilarity(
   return scored.slice(0, topK);
 }
 
+const KEYWORD_STOPWORDS = new Set([
+  "a",
+  "an",
+  "the",
+  "and",
+  "or",
+  "of",
+  "to",
+  "for",
+  "in",
+  "on",
+  "at",
+  "by",
+  "with",
+  "from",
+  "is",
+  "are",
+  "was",
+  "were",
+  "be",
+  "been",
+  "it",
+  "this",
+  "that",
+  "these",
+  "those",
+  "you",
+  "your",
+  "we",
+  "our",
+  "they",
+  "their",
+  "what",
+  "which",
+  "who",
+  "how",
+  "when",
+  "where",
+  "why",
+  "can",
+  "does",
+  "did",
+  "not",
+  "about",
+  "after",
+  "before",
+  "please",
+  "have",
+  "has",
+  "will",
+  "would",
+  "could",
+  "should",
+  "just",
+  "also",
+  "only",
+  "into",
+  "than",
+  "then",
+  "there",
+  "here",
+]);
+
 function tokenize(text: string) {
   return text
     .toLowerCase()
     .split(/[^a-z0-9]+/)
-    .filter((token) => token.length > 2);
+    .filter((token) => token.length > 2 && !KEYWORD_STOPWORDS.has(token));
 }
 
 export function rankChunksByKeywords(
@@ -77,23 +140,25 @@ export function rankChunksByKeywords(
 
   const scored = chunks
     .map((chunk) => {
-      const contentTokens = tokenize(chunk.content);
+      const contentTokens = new Set(tokenize(chunk.content));
       let score = 0;
 
-      for (const token of contentTokens) {
-        if (queryTokens.has(token)) {
+      for (const token of queryTokens) {
+        if (contentTokens.has(token)) {
           score += 1;
         }
       }
 
       const titleTokens = chunk.documentTitle ? tokenize(chunk.documentTitle) : [];
       for (const token of titleTokens) {
-        if (queryTokens.has(token)) {
+        if (queryTokens.has(token) && !contentTokens.has(token)) {
           score += 0.5;
         }
       }
 
-      return score > 0
+      const requiredMatches = queryTokens.size >= 3 ? 2 : 1;
+
+      return score >= requiredMatches
         ? {
             id: chunk.id,
             documentId: chunk.documentId,

@@ -1,5 +1,6 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse, type NextRequest, type NextFetchEvent } from "next/server";
+import { isClerkConfigured } from "@/lib/env/clerk";
 import { isPublicDemoMode } from "@/lib/env/public-demo";
 
 const isPublicRoute = createRouteMatcher([
@@ -66,6 +67,9 @@ export async function proxy(request: NextRequest, event: NextFetchEvent) {
 
   if (isAuthBypass()) {
     return authBypassProxy(request);
+  }
+  if (!isClerkConfigured()) {
+    return NextResponse.next();
   }
   return clerkProtectedProxy(request, event);
 }

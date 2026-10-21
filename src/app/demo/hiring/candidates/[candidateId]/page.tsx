@@ -58,14 +58,13 @@ export default async function DemoCandidatePage({ params }: DemoCandidatePagePro
               supporting={narrative.supporting}
               furtherReview={narrative.furtherReview}
             />
-            <details className="mt-6">
-              <summary className="cursor-pointer text-sm font-medium text-slate-700">
-                Requirement detail
-              </summary>
-              <div className="mt-3">
-                <RequirementChecklist rows={candidate.review.requirements} />
-              </div>
-            </details>
+            <div className="mt-6">
+              <h3 className="text-sm font-semibold text-slate-900">Requirement evidence</h3>
+              <p className="mt-1 mb-3 text-sm leading-6 text-slate-600">
+                Each requirement sits next to the resume line that supports it.
+              </p>
+              <RequirementChecklist rows={candidate.review.requirements} />
+            </div>
           </Card>
           <InterviewQuestionList questions={candidate.analysis.interviewQuestions} />
           <Card>

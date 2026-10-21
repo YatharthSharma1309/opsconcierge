@@ -38,7 +38,11 @@ type AnalyticsDashboardProps = {
   };
   ticketsByStatus: Array<{ status: string; count: number }>;
   activityByDay: Array<{ date: string; conversations: number; tickets: number }>;
-  knowledgeGaps: Array<{ topic: string; count: number }>;
+  knowledgeGaps: Array<{
+    topic: string;
+    count: number;
+    kind?: "unanswered" | "marked_wrong";
+  }>;
   conversationsByChannel: Array<{ channel: string; count: number }>;
   canPublishFaq?: boolean;
 };

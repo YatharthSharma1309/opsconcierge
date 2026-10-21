@@ -29,6 +29,18 @@ function skillsMatch(requirement: string, evidenceSkill: string): boolean {
   return false;
 }
 
+const CONTRADICTION =
+  /\b(?:no|not|without|never|lacks?|lacking|unfamiliar|did not|didn't|do not|don't)\b/i;
+
+/** A quote that names the skill and denies it. "Not only" is a comparison, not a denial. */
+export function quoteContradictsSkill(skill: string, quote: string) {
+  const skillNorm = skillKey(skill);
+  const quoteNorm = skillKey(quote);
+  if (!skillNorm || !quoteNorm.includes(skillNorm)) return false;
+  if (/\bnot only\b/i.test(quote)) return false;
+  return CONTRADICTION.test(quote);
+}
+
 function findEvidence(
   skill: string,
   evidence: EvidenceMatch[],
@@ -57,6 +69,13 @@ export function buildRequirementRows(input: {
   return skills.map((skill) => {
     const match = findEvidence(skill, evidence);
     const quote = match?.evidence?.trim() || null;
+    const contradicts =
+      match?.matchType === "contradictory" ||
+      (quote ? quoteContradictsSkill(skill, quote) : false);
+
+    if (contradicts) {
+      return { skill, verdict: "contradictory" as const, evidence: quote };
+    }
 
     if (match && (match.matchType === "exact" || match.matchType === "semantic")) {
       return { skill, verdict: "shown", evidence: quote };
@@ -75,7 +94,9 @@ export function buildRequirementRows(input: {
 }
 
 export function countAddressedRequirements(rows: RequirementRow[]): number {
-  return rows.filter((row) => row.verdict !== "not_shown").length;
+  return rows.filter(
+    (row) => row.verdict !== "not_shown" && row.verdict !== "contradictory",
+  ).length;
 }
 
 export function resumeExcerpt(text: string, max = 280): string {

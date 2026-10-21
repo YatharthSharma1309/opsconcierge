@@ -6,6 +6,7 @@ import {
   isEmbeddingEnabled,
   shouldAttemptGemini,
 } from "@/lib/ai";
+import type { ModelUsage } from "@/lib/billing/cost";
 import { geminiChatCompletion } from "@/lib/gemini";
 import { notifyOpsWorker } from "@/lib/ops-worker";
 import { computeGroundingConfidence, type GroundingConfidence } from "@/lib/rag/confidence";
@@ -431,6 +432,7 @@ export async function streamChatReply(
       provider: "none",
       model: "N/A",
       latencyMs: 0,
+      usage: null,
     };
   }
 
@@ -445,7 +447,7 @@ export async function streamChatReply(
 
   if (shouldAttemptGemini()) {
     try {
-      const { text, model, latencyMs } = await geminiChatCompletion({
+      const { text, model, latencyMs, usage } = await geminiChatCompletion({
         systemPrompt,
         userPrompt: prompt,
         temperature: 0.2,
@@ -464,11 +466,13 @@ export async function streamChatReply(
         responseSummary: {
           reply_len: reply.length,
           reply_snippet: summarizeForLog(reply, 120),
+          input_tokens: usage?.inputTokens ?? null,
+          output_tokens: usage?.outputTokens ?? null,
         },
       });
 
       // We don't stream Gemini tokens yet; stream-handler will stream words.
-      return { stream: null, reply, provider: "gemini", model, latencyMs };
+      return { stream: null, reply, provider: "gemini", model, latencyMs, usage };
     } catch (error) {
       logLlmCall({
         model: "gemini",
@@ -493,6 +497,7 @@ export async function streamChatReply(
       provider: "none",
       model: "N/A",
       latencyMs: 0,
+      usage: null,
     };
   }
 
@@ -528,6 +533,7 @@ export async function streamChatReply(
       provider: "openrouter",
       model: getChatModel(),
       latencyMs: Date.now() - start,
+      usage: null,
     };
   } catch {
     logLlmCall({
@@ -549,6 +555,7 @@ export async function streamChatReply(
       provider: "openrouter",
       model: getChatModel(),
       latencyMs: Date.now() - start,
+      usage: null satisfies ModelUsage | null,
     };
   }
 }

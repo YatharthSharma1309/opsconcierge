@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { buildRequirementRows, countAddressedRequirements } from "./requirement-rows";
+import {
+  buildRequirementRows,
+  countAddressedRequirements,
+  quoteContradictsSkill,
+} from "./requirement-rows";
 
 describe("buildRequirementRows", () => {
   it("keeps the job's required skills in order and labels the evidence", () => {
@@ -66,5 +70,36 @@ describe("buildRequirementRows", () => {
     });
 
     expect(rows[0]?.verdict).toBe("unverified");
+  });
+
+  it("keeps a denial next to the requirement instead of calling it shown", () => {
+    const rows = buildRequirementRows({
+      requiredSkills: ["PostgreSQL"],
+      breakdown: {
+        matchedRequiredSkills: ["PostgreSQL"],
+        missingRequiredSkills: [],
+        requiredSkillEvidence: [
+          {
+            skill: "PostgreSQL",
+            evidence: "No PostgreSQL experience. Used MySQL for reporting.",
+            confidence: 0.9,
+            matchType: "exact",
+          },
+        ],
+      },
+    });
+
+    expect(quoteContradictsSkill("PostgreSQL", "No PostgreSQL experience.")).toBe(true);
+    expect(rows[0]).toMatchObject({
+      verdict: "contradictory",
+      evidence: "No PostgreSQL experience. Used MySQL for reporting.",
+    });
+    expect(countAddressedRequirements(rows)).toBe(0);
+  });
+
+  it("does not treat 'not only' as a denial", () => {
+    expect(
+      quoteContradictsSkill("React", "Not only React, but also the design system."),
+    ).toBe(false);
   });
 });

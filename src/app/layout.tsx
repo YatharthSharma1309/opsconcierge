@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { AuthProvider } from "@/components/auth/auth-provider";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { ThemeScript } from "@/components/theme/theme-script";
-import { assertAuthBypassNotInProduction } from "@/lib/auth";
+import { assertAuthBypassNotInProduction } from "@/lib/auth/bypass";
 import "./globals.css";
 
 const geistSans = Geist({

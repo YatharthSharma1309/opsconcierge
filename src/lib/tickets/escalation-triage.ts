@@ -144,12 +144,22 @@ function parseAiTriageJson(raw: string): Omit<EscalationTriage, "model" | "sourc
   }
 }
 
-/** Keyword fallback when AI is off or fails — never blocks escalate. */
-export function heuristicEscalationTriage(
-  title: string,
-  description: string,
-): EscalationTriage {
-  const text = `${title}\n${description}`.toLowerCase();
+function otherEscalationTriage(): EscalationTriage {
+  return {
+    priority: "HIGH",
+    category: "other",
+    reasonCode: "needs_human",
+    brief: [
+      "Customer asked for a human after chat could not fully resolve the issue.",
+      "Read the transcript for the latest ask and any policy already cited.",
+      "Reply with a clear next step and ownership.",
+    ],
+    model: null,
+    source: "heuristic",
+  };
+}
+
+function triageMatchingText(text: string): EscalationTriage | null {
 
   const safetyHit =
     /\b(gas\s*smell|smell\s*of\s*gas|fire|smoke|carbon\s*monoxide|injury|bleeding|emergency|asap|urgent|danger)\b/.test(
@@ -245,18 +255,21 @@ export function heuristicEscalationTriage(
     };
   }
 
-  return {
-    priority: "HIGH",
-    category: "other",
-    reasonCode: "needs_human",
-    brief: [
-      "Customer asked for a human after chat could not fully resolve the issue.",
-      "Read the transcript for the latest ask and any policy already cited.",
-      "Reply with a clear next step and ownership.",
-    ],
-    model: null,
-    source: "heuristic",
-  };
+  return null;
+}
+
+/** Keyword fallback when AI is off or fails — never blocks escalate. */
+export function heuristicEscalationTriage(
+  title: string,
+  description: string,
+): EscalationTriage {
+  const latestQuestion = triageMatchingText(title.toLowerCase());
+  if (latestQuestion) return latestQuestion;
+
+  const fromTranscript = triageMatchingText(`${title}\n${description}`.toLowerCase());
+  if (fromTranscript?.category === "safety") return fromTranscript;
+  if (title.trim().length >= 12) return otherEscalationTriage();
+  return fromTranscript ?? otherEscalationTriage();
 }
 
 async function completeTriageJson(
@@ -319,6 +332,9 @@ Return ONLY valid JSON with keys:
 - brief: array of exactly 3 short operator bullets (what happened, what to check, what to do next)
 
 Rules:
+- Classify the latest customer question in the title. Earlier transcript turns are context only.
+- Do not use billing because an earlier message mentioned a refund when the latest question is about something else.
+- Safety still wins if any turn describes immediate danger.
 - URGENT only for safety, legal risk, or severe outage impacting many users.
 - Do not invent order IDs, dollar amounts, or SLA numbers not in the transcript.
 - Keep bullets under 140 characters each.`;

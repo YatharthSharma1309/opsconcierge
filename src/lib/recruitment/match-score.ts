@@ -1,3 +1,4 @@
+import { quoteContradictsSkill } from "@/lib/recruitment/requirement-rows";
 import type { AnalyzeEvidence, EvidenceMatch, JobCriteria, ScoreBreakdown } from "@/lib/recruitment/types";
 
 type MatchScoreInput = {
@@ -74,6 +75,12 @@ function clamp(value: number, min = 0, max = 1): number {
 }
 
 function evidenceConfidence(match: EvidenceMatch): number {
+  if (
+    match.matchType === "contradictory" ||
+    quoteContradictsSkill(match.skill, match.evidence)
+  ) {
+    return 0;
+  }
   const base = clamp(match.confidence);
   if (match.matchType === "exact") return base;
   if (match.matchType === "semantic") return base * 0.9;

@@ -15,7 +15,12 @@ import type { RequirementRow } from "@/lib/recruitment/types";
 
 function evidenceFromRequirements(requirements: RequirementRow[]): ShortlistEvidence[] {
   return requirements
-    .filter((row) => row.verdict !== "not_shown" && row.evidence)
+    .filter(
+      (row) =>
+        row.verdict !== "not_shown" &&
+        row.verdict !== "contradictory" &&
+        row.evidence,
+    )
     .map((row) => ({ skill: row.skill, quote: row.evidence as string }));
 }
 

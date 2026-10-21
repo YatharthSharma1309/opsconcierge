@@ -2,12 +2,28 @@ import { SignUp } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 import { BrandLogo } from "@/components/layout/brand-logo";
 import { SiteFooter } from "@/components/layout/site-footer";
-import { isAuthBypassEnabled } from "@/lib/auth";
+import { ClerkSetupNotice } from "@/components/auth/clerk-setup-notice";
+import { isAuthBypassEnabled } from "@/lib/auth/bypass";
 import { clerkAppearance } from "@/lib/clerk-appearance";
+import { isClerkConfigured } from "@/lib/env/clerk";
 
 export default function SignUpPage() {
   if (isAuthBypassEnabled()) {
     redirect("/dashboard");
+  }
+
+  if (!isClerkConfigured()) {
+    return (
+      <div className="flex min-h-screen flex-col bg-background">
+        <div className="flex flex-1 flex-col items-center justify-center px-4 py-12">
+          <div className="mb-8">
+            <BrandLogo showTagline />
+          </div>
+          <ClerkSetupNotice />
+        </div>
+        <SiteFooter variant="minimal" />
+      </div>
+    );
   }
 
   return (

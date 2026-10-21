@@ -37,7 +37,7 @@ const evidenceMatchSchema = z.object({
   skill: z.string().min(1).max(120),
   evidence: z.string().min(1).max(500),
   confidence: unitScoreSchema,
-  matchType: z.enum(["exact", "semantic", "inferred"]),
+  matchType: z.enum(["exact", "semantic", "inferred", "contradictory"]),
 });
 
 const analyzeEvidenceSchema = z.object({
@@ -92,7 +92,7 @@ Rules:
 - interviewQuestions must be specific to gaps and the role (5 items).
 - Every evidence score and confidence field must be a decimal from 0 to 1, never a percentage or point score. Use 0.8, not 80 or 8.
 - parseQuality concerns must be short labels or sentences under 160 characters each.
-- Evidence matchType: use exact for literal terms, semantic for equivalent phrasing, inferred only when strongly implied by work evidence.
+- Evidence matchType: use exact for literal terms, semantic for equivalent phrasing, inferred only when strongly implied by work evidence. Use contradictory when the resume states the opposite of a requirement, and quote that denial.
 - Return ONLY valid JSON matching this shape:
 {
   "summary": string,
@@ -102,8 +102,8 @@ Rules:
   "missingSkills": string[],
   "interviewQuestions": string[],
   "evidence": {
-    "matchedRequiredSkills": [{"skill": string, "evidence": string, "confidence": number (0-1), "matchType": "exact" | "semantic" | "inferred"}],
-    "matchedPreferredSkills": [{"skill": string, "evidence": string, "confidence": number (0-1), "matchType": "exact" | "semantic" | "inferred"}],
+    "matchedRequiredSkills": [{"skill": string, "evidence": string, "confidence": number (0-1), "matchType": "exact" | "semantic" | "inferred" | "contradictory"}],
+    "matchedPreferredSkills": [{"skill": string, "evidence": string, "confidence": number (0-1), "matchType": "exact" | "semantic" | "inferred" | "contradictory"}],
     "missingRequiredSkills": string[],
     "missingPreferredSkills": string[],
     "roleAlignment": {"score": number (0-1), "evidence": string},

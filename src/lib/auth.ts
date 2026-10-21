@@ -1,8 +1,11 @@
 export {
   assertAuthBypassNotInProduction,
+  isAuthBypassEnabled,
+} from "@/lib/auth/bypass";
+
+export {
   generateWidgetPublicKey,
   getDemoOrganizationContext,
-  isAuthBypassEnabled,
 } from "@/lib/auth/demo";
 
 export {
