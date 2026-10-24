@@ -1,5 +1,7 @@
 # OpsConcierge Cloud Run worker (optional)
 
+The wordmark on the screens is **Penaven**. This worker is not part of that desk.
+
 **Not required when Firebase Realtime Database is already logging runs.**
 
 Preferred Google Cloud evidence with $0 spend: **Firebase Realtime Database** — see [`docs/GCP_AND_GEMINI_SETUP.md`](../../docs/GCP_AND_GEMINI_SETUP.md).
