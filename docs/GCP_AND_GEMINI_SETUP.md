@@ -116,7 +116,7 @@ See `.env.example` for the complete variable list.
 
 ## 4. Vercel production
 
-In your Vercel project (https://vercel.com — project **relay-ai**):
+In your Vercel project (https://vercel.com — project **penaven**):
 
 1. Settings → Environment Variables
 2. Add `GEMINI_API_KEY`, `GEMINI_CHAT_MODEL`, `FIREBASE_DATABASE_URL`, `FIREBASE_RTDB_PATH`

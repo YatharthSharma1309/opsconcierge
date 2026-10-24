@@ -2,7 +2,7 @@
 
 **Selected name: Penaven.**
 
-Checked the same evening against the public registries this note can reach. `penaven.com`, `penaven.in`, and `penaven.io` are unregistered (Verisign, NIXI, and Identity Digital RDAP each returned 404). A quoted web search found no live software product under Penaven. The wordmark on the screens is Penaven. The repository, the public host, and the **$39/month** price stay as they are. Founder talks stay at 0.
+Checked the same evening against the public registries this note can reach. `penaven.com`, `penaven.in`, and `penaven.io` are unregistered (Verisign, NIXI, and Identity Digital RDAP each returned 404). A quoted web search found no live software product under Penaven. The wordmark on the screens is Penaven. On 24 Oct 2026 the GitHub repository and the Vercel project were both renamed to **penaven**. The public host stays https://support-ai-nine-mu.vercel.app. The package name stays `opsconcierge`. The **$39/month** price stays. No domain was purchased. Founder talks stay at 0.
 
 Lindwell is dropped. `lindwell.com` is an aftermarket listing, and Lindywell is a live Pilates app. Names already offered for sale were not used.
 

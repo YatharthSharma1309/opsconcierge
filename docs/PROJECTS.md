@@ -8,8 +8,8 @@ Live inventory checked **7 Aug 2026** (Neon MCP + Vercel CLI + public web).
 |-------|-------|-------|
 | Product | **1** | OpsConcierge (package `opsconcierge`) |
 | Neon Postgres | **3** | Only **SupportAI** powers this app |
-| Vercel apps | **6** | Only **relay-ai** is the OpsConcierge deploy |
-| GitHub remotes | **2** | `opsconcierge` (canonical) + legacy `relay-ai` |
+| Vercel apps | **6** | Only **penaven** (renamed from relay-ai on 24 Oct 2026) is this app’s deploy |
+| GitHub remotes | **2** | `penaven` (canonical, renamed from opsconcierge on 24 Oct 2026) + legacy `relay-ai` |
 
 ---
 
@@ -27,7 +27,7 @@ Live inventory checked **7 Aug 2026** (Neon MCP + Vercel CLI + public web).
 
 | Vercel project | Production URL | Role |
 |----------------|----------------|------|
-| **relay-ai** | https://support-ai-nine-mu.vercel.app | **OpsConcierge public demo** |
+| **penaven** | https://support-ai-nine-mu.vercel.app | **Penaven public demo** |
 | yatharth-portfolio | https://yatharth-portfolio-tau.vercel.app | Portfolio |
 | yatharthsharma | https://yatharthsharma.vercel.app | Personal |
 | debrief | https://debrief-psi.vercel.app | Unrelated |
@@ -36,7 +36,7 @@ Live inventory checked **7 Aug 2026** (Neon MCP + Vercel CLI + public web).
 
 **Protected:** https://relay-ai-app.vercel.app (Vercel login wall).
 
-Dashboard: https://vercel.com/yatharthsharma1309s-projects/relay-ai
+Dashboard: https://vercel.com/yatharthsharma1309s-projects/penaven
 
 ---
 
@@ -44,7 +44,7 @@ Dashboard: https://vercel.com/yatharthsharma1309s-projects/relay-ai
 
 | Remote | URL |
 |--------|-----|
-| **origin** | https://github.com/YatharthSharma1309/opsconcierge |
+| **origin** | https://github.com/YatharthSharma1309/penaven |
 | relay-ai (legacy) | https://github.com/YatharthSharma1309/relay-ai |
 
 ---

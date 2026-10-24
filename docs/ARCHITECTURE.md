@@ -143,7 +143,7 @@ Database check: `GET /api/health`. Gemini and Firebase are confirmed by a widget
 
 | Component | Host | Notes |
 |-----------|------|-------|
-| Next.js app | Vercel project `relay-ai` | Build migrates only when `DATABASE_URL` is set, then `db:generate` and `next build` |
+| Next.js app | Vercel project `penaven` | Build migrates only when `DATABASE_URL` is set, then `db:generate` and `next build` |
 | PostgreSQL | Neon | Pooled `DATABASE_URL` with `sslmode=require` |
 | Auth | Clerk | Orgs enabled; webhook to `/api/webhooks/clerk` |
 | LLM | Google AI Studio + OpenRouter | Env vars in Vercel project settings |

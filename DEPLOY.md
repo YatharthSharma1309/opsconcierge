@@ -16,7 +16,7 @@ Browser → Vercel (Next.js) → Neon PostgreSQL
 
 ## Prerequisites
 
-- [ ] GitHub repo: [`YatharthSharma1309/opsconcierge`](https://github.com/YatharthSharma1309/opsconcierge)
+- [ ] GitHub repo: [`YatharthSharma1309/penaven`](https://github.com/YatharthSharma1309/penaven)
 - [ ] [Neon](https://neon.tech) PostgreSQL project
 - [ ] [Clerk](https://clerk.com) application (production instance) — or demo bypass vars for portfolio-only deploys
 - [ ] [OpenRouter](https://openrouter.ai) and/or [Gemini](https://aistudio.google.com/apikey) API key
@@ -41,7 +41,7 @@ Skip Clerk setup only if you intentionally ship a **public demo** with auth bypa
 
 | Item | Value |
 |------|--------|
-| GitHub | https://github.com/YatharthSharma1309/opsconcierge |
+| GitHub | https://github.com/YatharthSharma1309/penaven |
 | Current production hosts | **https://support-ai-nine-mu.vercel.app** (public) · https://relay-ai-app.vercel.app (login-walled) |
 
 Set `APP_URL` to your primary production URL.
@@ -68,7 +68,7 @@ Full local reference: [`.env.example`](./.env.example). Free LLM notes: [`docs/F
 
 ## 4. Build settings
 
-Vercel project: **relay-ai** (team `yatharthsharma1309s-projects`). `vercel.json` build command:
+Vercel project: **penaven** (team `yatharthsharma1309s-projects`). `vercel.json` build command:
 
 ```
 if [ -n "$DATABASE_URL" ]; then npm run db:migrate:deploy; fi && npm run db:generate && npm run build

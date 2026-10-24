@@ -6,7 +6,7 @@ The wordmark on the screens is **Penaven**. The repository, the package name, an
 
 | | |
 |---|---|
-| **Repo** | https://github.com/YatharthSharma1309/opsconcierge |
+| **Repo** | https://github.com/YatharthSharma1309/penaven |
 | **Folder** | `OpsConcierge-App` |
 | **Wordmark** | Penaven — support desk for small teams |
 
@@ -130,7 +130,7 @@ Health: `GET /api/health`.
 
 | Host | Status (checked 24 Oct 2026) |
 |------|------------------------------|
-| **https://support-ai-nine-mu.vercel.app** | **Public** — Vercel project `relay-ai`. `GET /api/health` returned ok, database connected |
+| **https://support-ai-nine-mu.vercel.app** | **Public** — Vercel project `penaven`. `GET /api/health` returned ok, database connected |
 | https://relay-ai-app.vercel.app | Deployment-protected (Vercel login) — not public |
 
 **Product path:** landing → site chat with the passage named → a person when the docs do not cover it → run log at `/widget/intake` → optional hiring shortlist.

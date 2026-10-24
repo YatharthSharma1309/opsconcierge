@@ -1,6 +1,6 @@
 # OpsConcierge documentation
 
-Index for the **OpsConcierge** repo ([opsconcierge](https://github.com/YatharthSharma1309/opsconcierge)). The wordmark on the screens is **Penaven**. The repository, the package name, and the public host stay.
+Index for the **Penaven** repo ([penaven](https://github.com/YatharthSharma1309/penaven)). The wordmark on the screens is Penaven. The package name stays `opsconcierge`. The public host stays https://support-ai-nine-mu.vercel.app.
 
 Start here for product context. Use Technical for setup and architecture.
 
@@ -33,12 +33,12 @@ Start here for product context. Use Technical for setup and architecture.
 
 | Host | Status (checked 24 Oct 2026) |
 |------|------------------------------|
-| **https://support-ai-nine-mu.vercel.app** | **Public** — production on Vercel project `relay-ai`. `GET /api/health` returned ok, database connected |
+| **https://support-ai-nine-mu.vercel.app** | **Public** — production on Vercel project `penaven`. `GET /api/health` returned ok, database connected |
 | https://relay-ai-app.vercel.app | Deployment-protected (not public) |
 
-Dashboard: https://vercel.com/yatharthsharma1309s-projects/relay-ai
+Dashboard: https://vercel.com/yatharthsharma1309s-projects/penaven
 
-The wordmark is Penaven. The repo and the host stay. `GET /api/health` checks Postgres.
+The Vercel project is `penaven`. The public host stays. `GET /api/health` checks Postgres.
 
 ## Demo path
 
