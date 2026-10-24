@@ -1,6 +1,6 @@
 # OpsConcierge documentation
 
-Index for the **Penaven** repo ([penaven](https://github.com/YatharthSharma1309/penaven)). The wordmark on the screens is Penaven. The package name stays `opsconcierge`. The public host stays https://support-ai-nine-mu.vercel.app.
+Index for the **Penaven** repo ([penaven](https://github.com/YatharthSharma1309/penaven)). The wordmark on the screens is Penaven. The package name stays `opsconcierge`. The public site is https://penaven.vercel.app.
 
 Start here for product context. Use Technical for setup and architecture.
 
@@ -33,12 +33,12 @@ Start here for product context. Use Technical for setup and architecture.
 
 | Host | Status (checked 24 Oct 2026) |
 |------|------------------------------|
-| **https://support-ai-nine-mu.vercel.app** | **Public** — production on Vercel project `penaven`. `GET /api/health` returned ok, database connected |
+| **https://penaven.vercel.app** | **Public** — production on Vercel project `penaven`. `GET /api/health` returned ok, database connected |
 | https://relay-ai-app.vercel.app | Deployment-protected (not public) |
 
 Dashboard: https://vercel.com/yatharthsharma1309s-projects/penaven
 
-The Vercel project is `penaven`. The public host stays. `GET /api/health` checks Postgres.
+The Vercel project is `penaven`. The public site is https://penaven.vercel.app. `GET /api/health` checks Postgres.
 
 ## Demo path
 
@@ -48,6 +48,6 @@ Landing → site chat with the passage named → a person when the docs do not c
 
 Sample hiring, no sign-in: `/demo/hiring` and `/share/sample`.
 
-Verify: `GET https://support-ai-nine-mu.vercel.app/api/health`
+Verify: `GET https://penaven.vercel.app/api/health`
 
 **Price on the landing page:** Free $0. Pro $39/mo. A new workspace stays on Free until a paid plan is stored. The public demo skips the caps.

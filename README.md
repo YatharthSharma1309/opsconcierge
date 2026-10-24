@@ -130,7 +130,7 @@ Health: `GET /api/health`.
 
 | Host | Status (checked 24 Oct 2026) |
 |------|------------------------------|
-| **https://support-ai-nine-mu.vercel.app** | **Public** — Vercel project `penaven`. `GET /api/health` returned ok, database connected |
+| **https://penaven.vercel.app** | **Public** — Vercel project `penaven`. `GET /api/health` returned ok, database connected |
 | https://relay-ai-app.vercel.app | Deployment-protected (Vercel login) — not public |
 
 **Product path:** landing → site chat with the passage named → a person when the docs do not cover it → run log at `/widget/intake` → optional hiring shortlist.

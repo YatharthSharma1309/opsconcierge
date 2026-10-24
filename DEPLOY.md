@@ -42,7 +42,7 @@ Skip Clerk setup only if you intentionally ship a **public demo** with auth bypa
 | Item | Value |
 |------|--------|
 | GitHub | https://github.com/YatharthSharma1309/penaven |
-| Current production hosts | **https://support-ai-nine-mu.vercel.app** (public) · https://relay-ai-app.vercel.app (login-walled) |
+| Current production hosts | **https://penaven.vercel.app** (public). https://support-ai-nine-mu.vercel.app redirects there. https://relay-ai-app.vercel.app stays login-walled |
 
 Set `APP_URL` to your primary production URL.
 
@@ -99,14 +99,14 @@ Then upload 2–3 FAQ documents via Knowledge Base. Seed also creates a sample r
 
 ## 7. Portfolio / public demo
 
-**Live demo (public):** https://support-ai-nine-mu.vercel.app
+**Live demo (public):** https://penaven.vercel.app
 
 ### Redeploy checklist
 
-1. Deploy this repo to the Vercel project that serves **support-ai-nine-mu**
-2. Set `APP_URL=https://support-ai-nine-mu.vercel.app`
+1. Deploy this repo to the Vercel project **penaven**
+2. Set `APP_URL=https://penaven.vercel.app`
 3. Confirm landing title is **OpsConcierge** (not Relay AI)
-4. `curl -s https://support-ai-nine-mu.vercel.app/api/health`
+4. `curl -s https://penaven.vercel.app/api/health`
 
 Recommended walkthrough when `PUBLIC_DEMO_MODE` is enabled (no sign-in):
 

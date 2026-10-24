@@ -124,13 +124,13 @@ In your Vercel project (https://vercel.com — project **penaven**):
 
 Production URLs:
 
-- https://support-ai-nine-mu.vercel.app (**public**)
+- https://penaven.vercel.app (**public**)
 - https://relay-ai-app.vercel.app (legacy alias)
 
 Smoke test:
 
 ```bash
-curl -s https://support-ai-nine-mu.vercel.app/api/health
+curl -s https://penaven.vercel.app/api/health
 ```
 
 ## 5. Product walkthrough

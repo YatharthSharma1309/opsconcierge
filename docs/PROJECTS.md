@@ -27,7 +27,7 @@ Live inventory checked **7 Aug 2026** (Neon MCP + Vercel CLI + public web).
 
 | Vercel project | Production URL | Role |
 |----------------|----------------|------|
-| **penaven** | https://support-ai-nine-mu.vercel.app | **Penaven public demo** |
+| **penaven** | https://penaven.vercel.app | **Penaven public demo** |
 | yatharth-portfolio | https://yatharth-portfolio-tau.vercel.app | Portfolio |
 | yatharthsharma | https://yatharthsharma.vercel.app | Personal |
 | debrief | https://debrief-psi.vercel.app | Unrelated |
@@ -51,7 +51,9 @@ Dashboard: https://vercel.com/yatharthsharma1309s-projects/penaven
 
 ## Live demo
 
-**Use:** https://support-ai-nine-mu.vercel.app
+**Use:** https://penaven.vercel.app
+
+https://support-ai-nine-mu.vercel.app redirects there.
 
 Verified **7 Aug 2026** after a production redeploy, and again **21 Oct 2026**. The 21 Oct production deployment is Ready (`relay-aht6svks4`). Git on `master` is still behind that deploy until this working tree is committed.
 
