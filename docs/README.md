@@ -33,8 +33,7 @@ Start here for product context. Use Technical for setup and architecture.
 
 | Host | Status (checked 24 Oct 2026) |
 |------|------------------------------|
-| **https://penaven.vercel.app** | **Public** — production on Vercel project `penaven`. `GET /api/health` returned ok, database connected |
-| https://relay-ai-app.vercel.app | Deployment-protected (not public) |
+| **https://penaven.vercel.app** | **Public** — the only site for this project. `GET /api/health` returned ok, database connected |
 
 Dashboard: https://vercel.com/yatharthsharma1309s-projects/penaven
 

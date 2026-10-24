@@ -125,7 +125,6 @@ In your Vercel project (https://vercel.com — project **penaven**):
 Production URLs:
 
 - https://penaven.vercel.app (**public**)
-- https://relay-ai-app.vercel.app (legacy alias)
 
 Smoke test:
 

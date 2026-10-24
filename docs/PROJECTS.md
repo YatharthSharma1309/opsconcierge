@@ -34,8 +34,6 @@ Live inventory checked **7 Aug 2026** (Neon MCP + Vercel CLI + public web).
 | ai-sales-assistant-crm | https://ai-sales-assistant-crm-phi.vercel.app | Unrelated |
 | ai-sales-assistant-crm-api | https://ai-sales-assistant-crm-api.vercel.app | Unrelated |
 
-**Protected:** https://relay-ai-app.vercel.app (Vercel login wall).
-
 Dashboard: https://vercel.com/yatharthsharma1309s-projects/penaven
 
 ---
@@ -53,7 +51,7 @@ Dashboard: https://vercel.com/yatharthsharma1309s-projects/penaven
 
 **Use:** https://penaven.vercel.app
 
-https://support-ai-nine-mu.vercel.app redirects there.
+Earlier addresses for this project, including support-ai-nine-mu.vercel.app and relay-ai-app.vercel.app, were removed on 24 Oct 2026.
 
 Verified **7 Aug 2026** after a production redeploy, and again **21 Oct 2026**. The 21 Oct production deployment is Ready (`relay-aht6svks4`). Git on `master` is still behind that deploy until this working tree is committed.
 

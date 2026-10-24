@@ -42,7 +42,7 @@ Skip Clerk setup only if you intentionally ship a **public demo** with auth bypa
 | Item | Value |
 |------|--------|
 | GitHub | https://github.com/YatharthSharma1309/penaven |
-| Current production hosts | **https://penaven.vercel.app** (public). https://support-ai-nine-mu.vercel.app redirects there. https://relay-ai-app.vercel.app stays login-walled |
+| Current production host | **https://penaven.vercel.app** (public). Earlier Vercel addresses for this project were removed on 24 Oct 2026 |
 
 Set `APP_URL` to your primary production URL.
 
