@@ -12,10 +12,64 @@ The wordmark on the screens is **Penaven**. The repository, the package name, an
 
 ## Two lanes
 
+Support is the weekly desk. Hiring stays in the same workspace for the weeks a role is open. The top bar leads with Inbox, Tickets, Knowledge, and Widget. Hiring sits apart from those. Home, Boards, Run log, Chat, and Settings sit in the footer.
+
 | Lane | What you do |
 |------|-------------|
-| **Support** | Site chat answers from the documents you upload and names the passage. When those documents do not cover the question, a person gets the conversation. The inbox shows **Open**, **Waiting for a human**, or **Answered**. Answered means the docs covered the last reply. It is not a closed case. The run log is `/widget/intake`. |
-| **Hiring** | A role, the resumes, and each requirement next to the resume line. **Shown** and **Not shown**. You decide. The alignment figure stays on the candidate page after the lines. |
+| **Support** | Site chat answers from the documents you upload and names the passage. When those documents do not cover the question, a person gets the conversation. |
+| **Hiring** | Each requirement sits next to the resume line. You decide who moves forward. |
+
+### Support
+
+Five steps on the landing page, under **Walk the desk**:
+
+1. **Upload the docs.** A FAQ, refund policy, or hours page. On Knowledge, a file is **Reading**, **Ready**, or **Could not read**. Ready means the next reply can cite it. Could not read means upload it again as a text file. A `.txt` or PDF is enough.
+2. **Read the cited answer.** The site chat names the document and shows the passage under the reply. The line under a covered answer says it came from your docs. The bubble does not show retrieval jargon.
+3. **Hand the thread to a person.** When the docs do not cover the question, the case keeps the conversation. The widget asks for an email and **Ask a person to take this**.
+4. **Fill the gap in the docs.** Boards lists questions the docs did not cover, and answers someone marked wrong. **Draft a page**, edit it, then **Add to the docs**. That page shows up in Knowledge.
+5. The hiring step is below. It is the same workspace, not a second product.
+
+Inbox labels:
+
+| On the inbox | What it means |
+|--------------|----------------|
+| **Open** | A reply is still needed. |
+| **Waiting for a human** | A case is already with a person. The thread stays on that case. |
+| **Answered** | The docs covered the last reply. This is not a closed case. |
+
+A conversation shows the reply, the passage it used, and **Draft a page from this question** when the docs did not cover it. The case itself still uses Open, In progress, Resolved, and Closed. Those are the ticket, not the inbox label. Do not call a doc-grounded reply Resolved.
+
+The run log at `/widget/intake` records what was retrieved and whether the reply came from the docs or went to a person. Labels there include **Answered from the docs**, **Needs a person**, **Docs did not cover it**, and **Handed to a person**.
+
+Overview has a **This month** card: answers, resume screens, and roles against the Free caps (40, 5, and 1). Pro is $39/mo for the higher caps. There is no fee per answer, and no fee when a person takes the thread. Past the cap, the widget still offers a person. There is no upgrade button. Paid checkout is not stored yet, so a signed-in workspace stays on Free. The public demo skips the caps.
+
+### Hiring
+
+The landing step is **Compare the resume lines**. A missing line is not proof the skill is absent.
+
+On a candidate, **Requirement evidence** comes first. Each requirement sits next to the resume line that supports it.
+
+| Mark | What it means |
+|------|----------------|
+| **Shown** | The resume quotes that requirement. |
+| **Inferred** | An indirect reading. |
+| **Unverified** | Counted without a quote. |
+| **Not shown** | The resume does not establish it. |
+| **Contradicts** | The resume states the opposite. |
+
+None of those marks is a decision. **Criteria alignment** (the percentage) sits after the lines. It is not a prediction of job performance and it is not a hiring recommendation. **Questions to ask** are written from the gaps. Compare, shortlist, or reject stays with a person. Nothing is rejected before someone reads it.
+
+A role can **Export CSV** and **Copy shortlist link**. The public sample is `/demo/hiring` (Maya Chen, Jordan Ellis, Priya Nair, Full-Stack Engineer) and `/share/sample`. Compare two or three people at `/demo/hiring/compare`.
+
+### What the screens show
+
+- The mark is a filled **P** on indigo, with a teal page corner. The word under it is **Penaven**. The line under that is **Support desk for small teams**.
+- Light is the default. The headline on the landing page is **Answers from your docs. A person when it isn’t.**
+- The hero has two panels: **Answered, or a person** and **Lines, then you decide**.
+- Pricing on the page is Free $0 and Pro $39/mo. Enterprise is listed as custom and later. The month is the price. Desks that bill per conversation or per resolution are called out as a different model.
+- The page says what is not in this version: no phone line or WhatsApp Business, no live order tracking, no auto-reject, no enterprise call-center suite.
+
+Channels, website crawl, and a checkout button are not on the screens, so the docs do not advertise them.
 
 ## Quick start
 

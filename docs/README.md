@@ -42,6 +42,8 @@ The wordmark is Penaven. The repo and the host stay. `GET /api/health` checks Po
 
 ## Demo path
 
+The screen-by-screen account is in the repo [README](../README.md): the support desk (upload, cited answer, a person, the page you add next) and the hiring lane (resume lines first, then the alignment figure).
+
 Landing → site chat with the passage named → a person when the docs do not cover it → **run log** at `/widget/intake` → optional hiring shortlist. On a candidate, the resume lines come first. You decide.
 
 Sample hiring, no sign-in: `/demo/hiring` and `/share/sample`.
